@@ -1,41 +1,251 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:x="http://myfaces.apache.org/tomahawk" xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:p="http://primefaces.org/ui">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:entity="http://entity.goobi.io/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
 
     <composite:interface>
     </composite:interface>
 
     <composite:implementation>
 
-        <h:panelGroup>
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="box box-color box-bordered lightgrey">
-						<div class="box-title">
-							<h3>
-								<i class="fa fa-plug"></i>
-								<h:outputText value="#{msgs[NavigationForm.workflowPlugin.currentProcess.titel]}" />
-							</h3>
-						</div>
-						<div class="box-content">
-							<h:panelGroup
-								rendered="#{!LoginForm.hasRole('Plugin_workflow_entity_editor')}">
-								<h:outputText
-									styleClass="alert alert-danger alert-dismissable margin-bottom-10 margin-top-10"
-									value="#{msgs.plugin_administration_missingPermission} Plugin_workflow_entity_editor"></h:outputText>
-							</h:panelGroup>
+        <style>
+.breadcrumbs {
+    display: none;
+}
 
-							<h:panelGroup id="actionform" styleClass="col-sm-12"
-								rendered="#{LoginForm.hasRole('Plugin_workflow_entity_editor')}">
-								<div class="row">
-									<h:form>
-										hello workflow plugin: #{NavigationForm.workflowPlugin.value}
-									</h:form>
-								</div>
-							</h:panelGroup>
-						</div>
-					</div>
-				</div>
-			</div>
-        </h:panelGroup>
+
+.grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50px auto;
+    grid-row-gap: 1px;
+    grid-column-gap: 9px;
+}
+
+.grid .head {
+    grid-column-start: span 2;
+}
+
+.head ul {
+    list-style-type: none;
+    float: left;
+    margin: 0;
+    padding: 2px 5px;
+}
+
+.head ul li {
+    float: left;
+    margin-right: 10px;
+}
+
+.grid .left, .grid .right {
+    min-height: 300px;
+}
+
+.grid .right {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: stretch;
+    align-content: stretch;
+}
+
+.flex {
+    flex-grow: 1;
+}
+
+.breadcrumb-button {
+    display: block;
+    padding: 2px 6px;
+    float: left;
+    background: #fff;
+    transform: skew(45deg);
+}
+
+.breadcrumb-button i {
+    margin-right: 5px;
+}
+
+.box-content {
+    min-height: 250px;
+}
+
+.skew-fix {
+    display: inline-block;
+    transform: skew(-45deg);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.box .box-title h3 {
+    color: inherit;
+}
+</style>
+
+        <div class="grid">
+            <div class="head">
+                <ul>
+                    <ui:repeat
+                        var="breadcrumb"
+                        value="#{NavigationForm.workflowPlugin.breadcrumbList}">
+                        <li>
+                            <!--                             <button -->
+                            <!--                                 class="btn breadcrumb-button" -->
+                            <!--                                 jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}"> -->
+                            <!--                                 <span class="skew-fix"> -->
+                            <!--                                     <i -->
+                            <!--                                         class="fa #{breadcrumb.icon}" -->
+                            <!--                                         jsf:rendered="#{breadcrumb.entityName != null}" /> -->
+                            <!--                                     <h:outputText value="#{breadcrumb.entityName}" /> -->
+                            <!--                                 </span> -->
+                            <!--                             </button> -->
+
+
+                            <entity:breadcrumb
+                                entityType="#{breadcrumb.entityType}"
+                                entityName="#{breadcrumb.entityName}"
+                                entityColor="#{breadcrumb.color}"
+                                entityIcon="#{breadcrumb.icon}" />
+                        </li>
+                    </ui:repeat>
+
+                </ul>
+
+            </div>
+
+            <div class="left">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entityType}">
+                            <div
+                                class="box-title"
+                                jsf:style="background: #{NavigationForm.workflowPlugin.entityColor}; border-color: #{NavigationForm.workflowPlugin.entityColor};">
+                                <h3>
+                                    <i class="fa #{NavigationForm.workflowPlugin.entityIcon}" />
+
+                                    <h:outputText value="#{msgs[NavigationForm.workflowPlugin.currentProcess.titel]}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #{NavigationForm.workflowPlugin.entityColor}; min-height: 600px;">nothing to see</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="right">
+                <div class="row flex">
+                    <div class="col-sm-6">
+                        <div
+                            class="box  box-bordered"
+                            style="color: #df07b9">
+                            <div
+                                class="box-title"
+                                jsf:style="border-color: #df07b9">
+                                <h3>
+                                    <i class="fa fa-user" />
+
+                                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_linkedArtists}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #df07b9; height: 500px;">nothing to see</div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div
+                            class="box  box-bordered"
+                            style="color: #e81c0c">
+                            <div
+                                class="box-title"
+                                jsf:style="border-color: #e81c0c">
+                                <h3>
+                                    <i class="fa fa-university" />
+
+                                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_linkedAgencies}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #e81c0c;">nothing to see</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div
+                            class="box  box-bordered"
+                            style="color: #900688">
+                            <div
+                                class="box-title"
+                                jsf:style="border-color: #900688">
+                                <h3>
+                                    <i class="fa fa-picture-o" />
+
+                                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_linkedWork}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #900688;">nothing to see</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div
+                            class="box  box-bordered"
+                            style="color: #05b8cd;">
+                            <div
+                                class="box-title"
+                                jsf:style="border-color: #05b8cd;">
+                                <h3>
+                                    <i class="fa fa-trophy" />
+
+                                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_linkedAwards}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #05b8cd;">nothing to see</div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div
+                            class="box box-bordered"
+                            style="color: #19b609;">
+                            <div
+                                class="box-title"
+                                jsf:style="border-color: #19b609;">
+                                <h3>
+                                    <i class="fa fa-calendar" />
+
+                                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_linkedEvents}" />
+                                </h3>
+                            </div>
+                            <div
+                                class="box-content"
+                                jsf:style="border-color: #19b609;">nothing to see</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
 
     </composite:implementation>
 </ui:composition>
