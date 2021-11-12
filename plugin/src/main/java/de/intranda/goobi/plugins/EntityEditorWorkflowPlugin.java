@@ -4,20 +4,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
+import de.intranda.goobi.plugins.model.EntityConfig;
+import de.intranda.goobi.plugins.model.EntityConfig.EntityType;
+import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
+import ugh.dl.Metadata;
+import ugh.dl.MetadataGroup;
 import ugh.dl.Prefs;
+import ugh.exceptions.PreferencesException;
 import ugh.exceptions.UGHException;
 import ugh.fileformats.mets.MetsMods;
 
@@ -45,19 +56,29 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private Prefs prefs;
 
     @Getter
-    private String entityType;
+    private EntityType currentType;
 
     @Getter
-    private String entityColor;
-    @Getter
-    private String entityIcon;
-    @Getter
     private List<BreadcrumbItem> breadcrumbList = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private BreadcrumbItem selectedBreadcrumb;
+
+    private EntityConfig configuration;
+
+    @Getter
+    private String entityName;
 
     /**
      * Constructor
      */
     public EntityEditorWorkflowPlugin() {
+        XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
+        config.setExpressionEngine(new XPathExpressionEngine());
+
+        configuration = new EntityConfig(config);
+
         loadTestdata();
     }
 
@@ -71,31 +92,103 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             currentFileformat = new MetsMods(prefs);
             currentFileformat.read(currentProcess.getMetadataFilePath());
 
-            BreadcrumbItem root = new BreadcrumbItem("dashboard", "Dashboard", 0, "#ccc", null);
+            readMetadata();
+
+            BreadcrumbItem root = new BreadcrumbItem("Dashboard", "Dashboard", 0, "#ccc", null);
             breadcrumbList.add(root);
 
-            BreadcrumbItem item = new BreadcrumbItem("person", "John Doe", currentProcess.getId(), "#df07b9", "fa-user");
+            BreadcrumbItem item = new BreadcrumbItem("Person", "John Doe", 7, "#df07b9", "fa-user");
             breadcrumbList.add(item);
 
-            BreadcrumbItem item2 = new BreadcrumbItem("award", "Darwin Award", currentProcess.getId(), "#05b8cd", "fa-trophy");
+            BreadcrumbItem item2 = new BreadcrumbItem("Award", "Darwin Award", 11, "#05b8cd", "fa-trophy");
             breadcrumbList.add(item2);
 
-            BreadcrumbItem item3 = new BreadcrumbItem("work", "Mona Lisa", currentProcess.getId(), "#900688", "fa-picture-o");
+            BreadcrumbItem item3 = new BreadcrumbItem("Work", "Mona Lisa", 10, "#900688", "fa-picture-o");
             breadcrumbList.add(item3);
 
-            BreadcrumbItem item4 = new BreadcrumbItem("event", "World Cup", currentProcess.getId(), "#19b609", "fa-calendar");
+            BreadcrumbItem item4 = new BreadcrumbItem("Event", "World Cup", 9, "#19b609", "fa-calendar");
             breadcrumbList.add(item4);
 
-            BreadcrumbItem item5 = new BreadcrumbItem("agency", "intranda", currentProcess.getId(), "#e81c0c", "fa-university");
+            BreadcrumbItem item5 = new BreadcrumbItem("Agent", "intranda", 8, "#e81c0c", "fa-university");
             breadcrumbList.add(item5);
-
-            entityType = "person";
-            entityColor = "#df07b9";
-            entityIcon = "fa-user";
 
         } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
             log.error(e);
         }
+    }
+
+    public String loadSelectedBreadcrumb() {
+        // TODO save current entity?
+
+        //  check if dashboard was selected -> exit to start page
+        if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
+            return "/uii/index.xhtml";
+        }
+
+        // TODO: only if it doesn't exist in list?
+        // create BreadcrumbItem for the current object
+        BreadcrumbItem item = new BreadcrumbItem(currentType.getName(), entityName, currentProcess.getId(), currentType.getColor(),
+                currentType.getIcon());
+        breadcrumbList.add(item);
+
+        // load selected data
+        try {
+            currentProcess = ProcessManager.getProcessById(selectedBreadcrumb.getProcessId());
+            prefs = currentProcess.getRegelsatz().getPreferences();
+            currentFileformat = new MetsMods(prefs);
+            currentFileformat.read(currentProcess.getMetadataFilePath());
+        } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
+            log.error(e);
+        }
+        readMetadata();
+        return "";
+    }
+
+    private void readMetadata() {
+        try {
+            DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
+            String entityType = logical.getType().getName();
+            currentType = configuration.getTypeByName(entityType);
+
+            // read main name from metadata
+            StringBuilder sb = new StringBuilder();
+            for (String metadata : currentType.getIdentifyingMetadata().split(" ")) {
+                if (metadata.contains("/")) {
+                    String[] parts = metadata.split("/");
+                    // first part -> group name
+                    for (MetadataGroup mg : logical.getAllMetadataGroups()) {
+                        if (mg.getType().getName().equals(parts[0])) {
+                            // last part metadata name
+                            for (Metadata md : mg.getMetadataList()) {
+                                if (md.getType().getName().equals(parts[1])) {
+                                    if (sb.length() > 0) {
+                                        sb.append(" ");
+                                    }
+                                    sb.append(md.getValue());
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for (Metadata md : logical.getAllMetadata()) {
+                        if (md.getType().getName().equals(metadata)) {
+                            if (sb.length() > 0) {
+                                sb.append(" ");
+                            }
+                            sb.append(md.getValue());
+                        }
+                    }
+                }
+            }
+            entityName = sb.toString();
+            if (StringUtils.isBlank(entityName)) {
+                entityName = entityType;
+            }
+
+        } catch (PreferencesException e) {
+            log.error(e);
+        }
+
     }
 
 }

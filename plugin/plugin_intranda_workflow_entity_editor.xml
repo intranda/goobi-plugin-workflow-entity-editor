@@ -1,6 +1,26 @@
 <config_plugin>
 	
-	<!-- configuration item as sample -->
-	<value>sample value from config</value>
-	
+<type name="Person">	
+	<color>#df07b9</color>
+	<icon>fa-user</icon>
+</type>
+
+<type name="Agent">	
+	<color>#e81c0c</color>
+	<icon>fa-university</icon>
+</type>
+
+<type name="Work">	
+	<color>#900688</color>
+	<icon>fa-picture-o</icon>
+</type>
+<type name="Award">	
+	<color>#05b8cd</color>
+	<icon>fa-trophy</icon>
+</type>
+<type name="Event">	
+	<color>#19b609</color>
+	<icon>fa-calendar</icon>
+</type>
+
 </config_plugin>

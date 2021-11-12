@@ -25,7 +25,7 @@
 .grid {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 50px auto;
+    grid-template-rows: auto auto;
     grid-row-gap: 1px;
     grid-column-gap: 9px;
 }
@@ -69,6 +69,7 @@
     float: left;
     background: #fff;
     transform: skew(45deg);
+    margin-top: 3px;
 }
 
 .breadcrumb-button i {
@@ -93,21 +94,25 @@
 
         <div class="grid">
             <div class="head">
+            <h:form>
                 <ul>
                     <ui:repeat
                         var="breadcrumb"
                         value="#{NavigationForm.workflowPlugin.breadcrumbList}">
                         <li>
-                            <!--                             <button -->
-                            <!--                                 class="btn breadcrumb-button" -->
-                            <!--                                 jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}"> -->
-                            <!--                                 <span class="skew-fix"> -->
-                            <!--                                     <i -->
-                            <!--                                         class="fa #{breadcrumb.icon}" -->
-                            <!--                                         jsf:rendered="#{breadcrumb.entityName != null}" /> -->
-                            <!--                                     <h:outputText value="#{breadcrumb.entityName}" /> -->
-                            <!--                                 </span> -->
-                            <!--                             </button> -->
+<!--                                                         <button -->
+<!--                                                             class="btn breadcrumb-button" -->
+<!--                                                             jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}" -->
+<!--                                                             jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}" -->
+<!--                                                             > -->
+<!--                                                             <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" /> -->
+<!--                                                             <span class="skew-fix"> -->
+<!--                                                                 <i -->
+<!--                                                                     class="fa #{breadcrumb.icon}" -->
+<!--                                                                     jsf:rendered="#{breadcrumb.entityName != null}" /> -->
+<!--                                                                 <h:outputText value="#{breadcrumb.entityName}" /> -->
+<!--                                                             </span> -->
+<!--                                                         </button> -->
 
 
                             <entity:breadcrumb
@@ -119,25 +124,25 @@
                     </ui:repeat>
 
                 </ul>
-
+</h:form>
             </div>
 
             <div class="left">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entityType}">
+                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.currentType.name}">
                             <div
                                 class="box-title"
-                                jsf:style="background: #{NavigationForm.workflowPlugin.entityColor}; border-color: #{NavigationForm.workflowPlugin.entityColor};">
+                                jsf:style="background: #{NavigationForm.workflowPlugin.currentType.color}; border-color: #{NavigationForm.workflowPlugin.currentType.color};">
                                 <h3>
-                                    <i class="fa #{NavigationForm.workflowPlugin.entityIcon}" />
+                                    <i class="fa #{NavigationForm.workflowPlugin.currentType.icon}" />
 
-                                    <h:outputText value="#{msgs[NavigationForm.workflowPlugin.currentProcess.titel]}" />
+                                    <h:outputText value="#{NavigationForm.workflowPlugin.entityName}" />
                                 </h3>
                             </div>
                             <div
                                 class="box-content"
-                                jsf:style="border-color: #{NavigationForm.workflowPlugin.entityColor}; min-height: 600px;">nothing to see</div>
+                                jsf:style="border-color: #{NavigationForm.workflowPlugin.currentType.color}; min-height: 600px;">nothing to see</div>
                         </div>
                     </div>
                 </div>

@@ -19,10 +19,10 @@ public class BreadcrumbItem {
     private String color;
 
     //fa-user
-    //university
-    //picture-o
-    //trophy
-    //calendar
+    //fa-university
+    //fa-picture-o
+    //fa-trophy
+    //fa-calendar
     private String icon;
 
 }

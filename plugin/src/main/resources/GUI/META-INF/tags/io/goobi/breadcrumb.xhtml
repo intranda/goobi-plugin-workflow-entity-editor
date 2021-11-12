@@ -13,7 +13,10 @@
 
         <button
             class="btn breadcrumb-button"
-            jsf:style="border: 1px solid #{entityColor}; color: #{entityColor}">
+            jsf:style="border: 1px solid #{entityColor}; color: #{entityColor}"
+            jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}"
+            >
+            <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
             <span class="skew-fix">
                 <i
                     class="fa #{entityIcon}"
