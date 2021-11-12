@@ -14,10 +14,14 @@ import lombok.RequiredArgsConstructor;
 
 public class EntityConfig {
 
+    public static String vocabularyUrl;
+
     @Getter
     private List<EntityType> allTypes = new ArrayList<>();
 
     public EntityConfig(XMLConfiguration config) {
+
+        vocabularyUrl = config.getString("/global/vocabularyServerUrl");
 
         List<HierarchicalConfiguration> allTypes = config.configurationsAt("/type");
         for (HierarchicalConfiguration type : allTypes) {

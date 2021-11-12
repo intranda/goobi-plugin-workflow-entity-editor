@@ -4,18 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 
 import org.goobi.vocabulary.Field;
 import org.goobi.vocabulary.VocabRecord;
 import org.goobi.vocabulary.Vocabulary;
 
-import de.sub.goobi.helper.FacesContextHelper;
 import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
 import lombok.NonNull;
@@ -85,7 +79,7 @@ public class ConfiguredField {
         vocabularyName = name;
         vocabularyId = id;
         Vocabulary currentVocabulary = VocabularyManager.getVocabularyByTitle(vocabularyName);
-        vocabularyUrl = getVocabularyBaseName() + currentVocabulary.getId();
+        vocabularyUrl = EntityConfig.vocabularyUrl + currentVocabulary.getId();
         if (currentVocabulary != null) {
             VocabularyManager.getAllRecords(currentVocabulary);
             List<VocabRecord> recordList = currentVocabulary.getRecords();
@@ -102,19 +96,5 @@ public class ConfiguredField {
                 }
             }
         }
-    }
-
-    private String getVocabularyBaseName() {
-        FacesContext context = FacesContextHelper.getCurrentFacesContext();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        String contextPath = request.getContextPath();
-        String scheme = request.getScheme(); // http
-        String serverName = request.getServerName(); // hostname.com
-        int serverPort = request.getServerPort(); // 80
-        String reqUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
-        Client client = ClientBuilder.newClient();
-        WebTarget base = client.target(reqUrl);
-        WebTarget vocabularyBase = base.path("api").path("vocabulary");
-        return vocabularyBase.path("records").getUri().toString() + "/";
     }
 }
