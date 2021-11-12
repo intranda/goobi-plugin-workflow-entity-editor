@@ -3,24 +3,29 @@
 <type name="Person">	
 	<color>#df07b9</color>
 	<icon>fa-user</icon>
+	<identifyingMetadata>PersonMainName/FirstnameEn PersonMainName/LastnameEn</identifyingMetadata>
 </type>
 
 <type name="Agent">	
 	<color>#e81c0c</color>
 	<icon>fa-university</icon>
+	<identifyingMetadata>MainName/NameEN</identifyingMetadata>
+</type>
+<type name="Event">	
+	<color>#19b609</color>
+	<icon>fa-calendar</icon>
+	<identifyingMetadata>MainName/NameEN</identifyingMetadata>
 </type>
 
 <type name="Work">	
 	<color>#900688</color>
 	<icon>fa-picture-o</icon>
+	<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 </type>
 <type name="Award">	
 	<color>#05b8cd</color>
 	<icon>fa-trophy</icon>
-</type>
-<type name="Event">	
-	<color>#19b609</color>
-	<icon>fa-calendar</icon>
+	<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 </type>
 
 </config_plugin>
