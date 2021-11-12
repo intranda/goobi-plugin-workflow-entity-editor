@@ -1,31 +1,55 @@
 <config_plugin>
-	
-<type name="Person">	
-	<color>#df07b9</color>
-	<icon>fa-user</icon>
-	<identifyingMetadata>PersonMainName/FirstnameEn PersonMainName/LastnameEn</identifyingMetadata>
-</type>
+	<type name="Person">
+		<color>#df07b9</color>
+		<icon>fa-user</icon>
+		<identifyingMetadata>PersonMainName/FirstnameEn PersonMainName/LastnameEn</identifyingMetadata>
 
-<type name="Agent">	
-	<color>#e81c0c</color>
-	<icon>fa-university</icon>
-	<identifyingMetadata>MainName/NameEN</identifyingMetadata>
-</type>
-<type name="Event">	
-	<color>#19b609</color>
-	<icon>fa-calendar</icon>
-	<identifyingMetadata>MainName/NameEN</identifyingMetadata>
-</type>
+		<displayMetadata>
+			<field label="Publish record" metadata="Published" type="checkbox" required="true" />
+			<field label="identifier" metadata="CatalogIDDigital" type="input" required="true" />
+			<field label="Primary Role" metadata="PrimaryRole" type="vocabularyList" required="false">
+				<vocabulary name="Person - Primary Role in Database" id="12" />
+			</field>
+			<field label="Importance" metadata="Importance" type="select" required="false" readonly="false">
+				<value>1</value>
+				<value>2</value>
+				<value>3</value>
+				<value>4</value>
+				<value>5</value>
+			</field>
 
-<type name="Work">	
-	<color>#900688</color>
-	<icon>fa-picture-o</icon>
-	<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
-</type>
-<type name="Award">	
-	<color>#05b8cd</color>
-	<icon>fa-trophy</icon>
-	<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
-</type>
 
+			<field label="PURL" metadata="PURL" type="generated" required="false" readonly="true">
+				<rule>http://example.com/viewer/resolver?id=${CatalogIDDigital}</rule>
+			</field>
+
+			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
+				<field label="identifier" metadata="Identifier" type="input" required="false" />
+				<field label="Publish field" metadata="Published" type="boolean" required="true" />
+				<field label="Type" metadata="Type" type="input" required="false" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" />
+			</field>
+		</displayMetadata>
+
+	</type>
+	<type name="Agent">
+		<color>#e81c0c</color>
+		<icon>fa-university</icon>
+		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
+	</type>
+	<type name="Event">
+		<color>#19b609</color>
+		<icon>fa-calendar</icon>
+		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
+	</type>
+	<type name="Work">
+		<color>#900688</color>
+		<icon>fa-picture-o</icon>
+		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
+	</type>
+	<type name="Award">
+		<color>#05b8cd</color>
+		<icon>fa-trophy</icon>
+		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
+	</type>
 </config_plugin>

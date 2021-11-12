@@ -21,7 +21,6 @@
     display: none;
 }
 
-
 .grid {
     display: grid;
     grid-template-columns: 50% 50%;
@@ -94,37 +93,37 @@
 
         <div class="grid">
             <div class="head">
-            <h:form>
-                <ul>
-                    <ui:repeat
-                        var="breadcrumb"
-                        value="#{NavigationForm.workflowPlugin.breadcrumbList}">
-                        <li>
-<!--                                                         <button -->
-<!--                                                             class="btn breadcrumb-button" -->
-<!--                                                             jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}" -->
-<!--                                                             jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}" -->
-<!--                                                             > -->
-<!--                                                             <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" /> -->
-<!--                                                             <span class="skew-fix"> -->
-<!--                                                                 <i -->
-<!--                                                                     class="fa #{breadcrumb.icon}" -->
-<!--                                                                     jsf:rendered="#{breadcrumb.entityName != null}" /> -->
-<!--                                                                 <h:outputText value="#{breadcrumb.entityName}" /> -->
-<!--                                                             </span> -->
-<!--                                                         </button> -->
+                <h:form>
+                    <ul>
+                        <ui:repeat
+                            var="breadcrumb"
+                            value="#{NavigationForm.workflowPlugin.breadcrumbList}">
+                            <li>
+                                <!--                                                         <button -->
+                                <!--                                                             class="btn breadcrumb-button" -->
+                                <!--                                                             jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}" -->
+                                <!--                                                             jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}" -->
+                                <!--                                                             > -->
+                                <!--                                                             <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" /> -->
+                                <!--                                                             <span class="skew-fix"> -->
+                                <!--                                                                 <i -->
+                                <!--                                                                     class="fa #{breadcrumb.icon}" -->
+                                <!--                                                                     jsf:rendered="#{breadcrumb.entityName != null}" /> -->
+                                <!--                                                                 <h:outputText value="#{breadcrumb.entityName}" /> -->
+                                <!--                                                             </span> -->
+                                <!--                                                         </button> -->
 
 
-                            <entity:breadcrumb
-                                entityType="#{breadcrumb.entityType}"
-                                entityName="#{breadcrumb.entityName}"
-                                entityColor="#{breadcrumb.color}"
-                                entityIcon="#{breadcrumb.icon}" />
-                        </li>
-                    </ui:repeat>
+                                <entity:breadcrumb
+                                    entityType="#{breadcrumb.entityType}"
+                                    entityName="#{breadcrumb.entityName}"
+                                    entityColor="#{breadcrumb.color}"
+                                    entityIcon="#{breadcrumb.icon}" />
+                            </li>
+                        </ui:repeat>
 
-                </ul>
-</h:form>
+                    </ul>
+                </h:form>
             </div>
 
             <div class="left">
@@ -141,8 +140,148 @@
                                 </h3>
                             </div>
                             <div
-                                class="box-content"
-                                jsf:style="border-color: #{NavigationForm.workflowPlugin.currentType.color}; min-height: 600px;">nothing to see</div>
+                                class="box-content nopadding"
+                                jsf:style="border-color: #{NavigationForm.workflowPlugin.currentType.color}; min-height: 600px;">
+
+                                <h:form
+                                    styleClass="form-horizontal form-bordered"
+                                    prependId="false"
+                                    id="metadataForm">
+
+                                    <ui:repeat
+                                        value="#{NavigationForm.workflowPlugin.metadataFieldList}"
+                                        var="field"
+                                        varStatus="status">
+
+                                        <div class="form-group">
+                                            <div class="col-sm-3 control-label">
+
+                                                <h:outputLabel
+                                                    for="field_#{status.index}"
+                                                    value="#{msgs[field.configField.label]}" />
+
+                                                <!--                                                 <h:panelGroup rendered="#{field.configField.required}"> -->
+                                                <!--                                                     <i class="fa fa-asterisk pull-right font-asterisk margin-left-regular" /> -->
+                                                <!--                                                 </h:panelGroup> -->
+
+                                                <!--                                                 <ui:fragment rendered="#{field.searchable}"> -->
+                                                <!--                                                     <h:commandLink -->
+                                                <!--                                                         style="color: #666666;" -->
+                                                <!--                                                         styleClass="change-icon pull-right " -->
+                                                <!--                                                         title="#{msgs.search}" -->
+                                                <!--                                                         action="#{AktuelleSchritteForm.myPlugin.seachField}"> -->
+                                                <!--                                                         <i class="fa fa-search" /> -->
+                                                <!--                                                         <f:setPropertyActionListener -->
+                                                <!--                                                             value="true" -->
+                                                <!--                                                             target="#{AktuelleSchritteForm.myPlugin.displaySearchPopup}" /> -->
+                                                <!--                                                         <f:setPropertyActionListener -->
+                                                <!--                                                             value="#{field}" -->
+                                                <!--                                                             target="#{AktuelleSchritteForm.myPlugin.currentField}" /> -->
+                                                <!--                                                     </h:commandLink> -->
+                                                <!--                                                 </ui:fragment> -->
+
+                                                <!--                                                 <h:commandLink -->
+                                                <!--                                                     rendered="#{field.repeatable or field.deletable}" -->
+                                                <!--                                                     style="color: #666666; margin-right: 5px;" -->
+                                                <!--                                                     styleClass="change-icon pull-right " -->
+                                                <!--                                                     title="#{msgs.remove}" -->
+                                                <!--                                                     action="#{AktuelleSchritteForm.myPlugin.deleteField}"> -->
+                                                <!--                                                     <i class="fa fa-minus" /> -->
+                                                <!--                                                     <f:setPropertyActionListener -->
+                                                <!--                                                         value="#{field}" -->
+                                                <!--                                                         target="#{AktuelleSchritteForm.myPlugin.currentField}" /> -->
+                                                <!--                                                 </h:commandLink> -->
+
+                                                <!--                                                 <h:commandLink -->
+                                                <!--                                                     rendered="#{field.repeatable}" -->
+                                                <!--                                                     style="color: #666666; margin-right: 5px;" -->
+                                                <!--                                                     styleClass="change-icon pull-right " -->
+                                                <!--                                                     title="#{msgs.duplicate}" -->
+                                                <!--                                                     action="#{AktuelleSchritteForm.myPlugin.duplicateField}"> -->
+                                                <!--                                                     <i class="fa fa-plus" /> -->
+                                                <!--                                                     <f:setPropertyActionListener -->
+                                                <!--                                                         value="#{field}" -->
+                                                <!--                                                         target="#{AktuelleSchritteForm.myPlugin.currentField}" /> -->
+                                                <!--                                                 </h:commandLink> -->
+
+
+                                            </div>
+
+                                            <div
+                                                class="col-sm-9"
+                                                id="field_#{status.index}">
+
+                                                <ui:fragment rendered="#{field.configField.fieldType == 'input'}">
+                                                    <x:inputText
+                                                        styleClass="form-control"
+                                                        value="#{field.metadata.value}"
+                                                        required="false"
+                                                        id="field_#{status.index}">
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@this"
+                                                            event="blur" />
+                                                    </x:inputText>
+                                                </ui:fragment>
+
+                                                <ui:fragment rendered="#{field.configField.fieldType == 'checkbox'}">
+                                                    <h:selectBooleanCheckbox
+                                                        styleClass="form-control checkbox-height-fix"
+                                                        style="width: auto;"
+                                                        value="#{field.booleanValue}">
+                                                        <f:ajax
+                                                            event="change"
+                                                            render="@this" />
+                                                    </h:selectBooleanCheckbox>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
+                                                    <h:selectOneMenu
+                                                        styleClass="form-control"
+                                                        value="#{field.metadata.value}">
+                                                        <f:ajax
+                                                            event="change"
+                                                            render="@this" />
+                                                        <f:selectItem
+                                                            itemValue=""
+                                                            itemLabel="#{msgs.bitteAuswaehlen}"
+                                                            itemDisabled="true" />
+                                                        <f:selectItems
+                                                            value="#{field.configField.valueList}"
+                                                            var="item"
+                                                            itemLabel="#{item}"
+                                                            itemValue="#{item}" />
+                                                    </h:selectOneMenu>
+                                                </ui:fragment>
+
+  <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
+                                <h:selectOneMenu
+                                    styleClass="form-control"
+                                    value="#{field.vocabularyValue}">
+                                    <f:ajax
+                                        event="change"
+                                        render="@this" />
+                                    <f:selectItem
+                                        itemValue=""
+                                        itemLabel="#{msgs.bitteAuswaehlen}"
+                                        itemDisabled="false" />
+                                    <f:selectItems
+                                        value="#{field.configField.vocabularyList}"
+                                        var="item"
+                                        itemLabel="#{item}"
+                                        itemValue="#{item}" />
+                                </h:selectOneMenu>
+                            </ui:fragment>
+
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </ui:repeat>
+
+                                </h:form>
+                            </div>
                         </div>
                     </div>
                 </div>

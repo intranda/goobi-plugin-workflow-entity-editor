@@ -13,8 +13,10 @@ import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
+import de.intranda.goobi.plugins.model.ConfiguredField;
 import de.intranda.goobi.plugins.model.EntityConfig;
 import de.intranda.goobi.plugins.model.EntityConfig.EntityType;
+import de.intranda.goobi.plugins.model.MetadataField;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -27,8 +29,9 @@ import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
+import ugh.dl.MetadataGroupType;
+import ugh.dl.MetadataType;
 import ugh.dl.Prefs;
-import ugh.exceptions.PreferencesException;
 import ugh.exceptions.UGHException;
 import ugh.fileformats.mets.MetsMods;
 
@@ -70,6 +73,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private String entityName;
 
+    @Getter
+    private List<MetadataField> metadataFieldList = new ArrayList<>();
+
     /**
      * Constructor
      */
@@ -106,7 +112,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             BreadcrumbItem item3 = new BreadcrumbItem("Work", "Mona Lisa", 10, "#900688", "fa-picture-o");
             breadcrumbList.add(item3);
 
-            BreadcrumbItem item4 = new BreadcrumbItem("Event", "World Cup", 9, "#19b609", "fa-calendar");
+            BreadcrumbItem item4 = new BreadcrumbItem("Event", "FIFA World Cup", 9, "#19b609", "fa-calendar");
             breadcrumbList.add(item4);
 
             BreadcrumbItem item5 = new BreadcrumbItem("Agent", "intranda", 8, "#e81c0c", "fa-university");
@@ -127,8 +133,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         // TODO: only if it doesn't exist in list?
         // create BreadcrumbItem for the current object
-        BreadcrumbItem item = new BreadcrumbItem(currentType.getName(), entityName, currentProcess.getId(), currentType.getColor(),
-                currentType.getIcon());
+        BreadcrumbItem item =
+                new BreadcrumbItem(currentType.getName(), entityName, currentProcess.getId(), currentType.getColor(), currentType.getIcon());
         breadcrumbList.add(item);
 
         // load selected data
@@ -149,46 +155,85 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
             String entityType = logical.getType().getName();
             currentType = configuration.getTypeByName(entityType);
+            getDisplayName(logical, entityType);
 
-            // read main name from metadata
-            StringBuilder sb = new StringBuilder();
-            for (String metadata : currentType.getIdentifyingMetadata().split(" ")) {
-                if (metadata.contains("/")) {
-                    String[] parts = metadata.split("/");
-                    // first part -> group name
-                    for (MetadataGroup mg : logical.getAllMetadataGroups()) {
-                        if (mg.getType().getName().equals(parts[0])) {
-                            // last part metadata name
-                            for (Metadata md : mg.getMetadataList()) {
-                                if (md.getType().getName().equals(parts[1])) {
-                                    if (sb.length() > 0) {
-                                        sb.append(" ");
-                                    }
-                                    sb.append(md.getValue());
-                                }
-                            }
+            metadataFieldList.clear();
+
+            for (ConfiguredField mf : currentType.getConfiguredFields()) {
+                if (mf.isGroup()) {
+                    MetadataGroupType mgt = prefs.getMetadataGroupTypeByName(mf.getMetadataName());
+                    List<MetadataGroup> groups = logical.getAllMetadataGroupsByType(mgt);
+                    if (groups.isEmpty()) {
+                        // new groups, metadata in it
+                    } else {
+                        for (MetadataGroup group : groups) {
+
                         }
                     }
                 } else {
-                    for (Metadata md : logical.getAllMetadata()) {
-                        if (md.getType().getName().equals(metadata)) {
-                            if (sb.length() > 0) {
-                                sb.append(" ");
-                            }
-                            sb.append(md.getValue());
+                    MetadataType metadataType = prefs.getMetadataTypeByName(mf.getMetadataName());
+                    List<? extends Metadata> mdl = logical.getAllMetadataByType(metadataType);
+                    if (mdl.isEmpty()) {
+                        // create new metadata
+                        Metadata metadata = new Metadata(metadataType);
+                        logical.addMetadata(metadata);
+                        MetadataField field = new MetadataField();
+                        field.setConfigField(mf);
+                        field.setMetadata(metadata);
+                        metadataFieldList.add(field);
+                    } else {
+                        // merge metadata
+                        for (Metadata metadata : mdl) {
+                            MetadataField field = new MetadataField();
+                            field.setConfigField(mf);
+                            field.setMetadata(metadata);
+                            metadataFieldList.add(field);
                         }
                     }
                 }
             }
-            entityName = sb.toString();
-            if (StringUtils.isBlank(entityName)) {
-                entityName = entityType;
-            }
 
-        } catch (PreferencesException e) {
+        } catch (UGHException e) {
             log.error(e);
         }
 
+    }
+
+    private void getDisplayName(DocStruct logical, String entityType) {
+        // read main name from metadata
+        StringBuilder sb = new StringBuilder();
+        for (String metadata : currentType.getIdentifyingMetadata().split(" ")) {
+            if (metadata.contains("/")) {
+                String[] parts = metadata.split("/");
+                // first part -> group name
+                for (MetadataGroup mg : logical.getAllMetadataGroups()) {
+                    if (mg.getType().getName().equals(parts[0])) {
+                        // last part metadata name
+                        for (Metadata md : mg.getMetadataList()) {
+                            if (md.getType().getName().equals(parts[1])) {
+                                if (sb.length() > 0) {
+                                    sb.append(" ");
+                                }
+                                sb.append(md.getValue());
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (Metadata md : logical.getAllMetadata()) {
+                    if (md.getType().getName().equals(metadata)) {
+                        if (sb.length() > 0) {
+                            sb.append(" ");
+                        }
+                        sb.append(md.getValue());
+                    }
+                }
+            }
+        }
+        entityName = sb.toString();
+        if (StringUtils.isBlank(entityName)) {
+            entityName = entityType;
+        }
     }
 
 }
