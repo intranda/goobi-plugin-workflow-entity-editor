@@ -22,6 +22,8 @@ public class MetadataField {
 
     private List<MetadataField> subfields = new ArrayList<>(); // items for metadata in group
 
+    private MetadataField publishField;
+
     // boolean values
 
     public boolean isBooleanValue() {
@@ -64,5 +66,27 @@ public class MetadataField {
         }
         return null;
     }
+
+
+    public void addSubField(MetadataField field) {
+        subfields.add(field);
+    }
+
+    public boolean isDisplayPublishButton() {
+        if (publishField != null) {
+            return true;
+        }
+
+        if (configField.isGroup()) {
+            for (MetadataField mf : subfields) {
+                if ("publish".equals( mf.getConfigField().getFieldType())) {
+                    publishField = mf;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
 }

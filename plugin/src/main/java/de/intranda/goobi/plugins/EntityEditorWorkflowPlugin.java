@@ -164,10 +164,54 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                     MetadataGroupType mgt = prefs.getMetadataGroupTypeByName(mf.getMetadataName());
                     List<MetadataGroup> groups = logical.getAllMetadataGroupsByType(mgt);
                     if (groups.isEmpty()) {
-                        // new groups, metadata in it
+                        // create new group, metadata in it
+                        MetadataGroup group = new MetadataGroup(mgt);
+                        logical.addMetadataGroup(group);
+                        MetadataField field = new MetadataField();
+                        field.setConfigField(mf);
+                        field.setGroup(group);
+                        metadataFieldList.add(field);
+                        for (ConfiguredField subfield : mf.getSubfieldList()) {
+                            MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
+                            Metadata metadata = new Metadata(metadataType);
+                            group.addMetadata(metadata);
+                            MetadataField sub = new MetadataField();
+                            sub.setConfigField(mf);
+                            sub.setMetadata(metadata);
+                            field.addSubField(sub);
+                        }
                     } else {
                         for (MetadataGroup group : groups) {
+                            MetadataField field = new MetadataField();
+                            field.setConfigField(mf);
+                            field.setGroup(group);
+                            metadataFieldList.add(field);
 
+                            for (ConfiguredField subfield : mf.getSubfieldList()) {
+                                if (subfield.isGroup()) {
+                                    // TODO Sources
+                                } else {
+                                    MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
+                                    List<Metadata> mdl = group.getMetadataByType(subfield.getMetadataName());
+                                    if (mdl.isEmpty()) {
+                                        // create new metadata
+                                        Metadata metadata = new Metadata(metadataType);
+                                        group.addMetadata(metadata);
+                                        MetadataField sub = new MetadataField();
+                                        sub.setConfigField(subfield);
+                                        sub.setMetadata(metadata);
+                                        field.addSubField(sub);
+                                    } else {
+                                        // merge metadata
+                                        for (Metadata metadata : mdl) {
+                                            MetadataField sub = new MetadataField();
+                                            sub.setConfigField(subfield);
+                                            sub.setMetadata(metadata);
+                                            field.addSubField(sub);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 } else {

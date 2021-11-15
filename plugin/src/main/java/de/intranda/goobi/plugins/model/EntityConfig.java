@@ -29,17 +29,14 @@ public class EntityConfig {
             String entityColor = type.getString("/color");
             String entityIcon = type.getString("/icon");
             String metadataName = type.getString("/identifyingMetadata");
+            String order = type.getString("/identifyingMetadata/@languageOrder");
             EntityType newType = new EntityType(entityName, entityColor, entityIcon, metadataName);
+            newType.setLanguageOrder(order);
             this.allTypes.add(newType);
 
             for (HierarchicalConfiguration field : type.configurationsAt("/displayMetadata/field")) {
                 ConfiguredField metadataField = extractField(field);
                 newType.addMetadataField(metadataField);
-            }
-
-            for (HierarchicalConfiguration field : type.configurationsAt("/displayMetadata/group")) {
-                ConfiguredField group = extractField(field);
-                newType.addMetadataField(group);
             }
         }
     }
@@ -100,6 +97,7 @@ public class EntityConfig {
         @NonNull
 
         private String identifyingMetadata;
+        private String languageOrder;
 
         private List<ConfiguredField> configuredFields = new ArrayList<>();
 

@@ -59,7 +59,7 @@ public class ConfiguredField {
     private String generationRule;
     @Getter
     @Setter
-    private boolean isGroup = false; // metadata or group
+    private boolean group = false; // metadata or group
 
     // actual data
     //    @Getter
@@ -68,7 +68,7 @@ public class ConfiguredField {
     //    @Getter
     //    @Setter
     //    private MetadataGroup group;
-
+    @Getter
     private List<ConfiguredField> subfieldList = new ArrayList<>(); // fields for group
 
     public void addSubfield(ConfiguredField field) {
@@ -97,4 +97,7 @@ public class ConfiguredField {
             }
         }
     }
+
+
+
 }

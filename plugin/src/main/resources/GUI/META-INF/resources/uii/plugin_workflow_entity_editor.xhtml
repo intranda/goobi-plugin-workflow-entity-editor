@@ -89,6 +89,14 @@
 .box .box-title h3 {
     color: inherit;
 }
+
+.toggle {
+    background: #f6f6f6;
+}
+
+.toggle-on {
+    color: green;
+}
 </style>
 
         <div class="grid">
@@ -205,18 +213,39 @@
                                                 <!--                                                 </h:commandLink> -->
 
 
+
+                                                <!-- publish button -->
+                                                <button
+                                                    class="btn pull-right toggle"
+                                                    jsf:id="toggle-export"
+                                                    jsf:rendered="#{field.displayPublishButton}">
+                                                    <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                    <f:ajax
+                                                        execute="@this"
+                                                        render="@this" />
+
+                                                    <f:setPropertyActionListener
+                                                        value="#{not field.publishField.booleanValue}"
+                                                        target="#{field.publishField.booleanValue}" />
+                                                </button>
+
+                                                <!-- TODO deletion button -->
+                                                <!-- TODO duplicate button -->
+
                                             </div>
 
-                                            <div
-                                                class="col-sm-9"
-                                                id="field_#{status.index}">
+                                            <h:panelGroup
+                                                layout="block"
+                                                rendered="#{!field.configField.group}"
+                                                styleClass="col-sm-9">
 
-                                                <ui:fragment rendered="#{field.configField.fieldType == 'input'}">
+                                                <ui:fragment rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
                                                     <x:inputText
                                                         styleClass="form-control"
                                                         value="#{field.metadata.value}"
                                                         required="false"
-                                                        id="field_#{status.index}">
+                                                        id="field_#{status.index}"
+                                                        readonly="#{field.configField.readonly  or field.configField.fieldType == 'generated'}">
                                                         <f:ajax
                                                             execute="@this"
                                                             render="@this"
@@ -253,26 +282,35 @@
                                                     </h:selectOneMenu>
                                                 </ui:fragment>
 
-  <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
-                                <h:selectOneMenu
-                                    styleClass="form-control"
-                                    value="#{field.vocabularyValue}">
-                                    <f:ajax
-                                        event="change"
-                                        render="@this" />
-                                    <f:selectItem
-                                        itemValue=""
-                                        itemLabel="#{msgs.bitteAuswaehlen}"
-                                        itemDisabled="false" />
-                                    <f:selectItems
-                                        value="#{field.configField.vocabularyList}"
-                                        var="item"
-                                        itemLabel="#{item}"
-                                        itemValue="#{item}" />
-                                </h:selectOneMenu>
-                            </ui:fragment>
+                                                <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
+                                                    <h:selectOneMenu
+                                                        styleClass="form-control"
+                                                        value="#{field.vocabularyValue}">
+                                                        <f:ajax
+                                                            event="change"
+                                                            render="@this" />
+                                                        <f:selectItem
+                                                            itemValue=""
+                                                            itemLabel="#{msgs.bitteAuswaehlen}"
+                                                            itemDisabled="false" />
+                                                        <f:selectItems
+                                                            value="#{field.configField.vocabularyList}"
+                                                            var="item"
+                                                            itemLabel="#{item}"
+                                                            itemValue="#{item}" />
+                                                    </h:selectOneMenu>
+                                                </ui:fragment>
 
-                                            </div>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup
+                                                layout="block"
+                                                rendered="#{field.configField.group}"
+                                                styleClass="col-sm-9">
+                                            list group metadata
+                                            
+                                            </h:panelGroup>
+
                                         </div>
 
 
