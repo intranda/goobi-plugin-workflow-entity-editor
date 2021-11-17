@@ -74,7 +74,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private String entityName;
 
     @Getter
-    private List<MetadataField> metadataFieldList = new ArrayList<>();
+    private List<ConfiguredField> metadataFieldList = new ArrayList<>();
 
     /**
      * Constructor
@@ -170,14 +170,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                         MetadataField field = new MetadataField();
                         field.setConfigField(mf);
                         field.setGroup(group);
-                        metadataFieldList.add(field);
+                        mf.adMetadataField(field);
+                        metadataFieldList.add(mf);
                         for (ConfiguredField subfield : mf.getSubfieldList()) {
                             MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
                             Metadata metadata = new Metadata(metadataType);
                             group.addMetadata(metadata);
                             MetadataField sub = new MetadataField();
-                            sub.setConfigField(mf);
+                            sub.setConfigField(subfield);
                             sub.setMetadata(metadata);
+                            subfield.adMetadataField(sub);
                             field.addSubField(sub);
                         }
                     } else {
@@ -185,7 +187,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             MetadataField field = new MetadataField();
                             field.setConfigField(mf);
                             field.setGroup(group);
-                            metadataFieldList.add(field);
+                            mf.adMetadataField(field);
+                            metadataFieldList.add(mf);
 
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
                                 if (subfield.isGroup()) {
@@ -200,6 +203,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                                         MetadataField sub = new MetadataField();
                                         sub.setConfigField(subfield);
                                         sub.setMetadata(metadata);
+                                        subfield.adMetadataField(sub);
                                         field.addSubField(sub);
                                     } else {
                                         // merge metadata
@@ -207,6 +211,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                                             MetadataField sub = new MetadataField();
                                             sub.setConfigField(subfield);
                                             sub.setMetadata(metadata);
+                                            subfield.adMetadataField(sub);
                                             field.addSubField(sub);
                                         }
                                     }
@@ -224,14 +229,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                         MetadataField field = new MetadataField();
                         field.setConfigField(mf);
                         field.setMetadata(metadata);
-                        metadataFieldList.add(field);
+                        mf.adMetadataField(field);
+                        metadataFieldList.add(mf);
                     } else {
                         // merge metadata
                         for (Metadata metadata : mdl) {
                             MetadataField field = new MetadataField();
                             field.setConfigField(mf);
                             field.setMetadata(metadata);
-                            metadataFieldList.add(field);
+                            mf.adMetadataField(field);
+                            metadataFieldList.add(mf);
                         }
                     }
                 }

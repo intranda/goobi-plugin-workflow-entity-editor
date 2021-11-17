@@ -7,8 +7,8 @@
 >
     <namespace>http://entity.goobi.io/facelets</namespace>
     <tag>
-        <tag-name>breadcrumb</tag-name>
-        <source>tags/io/goobi/breadcrumb.xhtml</source>
+        <tag-name>entity_breadcrumb</tag-name>
+        <source>tags/io/goobi/entity_breadcrumb.xhtml</source>
         <attribute>
             <name>entityType</name>
             <required>true</required>
@@ -29,5 +29,26 @@
             <required>true</required>
             <type>java.lang.String</type>
         </attribute>
+    </tag>
+    
+    <tag>
+        <tag-name>entity_badge</tag-name>
+        <source>tags/io/goobi/entity_badge.xhtml</source>
+        <attribute>
+            <name>styleclassname</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>fieldname</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>showfield</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+       
     </tag>
 </facelet-taglib>
