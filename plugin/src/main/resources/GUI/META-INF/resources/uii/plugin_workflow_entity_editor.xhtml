@@ -100,7 +100,8 @@
 
 
 .badge-empty {
-    background-color: #aaa;
+    background-color: #fff;
+    border: 1px solid #777;
 }
 
 .badge-filled {
@@ -111,16 +112,24 @@
     margin-left: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .badge a {
-    color: #fff !important;
+    color: #fff;
+    font-size: larger;
 }
+
+.badge-empty a {
+  color: #777; 
+  }
 
 .badge-area {
     display: flex;
-    justify-content: flex-end;
+/*     justify-content: flex-end; */
     flex-wrap: wrap;
+    border-bottom: 1px solid #ddd;
+    background: #f6f6f6;
 }
 
 </style>
@@ -183,7 +192,7 @@
                                     id="metadataForm">
 
                                     <!-- TODO badges area -->
-                                    <span class="badge-area">
+                                    <div class="badge-area">
                                         <x:dataList
                                             var="item"
                                             value="#{NavigationForm.workflowPlugin.metadataFieldList}">
@@ -197,7 +206,7 @@
                                                                             />
                                             </ui:fragment>
                                         </x:dataList>
-                                    </span>
+                                    </div>
 
                                     <!-- list all metadata fields -->
                                     <ui:repeat

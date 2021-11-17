@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk">
+<h:body>
+    <ui:composition>
+        <span class="badge #{styleclassname} #{item.valid ? '' : 'validation-error'}">
+            <h:commandLink
+                action="#{item.addValue}"
+                rendered="#{item.repeatable and item.showField}">
+                <i class="fa fa-plus-circle margin-right-5" />
+                <h:outputText value="#{item.label}" />
+                <x:updateActionListener
+                    property="#{item.showField}"
+                    value="true" />
+                <f:ajax
+                    execute="@this"
+                    render="@form" />
+            </h:commandLink>
+
+            <h:commandLink rendered="#{!item.repeatable or (item.repeatable and !item.showField)}">
+                <ui:fragment rendered="#{item.repeatable}">
+                    <i class="fa fa-plus-circle margin-right-5" />
+                </ui:fragment>
+                <h:outputText value="#{item.label}" />
+                <ui:fragment rendered="#{!item.valid}">
+                    <i class="fa fa-exclamation-triangle margin-left-5" />
+                </ui:fragment>
+
+                <x:updateActionListener
+                    property="#{item.showField}"
+                    value="true" />
+                <f:ajax
+                    execute="@this"
+                    render="@form" />
+            </h:commandLink>
+        </span>
+
+    </ui:composition>
+</h:body>
+</html>
