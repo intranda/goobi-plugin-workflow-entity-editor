@@ -98,7 +98,6 @@
     color: green;
 }
 
-
 .badge-empty {
     background-color: #fff;
     border: 1px solid #777;
@@ -121,17 +120,16 @@
 }
 
 .badge-empty a {
-  color: #777; 
-  }
+    color: #777;
+}
 
 .badge-area {
     display: flex;
-/*     justify-content: flex-end; */
+    /*     justify-content: flex-end; */
     flex-wrap: wrap;
     border-bottom: 1px solid #ddd;
     background: #f6f6f6;
 }
-
 </style>
 
         <div class="grid">
@@ -192,21 +190,23 @@
                                     id="metadataForm">
 
                                     <!-- TODO badges area -->
-                                    <div class="badge-area">
+                                    <h:panelGroup
+                                        id="badge-area"
+                                        layout="block"
+                                        styleClass="badge-area">
                                         <x:dataList
                                             var="item"
                                             value="#{NavigationForm.workflowPlugin.metadataFieldList}">
                                             <ui:fragment>
-                                                
 
-                                                                        <entity:entity_badge
-                                                                            styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
-                                                                            fieldname="#{msgs['plugin_administration_archive_'.concat(item.name)]}"
-                                                                            showfield="#{item.showField}"
-                                                                            />
+
+                                                <entity:entity_badge
+                                                    styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
+                                                    fieldname="#{msgs['plugin_administration_archive_'.concat(item.name)]}"
+                                                    showfield="#{item.showField}" />
                                             </ui:fragment>
                                         </x:dataList>
-                                    </div>
+                                    </h:panelGroup>
 
                                     <!-- list all metadata fields -->
                                     <ui:repeat
@@ -259,7 +259,7 @@
                                                             readonly="#{field.configField.readonly  or field.configField.fieldType == 'generated'}">
                                                             <f:ajax
                                                                 execute="@this"
-                                                                render="@this"
+                                                                render="badge-area"
                                                                 event="blur" />
                                                         </x:inputText>
                                                     </ui:fragment>
@@ -271,7 +271,7 @@
                                                             value="#{field.booleanValue}">
                                                             <f:ajax
                                                                 event="change"
-                                                                render="@this" />
+                                                                render="badge-area" />
                                                         </h:selectBooleanCheckbox>
                                                     </ui:fragment>
                                                     <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
@@ -280,7 +280,7 @@
                                                             value="#{field.metadata.value}">
                                                             <f:ajax
                                                                 event="change"
-                                                                render="@this" />
+                                                                render="badge-area" />
                                                             <f:selectItem
                                                                 itemValue=""
                                                                 itemLabel="#{msgs.bitteAuswaehlen}"
@@ -299,7 +299,7 @@
                                                             value="#{field.vocabularyValue}">
                                                             <f:ajax
                                                                 event="change"
-                                                                render="@this" />
+                                                                render="badge-area" />
                                                             <f:selectItem
                                                                 itemValue=""
                                                                 itemLabel="#{msgs.bitteAuswaehlen}"
@@ -318,9 +318,89 @@
                                                     layout="block"
                                                     rendered="#{field.configField.group}"
                                                     styleClass="col-sm-9">
-                                            list group metadata
-                                            
-                                            </h:panelGroup>
+                                                    <ui:repeat
+                                                        var="subfield"
+                                                        value="#{field.subfields}">
+
+                                                        <h:panelGroup
+                                                            layout="block"
+                                                            styleClass="group-metadata"
+                                                            renderd="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                            <h:outputText
+                                                                value="#{subfield.configField.label}"
+                                                                rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.fieldType != 'language'}" />
+                                                            <x:inputText
+                                                                styleClass="form-control"
+                                                                value="#{subfield.metadata.value}"
+                                                                required="false"
+                                                                rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
+                                                                readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}">
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render="badge-area"
+                                                                    event="blur" />
+                                                            </x:inputText>
+
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
+                                                                <h:selectOneMenu
+                                                                    styleClass="form-control"
+                                                                    value="#{subfield.metadata.value}">
+                                                                    <f:ajax
+                                                                        event="change"
+                                                                        render="badge-area" />
+                                                                    <f:selectItem
+                                                                        itemValue=""
+                                                                        itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                        itemDisabled="true" />
+                                                                    <f:selectItems
+                                                                        value="#{subfield.configField.valueList}"
+                                                                        var="item"
+                                                                        itemLabel="#{item}"
+                                                                        itemValue="#{item}" />
+                                                                </h:selectOneMenu>
+                                                            </ui:fragment>
+
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
+                                                                <h:selectOneMenu
+                                                                    styleClass="form-control"
+                                                                    value="#{subfield.vocabularyValue}">
+                                                                    <f:ajax
+                                                                        event="change"
+                                                                        render="badge-area" />
+                                                                    <f:selectItem
+                                                                        itemValue=""
+                                                                        itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                        itemDisabled="false" />
+                                                                    <f:selectItems
+                                                                        value="#{subfield.configField.vocabularyList}"
+                                                                        var="item"
+                                                                        itemLabel="#{item}"
+                                                                        itemValue="#{item}" />
+                                                                </h:selectOneMenu>
+                                                            </ui:fragment>
+                                                        </h:panelGroup>
+
+
+<h:panelGroup
+                                                            layout="block"
+                                                            styleClass="group-metadata"
+                                                            renderd="#{subfield.configField.fieldType == 'language'}">
+<span>
+ <h:outputText
+                                                                value="#{subfield.configField.label}"
+                                                                rendered="#{subfield.configField.fieldType == 'language'}" />
+
+</span>
+
+</h:panelGroup>
+
+                                                    </ui:repeat>
+
+
+
+
+                                                </h:panelGroup>
 
                                             </div>
 

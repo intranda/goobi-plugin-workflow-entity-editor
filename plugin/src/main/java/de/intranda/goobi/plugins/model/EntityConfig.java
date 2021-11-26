@@ -104,7 +104,5 @@ public class EntityConfig {
         public void addMetadataField(ConfiguredField field) {
             configuredFields.add(field);
         }
-
     }
-
 }

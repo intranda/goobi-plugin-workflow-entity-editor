@@ -186,4 +186,11 @@ public class ConfiguredField {
         }
         return false;
     }
+
+    public void clearMetadata( ) {
+        metadataList.clear();
+        for (ConfiguredField cf: subfieldList ) {
+            cf.clearMetadata();
+        }
+    }
 }

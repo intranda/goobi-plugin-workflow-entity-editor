@@ -159,7 +159,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
             metadataFieldList.clear();
 
-            for (ConfiguredField mf : currentType.getConfiguredFields()) {
+            for (ConfiguredField mf : new ArrayList<>(currentType.getConfiguredFields())) {
+                mf.clearMetadata();
                 if (mf.isGroup()) {
                     MetadataGroupType mgt = prefs.getMetadataGroupTypeByName(mf.getMetadataName());
                     List<MetadataGroup> groups = logical.getAllMetadataGroupsByType(mgt);
@@ -188,6 +189,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             field.setConfigField(mf);
                             field.setGroup(group);
                             mf.adMetadataField(field);
+                            mf.setShowField(true);
                             metadataFieldList.add(mf);
 
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
@@ -238,6 +240,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             field.setConfigField(mf);
                             field.setMetadata(metadata);
                             mf.adMetadataField(field);
+                            mf.setShowField(true);
                             metadataFieldList.add(mf);
                         }
                     }
