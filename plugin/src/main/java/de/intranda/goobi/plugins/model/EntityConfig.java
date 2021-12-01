@@ -45,22 +45,34 @@ public class EntityConfig {
         String label = field.getString("@label");
         String mtadataName = field.getString("@metadata");
         String fieldType = field.getString("@type", "input");
-
         ConfiguredField metadataField = new ConfiguredField(label, fieldType, mtadataName);
+
+        String labelPosition = field.getString("@labelPosition", "none");
+        metadataField.setLabelPosition(labelPosition);
 
         boolean required = field.getBoolean("@required", false);
         metadataField.setRequired(required);
+
         boolean readonly = field.getBoolean("@readonly", false);
         metadataField.setReadonly(readonly);
+
         boolean repeatable = field.getBoolean("@repeatable", false);
         metadataField.setRepeatable(repeatable);
+
         if ("vocabularyList".equals(fieldType)) {
             String vocabularyName = field.getString("/vocabulary/@name");
             String vocabularyId = field.getString("/vocabulary/@id");
             metadataField.setVocabulary(vocabularyName, vocabularyId);
-        }
-        if ("select".equals(fieldType)) {
+        } else if ("select".equals(fieldType)) {
             metadataField.setValueList(Arrays.asList(field.getStringArray("/value")));
+        } else if ("vocabularySearch".equals(fieldType)) {
+            String vocabularyName = field.getString("/vocabulary/@name");
+            String vocabularyId = field.getString("/vocabulary/@id");
+            metadataField.setVocabulary(vocabularyName, vocabularyId);
+            List<String> searchFields = Arrays.asList(field.getStringArray("/vocabulary/@searchfields"));
+            List<String> displayFields = Arrays.asList(field.getStringArray("/vocabulary/@displayfields"));
+            metadataField.setSearchFields(searchFields);
+            metadataField.setDisplayFields(displayFields);
         }
         metadataField.setGenerationRule(field.getString("/rule"));
 

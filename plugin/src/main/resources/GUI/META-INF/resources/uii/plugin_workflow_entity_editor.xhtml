@@ -92,6 +92,7 @@
 
 .toggle {
     background: #f6f6f6;
+    padding: 0px 2px;
 }
 
 .toggle-on {
@@ -116,7 +117,7 @@
 
 .badge a {
     color: #fff;
-    font-size: larger;
+    /*     font-size: larger; */
 }
 
 .badge-empty a {
@@ -130,6 +131,59 @@
     border-bottom: 1px solid #ddd;
     background: #f6f6f6;
 }
+
+.field-label {
+    color: #666;
+    padding-bottom: 5px;
+    display: block;
+}
+
+.field-label-language {
+    margin-top: 5px;
+}
+
+.language-field {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-template-rows: auto;
+}
+
+.group-metadata:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.vocabulary-search {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    grid-template-rows: auto;
+}
+
+.viaf-btn {
+    padding: 2px 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    height: 26px;
+}
+
+.viaf-btn img {
+    width: 12px;
+    height: 12px;
+}
+
+.viaf-btn:hover {
+    background: #fff;
+}
+
+.form-group .vocabulary-searchfield {
+border-left: 0 !important;
+}
+
+.vocabulary-searcharea {
+border-bottom: 0 !important;
+
+}
+
+
 </style>
 
         <div class="grid">
@@ -225,6 +279,30 @@
                                                         for="field_#{status.index}"
                                                         value="#{msgs[configuredField.label]}" />
 
+                                                    <!-- delete button -->
+                                                    <button
+                                                        class="btn pull-right toggle"
+                                                        jsf:id="remove"
+                                                        jsf:action="#{NavigationForm.workflowPlugin.removeMetadata(field)}">
+                                                        <i class="fa fa-minus-circle" />
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@form" />
+                                                    </button>
+
+
+                                                    <!-- duplicate button -->
+                                                    <button
+                                                        class="btn pull-right toggle"
+                                                        jsf:id="duplicate"
+                                                        jsf:rendered="#{field.configField.repeatable}"
+                                                        jsf:action="#{NavigationForm.workflowPlugin.duplicateMetadata(configuredField)}">
+                                                        <i class="fa fa-plus-circle" />
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@form" />
+                                                    </button>
+
                                                     <!-- publish button -->
                                                     <button
                                                         class="btn pull-right toggle"
@@ -234,14 +312,11 @@
                                                         <f:ajax
                                                             execute="@this"
                                                             render="@this" />
-
                                                         <f:setPropertyActionListener
                                                             value="#{not field.publishField.booleanValue}"
                                                             target="#{field.publishField.booleanValue}" />
                                                     </button>
 
-                                                    <!-- TODO delete button -->
-                                                    <!-- TODO duplicate button -->
 
                                                 </div>
 
@@ -321,15 +396,16 @@
                                                     <ui:repeat
                                                         var="subfield"
                                                         value="#{field.subfields}">
-
                                                         <h:panelGroup
                                                             layout="block"
-                                                            styleClass="group-metadata"
-                                                            renderd="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+                                                            styleClass="group-metadata #{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                            rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
 
                                                             <h:outputText
-                                                                value="#{subfield.configField.label}"
-                                                                rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.fieldType != 'language'}" />
+                                                                styleClass="field-label"
+                                                                value="#{msgs[subfield.configField.label]}"
+                                                                rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
                                                             <x:inputText
                                                                 styleClass="form-control"
                                                                 value="#{subfield.metadata.value}"
@@ -341,6 +417,18 @@
                                                                     render="badge-area"
                                                                     event="blur" />
                                                             </x:inputText>
+
+                                                            <x:inputTextarea
+                                                                styleClass="form-control"
+                                                                value="#{subfield.metadata.value}"
+                                                                required="false"
+                                                                rendered="#{subfield.configField.fieldType == 'textarea'}"
+                                                                readonly="#{subfield.configField.readonly}">
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render="badge-area"
+                                                                    event="blur" />
+                                                            </x:inputTextarea>
 
                                                             <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
                                                                 <h:selectOneMenu
@@ -379,26 +467,65 @@
                                                                         itemValue="#{item}" />
                                                                 </h:selectOneMenu>
                                                             </ui:fragment>
+
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
+                                                                <div class="vocabulary-search">
+                                                                    <x:inputText
+                                                                        styleClass="form-control"
+                                                                        value="#{subfield.metadata.value}"
+                                                                        required="false"
+                                                                        id="field_#{status.index}"
+                                                                        readonly="true">
+                                                                        <f:ajax
+                                                                            execute="@this"
+                                                                            render="badge-area"
+                                                                            event="blur" />
+                                                                    </x:inputText>
+                                                                    <span>
+                                                                        <button
+                                                                            jsf:id="vocabularySearch"
+                                                                            class="btn change-icon vocabularySearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
+                                                                            title="#{msgs.NORM_vocabularySearch}"
+                                                                            aria-label="#{msgs.NORM_vocabularySearch}"
+                                                                            type="button"
+                                                                            jsf:onclick="$('#vocabularySearchBox').modal('show');">
+                                                                            <img
+                                                                                class="toggle"
+                                                                                style="width: 16px;"
+                                                                                alt="Vocabulary"
+                                                                                src="template/img/Icons_Vocabulary_grey.png" />
+                                                                            <img
+                                                                                class="toggle"
+                                                                                style="width: 16px;"
+                                                                                alt="Vocabulary"
+                                                                                src="template/img/Icons_Vocabulary_color.png" />
+                                                                            <f:setPropertyActionListener
+                                                                                value="#{subfield}"
+                                                                                target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                            <f:ajax
+                                                                                execute="@this"
+                                                                                render=":vocabularySearchModalContent" />
+                                                                            <f:passThroughAttribute
+                                                                                name="data-toggle"
+                                                                                value="tooltip" />
+                                                                            <f:passThroughAttribute
+                                                                                name="data-placement"
+                                                                                value="top" />
+                                                                        </button>
+                                                                    </span>
+                                                                </div>
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
+                                                                file upload area
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'date'}">
+                                                                date field incl. date picker and format validator                                                           
+                                                            </ui:fragment>
+                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'source'}">
+                                                                linked source                                                       
+                                                            </ui:fragment>
                                                         </h:panelGroup>
-
-
-<h:panelGroup
-                                                            layout="block"
-                                                            styleClass="group-metadata"
-                                                            renderd="#{subfield.configField.fieldType == 'language'}">
-<span>
- <h:outputText
-                                                                value="#{subfield.configField.label}"
-                                                                rendered="#{subfield.configField.fieldType == 'language'}" />
-
-</span>
-
-</h:panelGroup>
-
                                                     </ui:repeat>
-
-
-
 
                                                 </h:panelGroup>
 
@@ -408,6 +535,134 @@
                                         </ui:repeat>
 
                                     </ui:repeat>
+
+
+
+                                    <!-- vocabulary search modal -->
+                                    <h:panelGroup
+                                        styleClass="modal fade"
+                                        layout="block"
+                                        id="vocabularySearchBox"
+                                        tabindex="-1"
+                                        role="dialog"
+                                        aria-labelledby="vocabSearchBox"
+                                        aria-hidden="true">
+                                        <div
+                                            class="modal-dialog"
+                                            role="document">
+                                            <h:panelGroup
+                                                styleClass="modal-content"
+                                                layout="block"
+                                                id="vocabularySearchModalContent">
+                                                <div class="modal-header">
+                                                    <h4
+                                                        class="modal-title"
+                                                        style="width: 90%"
+                                                        id="vocabularySearchBoxLabel">#{msgs.NORM_vocabularySearch}: #{msgs[NavigationForm.workflowPlugin.searchField.configField.label]}</h4>
+
+                                                    <button
+                                                        type="button"
+                                                        class="close"
+                                                        data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">
+                                                            <h:outputText
+                                                                value="&amp;times;"
+                                                                escape="false" />
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                        <h:outputText
+                                                            value="#{msgs.NORM_helpVocabularySearch}"
+                                                            escape="false" />
+                                                    </p>
+
+                                                    <div class="row form-group vocabulary-searcharea">
+                                                        <div class="col-sm-12 vocabulary-searchfield">
+
+                                                            <x:inputText
+                                                                id="vocabularySearchInput"
+                                                                styleClass="form-control"
+                                                                value="#{NavigationForm.workflowPlugin.searchValue}" />
+                                                        </div>
+
+
+                                                    </div>
+
+                                                    <div class="text-right">
+                                                        <button
+                                                            jsf:id="vocabularySearchAction"
+                                                            class="btn btn--white btn--loader"
+                                                            jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
+                                                            <i
+                                                                class="fa fa-search"
+                                                                aria-hidden="true"></i>
+                                                            #{msgs.search}
+
+                                                            <f:passThroughAttribute
+                                                                name="data-toggle"
+                                                                value="tooltip" />
+                                                            <f:ajax
+                                                                execute="@form"
+                                                                render="vocabularySearchlist" />
+                                                        </button>
+                                                    </div>
+
+                                                    <h:panelGroup id="vocabularySearchlist">
+                                                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
+                                                            <div class="modal__gnd-list scrollable">
+                                                                <x:dataList
+                                                                    value="#{NavigationForm.workflowPlugin.records}"
+                                                                    var="record">
+                                                                    <div class="row form-group">
+                                                                        <div class="col-sm-11 vocabulary-searchfield">
+                                                                            <x:dataList
+                                                                                value="#{record.fields}"
+                                                                                var="field">
+                                                                                <div
+                                                                                    class="row"
+                                                                                    style="margin: 0px;">
+                                                                                    <div class="col-sm-4">
+                                                                                        <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
+                                                                                    </div>
+                                                                                    <div class="col-sm-8">
+                                                                                        <h:outputText value="#{field.value}" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </x:dataList>
+                                                                        </div>
+
+                                                                        <div class="col-sm-1 vocabulary-searchfield">
+                                                                            <button
+                                                                                jsf:id="check"
+                                                                                class="btn btn--icon-green greenCheckButton"
+                                                                                jsf:action="#{NavigationForm.workflowPlugin.importVocabularyData}">
+                                                                                <f:setPropertyActionListener
+                                                                                    value="#{record}"
+                                                                                    target="#{NavigationForm.workflowPlugin.selectedVocabularyRecord}" />
+
+                                                                                <i class="fa fa-check" />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <hr />
+                                                                </x:dataList>
+
+                                                            </div>
+                                                        </ui:fragment>
+
+                                                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
+                                                            <h:outputText value="#{msgs.NORM_noHits}" />
+                                                        </ui:fragment>
+
+                                                    </h:panelGroup>
+                                                </div>
+                                            </h:panelGroup>
+                                        </div>
+                                    </h:panelGroup>
 
                                 </h:form>
                             </div>

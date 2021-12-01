@@ -1,8 +1,25 @@
 <config_plugin>
+	<global>
+		<vocabularyServerUrl>https://example.com/vocabulary/records/</vocabularyServerUrl>
+	</global>
+
 	<type name="Person">
 		<color>#df07b9</color>
 		<icon>fa-user</icon>
-		<identifyingMetadata>PersonMainName/FirstnameEn PersonMainName/LastnameEn</identifyingMetadata>
+		<identifyingMetadata languageOrder="ORIG, FR, DE, EN">PersonMainName/Firstname PersonMainName/Lastname</identifyingMetadata>
+
+		<!-- Define, which input type should be used. Allowed values are:
+		* checkbox: Checkbox
+		* input: single line input field
+		* textarea: multi line input area
+		* select: dropdown with defined values
+		* vocabularyList: dropdown with values from vocabulary
+		* vocabularySearch: read only field with search button to get data from vocabulary
+		* publish: toggle button to mark field as publishable
+		* source: linked source
+		* fileupload: file upload button
+		* date: date field incl. date picker
+		-->
 
 		<displayMetadata>
 			<field label="Publish record" metadata="Published" type="checkbox" required="true" />
@@ -20,21 +37,167 @@
 
 
 			<field label="PURL" metadata="PURL" type="generated" required="false" readonly="true">
-				<rule>http://example.com/viewer/resolver?id=${CatalogIDDigital}</rule>
+				<rule>http://example.com/viewer/resolver?id=${meta.CatalogIDDigital}</rule>
 			</field>
 
 			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
-				<field label="identifier" metadata="Identifier" type="input" required="false" />
-				<field label="Publish field" metadata="Published" type="boolean" required="true" />
-				<field label="Type" metadata="Type" type="input" required="false" />
-				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" />
+				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" />
+				<field label="Type" metadata="Type" type="select" required="false" labelPosition="top">
+					<value>GND</value>
+					<value>ISNI</value>
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+
+			<field label="Main Name" metadata="PersonMainName" repeatable="false" group="true">
+				<field label="Firstname (orig)" metadata="FirstnameOrig" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (orig)" metadata="LastnameOrig" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" />
+
+				<field label="Numeration" metadata="Numeration" type="input" required="false" labelPosition="left" />
+				<field label="Title" metadata="Title" type="input" required="false" labelPosition="left" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+
+			<field label="Other Name" metadata="PersonOtherName" repeatable="true" group="true">
+				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="left">
+					<vocabulary name="Person - Other Name Forms Type" id="3" />
+				</field>
+				<field label="Firstname (orig)" metadata="FirstnameOrig" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (orig)" metadata="LastnameOrig" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" />
+
+				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" />
+				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" />
+
+				<field label="Numeration" metadata="Numeration" type="input" required="false" labelPosition="left" />
+				<field label="Title" metadata="Title" type="input" required="false" labelPosition="left" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Date of Birth" metadata="BirthDateGroup" repeatable="false" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Birthdate" metadata="Birthdate" type="input" required="false" labelPosition="none" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Alternative Date of Birth" metadata="AltBirthDateGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Birthdate" metadata="Birthdate" type="input" required="false" labelPosition="none" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Birthplace" metadata="BirthplaceGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Birthplace" metadata="Birthplace" type="vocabularySearch" required="false" labelPosition="none">
+					<vocabulary name="Location" id="5" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Date of Death" metadata="DeathDateGroup" repeatable="false" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="DeathDate" metadata="DeathDate" type="input" required="false" labelPosition="none" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Alternative Date of Death" metadata="AltDeathDateGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="AlternativeDeathDate" metadata="AlternativeDeathDate" type="input" required="false" labelPosition="none" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Birthplace" metadata="DeathplaceGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Deathplace" metadata="Deathplace" type="vocabularySearch" required="false" labelPosition="none">
+					<vocabulary name="Location" id="5" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Gender" metadata="GenderGroup" repeatable="true" group="true">
+				<field label="Gender" metadata="Gender" type="vocabularyList" required="false">
+					<vocabulary name="Gender" id="9" />
+				</field>
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+
+			<field label="Media" metadata="Media" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="File" metadata="File" type="fileupload" required="false" labelPosition="left" />
+				<field label="Subject" metadata="Subject" type="vocabularyList" required="false" labelPosition="left">
+					<vocabulary name="Audiovisual Media Subject" id="11" />
+				</field>
+				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="left">
+					<vocabulary name="Audiovisual Media Type" id="11" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Profession" metadata="ProfessionGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="Profession" metadata="Profession" type="vocabularyList" required="false" labelPosition="top">
+					<vocabulary name="Profession" id="15" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Discipline" metadata="DisciplineGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Discipline" metadata="Discipline" type="vocabularyList" required="false" labelPosition="none">
+					<vocabulary name="Discipline" id="16" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="Description" metadata="ShortDescription" type="input" required="false" labelPosition="top" />
+				<field label="Location" metadata="Location" type="vocabularySearch" required="false" labelPosition="top">
+					<vocabulary name="Location" id="5" />
+				</field>
+				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
+					<vocabulary name="Biography Type" id="17" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+
+			<field label="Website" metadata="Website" repeatable="true" group="true">
+				<field label="Link" metadata="Link" type="input" required="false" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
 			</field>
 		</displayMetadata>
+
 
 	</type>
 	<type name="Agent">
 		<color>#e81c0c</color>
 		<icon>fa-university</icon>
+		<!--always english -->
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
 	</type>
 	<type name="Event">

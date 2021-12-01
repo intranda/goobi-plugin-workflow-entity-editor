@@ -2,15 +2,19 @@ package de.intranda.goobi.plugins;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
+import org.goobi.vocabulary.Field;
+import org.goobi.vocabulary.VocabRecord;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.ConfiguredField;
@@ -18,9 +22,12 @@ import de.intranda.goobi.plugins.model.EntityConfig;
 import de.intranda.goobi.plugins.model.EntityConfig.EntityType;
 import de.intranda.goobi.plugins.model.MetadataField;
 import de.sub.goobi.config.ConfigPlugins;
+import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
+import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -191,7 +198,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             mf.adMetadataField(field);
                             mf.setShowField(true);
                             metadataFieldList.add(mf);
-
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
                                 if (subfield.isGroup()) {
                                     // TODO Sources
@@ -207,6 +213,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                                         sub.setMetadata(metadata);
                                         subfield.adMetadataField(sub);
                                         field.addSubField(sub);
+                                        // generate metadata value
+                                        if ("generated".equals(subfield.getFieldType())) {
+                                            String value = subfield.getGenerationRule();
+                                            if (StringUtils.isNotBlank(value)) {
+                                                VariableReplacer replacer =
+                                                        new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
+                                                metadata.setValue(replacer.replace(value));
+                                                mf.setShowField(true);
+                                            }
+                                        }
+
                                     } else {
                                         // merge metadata
                                         for (Metadata metadata : mdl) {
@@ -215,6 +232,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                                             sub.setMetadata(metadata);
                                             subfield.adMetadataField(sub);
                                             field.addSubField(sub);
+
                                         }
                                     }
                                 }
@@ -233,6 +251,15 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                         field.setMetadata(metadata);
                         mf.adMetadataField(field);
                         metadataFieldList.add(mf);
+                        // generate metadata value
+                        if ("generated".equals(mf.getFieldType())) {
+                            String value = mf.getGenerationRule();
+                            if (StringUtils.isNotBlank(value)) {
+                                VariableReplacer replacer = new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
+                                metadata.setValue(replacer.replace(value));
+                                mf.setShowField(true);
+                            }
+                        }
                     } else {
                         // merge metadata
                         for (Metadata metadata : mdl) {
@@ -288,6 +315,125 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         if (StringUtils.isBlank(entityName)) {
             entityName = entityType;
         }
+    }
+
+    public void duplicateMetadata(ConfiguredField field) {
+
+        if (field.getMetadataList() == null) {
+            field.setMetadataList(new ArrayList<>());
+        }
+        if (field.isGroup()) {
+            try {
+
+                MetadataGroup group = new MetadataGroup(prefs.getMetadataGroupTypeByName(field.getMetadataName()));
+                currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadataGroup(group);
+                MetadataField f = new MetadataField();
+                f.setConfigField(field);
+                f.setGroup(group);
+                field.adMetadataField(f);
+                for (ConfiguredField subfield : field.getSubfieldList()) {
+                    if (!subfield.isGroup()) {
+                        Metadata otherMetadata = subfield.getMetadataList().get(0).getMetadata();
+                        MetadataType metadataType = otherMetadata.getType();
+                        Metadata metadata = new Metadata(metadataType);
+                        group.addMetadata(metadata);
+                        MetadataField sub = new MetadataField();
+                        sub.setConfigField(subfield);
+                        sub.setMetadata(metadata);
+                        f.addSubField(sub);
+                    }
+                }
+            } catch (UGHException e) {
+                log.error(e);
+            }
+        } else {
+            try {
+                Metadata metadata = new Metadata(prefs.getMetadataTypeByName(field.getMetadataName()));
+                currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadata(metadata);
+                MetadataField f = new MetadataField();
+                f.setConfigField(field);
+                f.setMetadata(metadata);
+                field.adMetadataField(f);
+            } catch (UGHException e) {
+                log.error(e);
+            }
+        }
+        field.setShowField(true);
+    }
+
+    public void removeMetadata(MetadataField field) {
+        ConfiguredField cf = field.getConfigField();
+        if (cf.isGroup()) {
+            MetadataGroup grp = field.getGroup();
+            grp.getParent().removeMetadataGroup(grp, true);
+        } else {
+            Metadata md = field.getMetadata();
+            md.getParent().removeMetadata(md, true);
+        }
+        cf.getMetadataList().remove(field);
+
+        if (cf.getMetadataList().isEmpty()) {
+            duplicateMetadata(cf);
+            cf.setShowField(false);
+            // generate empty field
+
+        }
+    }
+
+    @Getter
+    @Setter
+    private MetadataField searchField;
+
+    @Getter
+    @Setter
+    private String searchValue;
+
+    @Getter
+    private boolean showNotHits;
+
+    @Getter
+    private List<VocabRecord> records;
+    @Getter
+    @Setter
+    private VocabRecord selectedVocabularyRecord;
+
+    public void searchVocabulary() {
+
+        List<StringPair> data = new ArrayList<>();
+
+        for (String field : searchField.getConfigField().getSearchFields()) {
+            data.add(new StringPair(field, searchValue));
+        }
+
+        records = VocabularyManager.findRecords(searchField.getConfigField().getVocabularyName(), data);
+
+        if (records == null || records.isEmpty()) {
+            showNotHits = true;
+        } else {
+            showNotHits = false;
+        }
+        Collections.sort(records);
+    }
+
+    public void importVocabularyData() {
+        Metadata md = searchField.getMetadata();
+        for (Field field : selectedVocabularyRecord.getFields()) {
+            if (field.getDefinition().isMainEntry()) {
+                md.setValue(field.getValue());
+            }
+        }
+
+        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
+                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
+            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
+                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
+                    + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
+        } else {
+            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
+                    searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
+                            + selectedVocabularyRecord.getId());
+        }
+
     }
 
 }

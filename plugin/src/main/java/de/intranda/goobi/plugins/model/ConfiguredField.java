@@ -29,9 +29,28 @@ public class ConfiguredField {
     @Getter
     @NonNull
     private String label; // displayed name
+
+    @Getter
+    @Setter
+    private String labelPosition = "none"; //none, top, left
+
+    /*
+     * Define, which input type should be used. Allowed values are:
+     * checkbox: Checkbox
+     * input: single line input field
+     * textarea: multi line input area
+     * select: dropdown with defined values
+     * vocabularyList: dropdown with values from vocabulary
+     * vocabularySearch: read only field with search button to get data from vocabulary
+     * publish: toggle button to mark field as publishable
+     * source: linked source
+     * fileupload: file upload button
+     * date: date field incl. date picker
+     */
     @Getter
     @NonNull
-    private String fieldType; // type, input, select, ....
+    private String fieldType;
+
     @Getter
     @NonNull
     private String metadataName; // metadata or group name
@@ -59,6 +78,14 @@ public class ConfiguredField {
 
     @Getter
     @Setter
+    private List<String> searchFields;
+
+    @Getter
+    @Setter
+    private List<String> displayFields;
+
+    @Getter
+    @Setter
     private List<String> valueList;
 
     @Getter
@@ -81,6 +108,7 @@ public class ConfiguredField {
 
     // actual data
     @Getter
+    @Setter
     private List<MetadataField> metadataList = new ArrayList<>();
 
     @Getter
@@ -95,7 +123,7 @@ public class ConfiguredField {
         vocabularyId = id;
         Vocabulary currentVocabulary = VocabularyManager.getVocabularyByTitle(vocabularyName);
         vocabularyUrl = EntityConfig.vocabularyUrl + currentVocabulary.getId();
-        if (currentVocabulary != null) {
+        if (currentVocabulary != null && "vocabularyList".equals(fieldType)) {
             VocabularyManager.getAllRecords(currentVocabulary);
             List<VocabRecord> recordList = currentVocabulary.getRecords();
             Collections.sort(recordList);
@@ -187,10 +215,12 @@ public class ConfiguredField {
         return false;
     }
 
-    public void clearMetadata( ) {
+    // only call it when new entity is loaded
+    public void clearMetadata() {
         metadataList.clear();
-        for (ConfiguredField cf: subfieldList ) {
+        for (ConfiguredField cf : subfieldList) {
             cf.clearMetadata();
         }
     }
+
 }
