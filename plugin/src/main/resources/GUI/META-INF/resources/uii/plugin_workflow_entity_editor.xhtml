@@ -175,15 +175,12 @@
 }
 
 .form-group .vocabulary-searchfield {
-border-left: 0 !important;
+    border-left: 0 !important;
 }
 
 .vocabulary-searcharea {
-border-bottom: 0 !important;
-
+    border-bottom: 0 !important;
 }
-
-
 </style>
 
         <div class="grid">
@@ -241,6 +238,7 @@ border-bottom: 0 !important;
                                 <h:form
                                     styleClass="form-horizontal form-bordered"
                                     prependId="false"
+                                    enctype="multipart/form-data"
                                     id="metadataForm">
 
                                     <!-- TODO badges area -->
@@ -516,10 +514,42 @@ border-bottom: 0 !important;
                                                                 </div>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
-                                                                file upload area
+
+                                                                <h:inputFile
+                                                                    id="thirdtab_fileupload3"
+                                                                    value="#{subfield.uploadedFile}"
+                                                                    storage="file"
+                                                                    styleClass="form-control form-control-file"
+                                                                    style="border: 0;padding-left: 0px;"
+                                                                    required="false">
+                                                                    <f:ajax
+                                                                        listener="#{subfield.uploadFile}"
+                                                                        render="thirdtab_fileupload3_message" />
+                                                                </h:inputFile>
                                                             </ui:fragment>
-                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'date'}">
-                                                                date field incl. date picker and format validator                                                           
+                                                            <ui:fragment
+                                                                rendered="#{subfield.configField.fieldType == 'date'}"
+                                                                id="group">
+
+                                                                <x:inputText
+                                                                    styleClass="form-control"
+                                                                    value="#{subfield.metadata.value}"
+                                                                    required="false"
+                                                                    readonly="false"
+                                                                    validator="#{subfield.dateValidator}"
+                                                                    id="dateField">
+                                                                    <f:ajax
+                                                                        execute="@this"
+                                                                        render="badge-area group"
+                                                                        event="blur" />
+                                                                </x:inputText>
+                                                                <h:panelGroup
+                                                                    layout="block"
+                                                                    rendered="#{!subfield.valid}"
+                                                                    styleClass="font-danger validation-message">
+                                                                    <h:outputText value="#{subfield.validationErrorMessage}" />
+                                                                </h:panelGroup>
+
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{subfield.configField.fieldType == 'source'}">
                                                                 linked source                                                       

@@ -435,5 +435,4 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
     }
-
 }
