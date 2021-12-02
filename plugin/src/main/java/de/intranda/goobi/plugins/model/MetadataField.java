@@ -20,6 +20,8 @@ import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.Helper;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.Metadata;
@@ -41,6 +43,18 @@ public class MetadataField {
 
     private boolean valid;
     private String validationErrorMessage;
+
+    @Getter
+    private List<SourceField> sources = new ArrayList<>();
+
+    public void addSource(SourceField field) {
+        sources.add(field);
+    }
+
+    public void removeSource(SourceField field) {
+        sources.remove(field);
+    }
+
 
     // boolean values
 
@@ -201,5 +215,24 @@ public class MetadataField {
             }
         }
         return null;
+    }
+
+
+
+    @Data
+    @RequiredArgsConstructor
+    public class SourceField {
+        @NonNull
+        private String sourceId;
+        @NonNull
+        private String sourceUri;
+        @NonNull
+        private String sourceName;
+        @NonNull
+        private String sourceType;
+        @NonNull
+        private String sourceLink;
+        @NonNull
+        private String pageRange;
     }
 }

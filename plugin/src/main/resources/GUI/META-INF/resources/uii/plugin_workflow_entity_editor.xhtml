@@ -530,7 +530,7 @@
                                                             <ui:fragment
                                                                 rendered="#{subfield.configField.fieldType == 'date'}"
                                                                 id="group">
-
+<!-- TODO show wrong syntax errors, add date picker -->
                                                                 <x:inputText
                                                                     styleClass="form-control"
                                                                     value="#{subfield.metadata.value}"
@@ -551,11 +551,14 @@
                                                                 </h:panelGroup>
 
                                                             </ui:fragment>
-                                                            <ui:fragment rendered="#{subfield.configField.fieldType == 'source'}">
-                                                                linked source                                                       
-                                                            </ui:fragment>
+                                                            
                                                         </h:panelGroup>
                                                     </ui:repeat>
+                                                            <ui:repeat var="source" value="#{field.sources}">
+                                                               <h:outputText value="Name: #{source.sourceName}" />
+                                                               <br/>
+                                                               <h:outputText value="Page: #{source.pageRange}" />                                                       
+                                                            </ui:repeat>
 
                                                 </h:panelGroup>
 

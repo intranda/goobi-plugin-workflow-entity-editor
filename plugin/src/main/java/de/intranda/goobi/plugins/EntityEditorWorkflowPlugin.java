@@ -21,6 +21,7 @@ import de.intranda.goobi.plugins.model.ConfiguredField;
 import de.intranda.goobi.plugins.model.EntityConfig;
 import de.intranda.goobi.plugins.model.EntityConfig.EntityType;
 import de.intranda.goobi.plugins.model.MetadataField;
+import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.VariableReplacer;
@@ -199,8 +200,39 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             mf.setShowField(true);
                             metadataFieldList.add(mf);
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
-                                if (subfield.isGroup()) {
-                                    // TODO Sources
+                                if ("source".equals(subfield.getFieldType())) {
+                                    // Sources
+                                    List<MetadataGroup> sources = group.getAllMetadataGroupsByName("Source");
+                                    if (!sources.isEmpty()) {
+                                        for (MetadataGroup sourceGroup : sources) {
+                                            String sourceId = null;
+                                            String sourceUri = null;
+                                            String sourceName = null;
+                                            String sourceType = null;
+                                            String sourceLink = null;
+                                            String sourcePageRange = null;
+
+                                            for (Metadata md : sourceGroup.getMetadataList()) {
+                                                if (md.getType().getName().equals("SourceID")) {
+                                                    sourceId = md.getValue();
+                                                    sourceUri = md.getAuthorityURI();
+                                                } else if (md.getType().getName().equals("SourceName")) {
+                                                    sourceName = md.getValue();
+                                                } else if (md.getType().getName().equals("SourceType")) {
+                                                    sourceType = md.getValue();
+                                                } else if (md.getType().getName().equals("SourceLink")) {
+                                                    sourceLink = md.getValue();
+                                                } else if (md.getType().getName().equals("SourcePage")) {
+                                                    sourcePageRange = md.getValue();
+                                                }
+
+                                            }
+                                            SourceField source = field.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink,
+                                                    sourcePageRange);
+                                            field.addSource(source);
+                                        }
+                                    }
+
                                 } else {
                                     MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
                                     List<Metadata> mdl = group.getMetadataByType(subfield.getMetadataName());
