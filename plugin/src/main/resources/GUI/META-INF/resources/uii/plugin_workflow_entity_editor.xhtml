@@ -530,13 +530,12 @@
                                                             <ui:fragment
                                                                 rendered="#{subfield.configField.fieldType == 'date'}"
                                                                 id="group">
-<!-- TODO show wrong syntax errors, add date picker -->
+                                                                <!-- TODO show wrong syntax errors, add date picker validator="#{subfield.dateValidator}" -->
                                                                 <x:inputText
                                                                     styleClass="form-control"
                                                                     value="#{subfield.metadata.value}"
                                                                     required="false"
                                                                     readonly="false"
-                                                                    validator="#{subfield.dateValidator}"
                                                                     id="dateField">
                                                                     <f:ajax
                                                                         execute="@this"
@@ -551,14 +550,18 @@
                                                                 </h:panelGroup>
 
                                                             </ui:fragment>
-                                                            
+
                                                         </h:panelGroup>
                                                     </ui:repeat>
-                                                            <ui:repeat var="source" value="#{field.sources}">
-                                                               <h:outputText value="Name: #{source.sourceName}" />
-                                                               <br/>
-                                                               <h:outputText value="Page: #{source.pageRange}" />                                                       
-                                                            </ui:repeat>
+                                                    <ui:repeat
+                                                        var="source"
+                                                        value="#{field.sources}">
+                                                        <h:outputText value="Name: #{source.sourceName}" />
+                                                        <br />
+                                                        <h:outputText value="Type: #{source.sourceType}" />
+                                                        <br />
+                                                        <h:outputText value="Page: #{source.pageRange}" />
+                                                    </ui:repeat>
 
                                                 </h:panelGroup>
 

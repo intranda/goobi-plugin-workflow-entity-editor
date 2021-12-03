@@ -122,7 +122,7 @@ public class MetadataField {
 
 
 
-    public void validateProperty(FacesContext context, UIComponent component, Object value) {
+    public void dateValidator(FacesContext context, UIComponent component, Object value) {
         valid = true;
         validationErrorMessage=null;
         if (value == null) {
