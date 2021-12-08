@@ -165,6 +165,15 @@
     height: 26px;
 }
 
+.toggle-btn, .toggle-btn:hover {
+    background: #fff;
+}
+
+.source-btn, source-btn:hover {
+    background: #fff;
+    padding: 0px 5px;
+}
+
 .viaf-btn img {
     width: 12px;
     height: 12px;
@@ -181,6 +190,36 @@
 .vocabulary-searcharea {
     border-bottom: 0 !important;
 }
+
+.source {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    grid-template-rows: auto;
+}
+
+.source:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.close {
+    color: #fff;
+    float: right;
+    opacity: .5;
+}
+
+.modal-dialog {
+    width: 75%;
+}
+
+.noborder {
+    border: 0 !important;
+}
+
+.nobackground {
+    background: #fff !important;
+}
 </style>
 
         <div class="grid">
@@ -191,21 +230,6 @@
                             var="breadcrumb"
                             value="#{NavigationForm.workflowPlugin.breadcrumbList}">
                             <li>
-                                <!--                                                         <button -->
-                                <!--                                                             class="btn breadcrumb-button" -->
-                                <!--                                                             jsf:style="border: 1px solid #{breadcrumb.color}; color: #{breadcrumb.color}" -->
-                                <!--                                                             jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}" -->
-                                <!--                                                             > -->
-                                <!--                                                             <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" /> -->
-                                <!--                                                             <span class="skew-fix"> -->
-                                <!--                                                                 <i -->
-                                <!--                                                                     class="fa #{breadcrumb.icon}" -->
-                                <!--                                                                     jsf:rendered="#{breadcrumb.entityName != null}" /> -->
-                                <!--                                                                 <h:outputText value="#{breadcrumb.entityName}" /> -->
-                                <!--                                                             </span> -->
-                                <!--                                                         </button> -->
-
-
                                 <entity:entity_breadcrumb
                                     entityType="#{breadcrumb.entityType}"
                                     entityName="#{breadcrumb.entityName}"
@@ -388,6 +412,7 @@
                                                 </h:panelGroup>
 
                                                 <h:panelGroup
+                                                    id="group"
                                                     layout="block"
                                                     rendered="#{field.configField.group}"
                                                     styleClass="col-sm-9">
@@ -553,153 +578,16 @@
 
                                                         </h:panelGroup>
                                                     </ui:repeat>
-                                                    <ui:repeat
-                                                        var="source"
-                                                        value="#{field.sources}">
-                                                        <h:outputText value="Name: #{source.sourceName}" />
-                                                        <br />
-                                                        <h:outputText value="Type: #{source.sourceType}" />
-                                                        <br />
-                                                        <h:outputText value="Page: #{source.pageRange}" />
-                                                    </ui:repeat>
-
+                                                    <ui:include src="includes/sources.xhtml" />
                                                 </h:panelGroup>
-
                                             </div>
-
-
                                         </ui:repeat>
-
                                     </ui:repeat>
-
-
-
                                     <!-- vocabulary search modal -->
-                                    <h:panelGroup
-                                        styleClass="modal fade"
-                                        layout="block"
-                                        id="vocabularySearchBox"
-                                        tabindex="-1"
-                                        role="dialog"
-                                        aria-labelledby="vocabSearchBox"
-                                        aria-hidden="true">
-                                        <div
-                                            class="modal-dialog"
-                                            role="document">
-                                            <h:panelGroup
-                                                styleClass="modal-content"
-                                                layout="block"
-                                                id="vocabularySearchModalContent">
-                                                <div class="modal-header">
-                                                    <h4
-                                                        class="modal-title"
-                                                        style="width: 90%"
-                                                        id="vocabularySearchBoxLabel">#{msgs.NORM_vocabularySearch}: #{msgs[NavigationForm.workflowPlugin.searchField.configField.label]}</h4>
+                                    <ui:include src="includes/vocabulary_search_modal.xhtml" />
 
-                                                    <button
-                                                        type="button"
-                                                        class="close"
-                                                        data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">
-                                                            <h:outputText
-                                                                value="&amp;times;"
-                                                                escape="false" />
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>
-                                                        <h:outputText
-                                                            value="#{msgs.NORM_helpVocabularySearch}"
-                                                            escape="false" />
-                                                    </p>
-
-                                                    <div class="row form-group vocabulary-searcharea">
-                                                        <div class="col-sm-12 vocabulary-searchfield">
-
-                                                            <x:inputText
-                                                                id="vocabularySearchInput"
-                                                                styleClass="form-control"
-                                                                value="#{NavigationForm.workflowPlugin.searchValue}" />
-                                                        </div>
-
-
-                                                    </div>
-
-                                                    <div class="text-right">
-                                                        <button
-                                                            jsf:id="vocabularySearchAction"
-                                                            class="btn btn--white btn--loader"
-                                                            jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
-                                                            <i
-                                                                class="fa fa-search"
-                                                                aria-hidden="true"></i>
-                                                            #{msgs.search}
-
-                                                            <f:passThroughAttribute
-                                                                name="data-toggle"
-                                                                value="tooltip" />
-                                                            <f:ajax
-                                                                execute="@form"
-                                                                render="vocabularySearchlist" />
-                                                        </button>
-                                                    </div>
-
-                                                    <h:panelGroup id="vocabularySearchlist">
-                                                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
-                                                            <div class="modal__gnd-list scrollable">
-                                                                <x:dataList
-                                                                    value="#{NavigationForm.workflowPlugin.records}"
-                                                                    var="record">
-                                                                    <div class="row form-group">
-                                                                        <div class="col-sm-11 vocabulary-searchfield">
-                                                                            <x:dataList
-                                                                                value="#{record.fields}"
-                                                                                var="field">
-                                                                                <div
-                                                                                    class="row"
-                                                                                    style="margin: 0px;">
-                                                                                    <div class="col-sm-4">
-                                                                                        <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
-                                                                                    </div>
-                                                                                    <div class="col-sm-8">
-                                                                                        <h:outputText value="#{field.value}" />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </x:dataList>
-                                                                        </div>
-
-                                                                        <div class="col-sm-1 vocabulary-searchfield">
-                                                                            <button
-                                                                                jsf:id="check"
-                                                                                class="btn btn--icon-green greenCheckButton"
-                                                                                jsf:action="#{NavigationForm.workflowPlugin.importVocabularyData}">
-                                                                                <f:setPropertyActionListener
-                                                                                    value="#{record}"
-                                                                                    target="#{NavigationForm.workflowPlugin.selectedVocabularyRecord}" />
-
-                                                                                <i class="fa fa-check" />
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <hr />
-                                                                </x:dataList>
-
-                                                            </div>
-                                                        </ui:fragment>
-
-                                                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
-                                                            <h:outputText value="#{msgs.NORM_noHits}" />
-                                                        </ui:fragment>
-
-                                                    </h:panelGroup>
-                                                </div>
-                                            </h:panelGroup>
-                                        </div>
-                                    </h:panelGroup>
-
+                                    <!-- sources modal -->
+                                    <ui:include src="includes/source_modal.xhtml" />
                                 </h:form>
                             </div>
                         </div>

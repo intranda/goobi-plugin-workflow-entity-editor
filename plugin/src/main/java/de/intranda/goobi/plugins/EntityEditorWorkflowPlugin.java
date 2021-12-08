@@ -51,14 +51,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private String title = "intranda_workflow_entity_editor";
 
     @Getter
-    private String value;
-
-    @Getter
     private PluginType type = PluginType.Workflow;
 
     @Getter
     private String gui = "/uii/plugin_workflow_entity_editor.xhtml";
 
+    // store the current object
     @Getter
     private Process currentProcess;
     @Getter
@@ -66,23 +64,71 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private Prefs prefs;
 
+    // entity type of the current object
     @Getter
     private EntityType currentType;
 
+
+    // contains the last opened elements
     @Getter
     private List<BreadcrumbItem> breadcrumbList = new ArrayList<>();
 
+    // select a breadcrumb to open
     @Getter
     @Setter
     private BreadcrumbItem selectedBreadcrumb;
 
+    // configuration object
     private EntityConfig configuration;
 
+    // contains the display name for the current entity
     @Getter
     private String entityName;
 
+    // list of all metadata fields
     @Getter
     private List<ConfiguredField> metadataFieldList = new ArrayList<>();
+
+    // current field for vocabulary search
+    @Getter
+    @Setter
+    private MetadataField searchField;
+
+    // search value
+    @Getter
+    @Setter
+    private String searchValue;
+
+    // display all vocabulary records or
+    @Getter
+    private boolean showNotHits;
+
+    // records found in vocabulary search
+    @Getter
+    private List<VocabRecord> records;
+
+    // selected record to import
+    @Getter
+    @Setter
+    private VocabRecord selectedVocabularyRecord;
+
+    // selected field to add sources
+    @Getter
+    @Setter
+    private MetadataField currentField;
+    // list of all sources
+    @Getter
+    private List<VocabRecord> sources;
+
+    // selected sources to add
+    @Getter
+    @Setter
+    private VocabRecord selectedSource;
+
+    // page range within the source
+    @Getter
+    @Setter
+    private String pages = "";
 
     /**
      * Constructor
@@ -96,6 +142,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         loadTestdata();
     }
 
+    /**
+     * generate some test data - remove it once we have a real entry
+     * 
+     */
     public void loadTestdata() {
 
         // load testdata
@@ -131,6 +181,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
+    /**
+     * Close the current element and open the selected breadcrumb
+     * 
+     * {@link selectedBreadcrumb} must be set first
+     * 
+     * @return
+     */
+
     public String loadSelectedBreadcrumb() {
         // TODO save current entity?
 
@@ -158,6 +216,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return "";
     }
 
+
+    // read metadata from fileformat and initilize fields for UI
     private void readMetadata() {
         try {
             DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
@@ -202,6 +262,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
                                 if ("source".equals(subfield.getFieldType())) {
                                     // Sources
+                                    field.setAllowSources(true);
                                     List<MetadataGroup> sources = group.getAllMetadataGroupsByName("Source");
                                     if (!sources.isEmpty()) {
                                         for (MetadataGroup sourceGroup : sources) {
@@ -227,8 +288,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                                                 }
 
                                             }
-                                            SourceField source = field.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink,
-                                                    sourcePageRange);
+                                            SourceField source =
+                                                    field.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, sourcePageRange);
                                             field.addSource(source);
                                         }
                                     }
@@ -312,6 +373,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     }
 
+    // generate the display name for the current entity
     private void getDisplayName(DocStruct logical, String entityType) {
         // read main name from metadata
         StringBuilder sb = new StringBuilder();
@@ -349,6 +411,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
+    /**
+     * Duplicate the selected metadata
+     */
     public void duplicateMetadata(ConfiguredField field) {
 
         if (field.getMetadataList() == null) {
@@ -393,6 +458,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         field.setShowField(true);
     }
 
+    /**
+     * Delete the selected metadata
+     * 
+     * @param field
+     */
+
     public void removeMetadata(MetadataField field) {
         ConfiguredField cf = field.getConfigField();
         if (cf.isGroup()) {
@@ -412,22 +483,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
-    @Getter
-    @Setter
-    private MetadataField searchField;
-
-    @Getter
-    @Setter
-    private String searchValue;
-
-    @Getter
-    private boolean showNotHits;
-
-    @Getter
-    private List<VocabRecord> records;
-    @Getter
-    @Setter
-    private VocabRecord selectedVocabularyRecord;
+    /**
+     * Search within a vocabulary
+     * 
+     * {@link searchField} must be set first
+     */
 
     public void searchVocabulary() {
 
@@ -447,6 +507,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Collections.sort(records);
     }
 
+
+    /**
+     * Import data from selected vocabulary record
+     * 
+     */
     public void importVocabularyData() {
         Metadata md = searchField.getMetadata();
         for (Field field : selectedVocabularyRecord.getFields()) {
@@ -467,4 +532,88 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
     }
+
+    /**
+     * Search within sources
+     * 
+     */
+
+    public void searchSource() {
+        List<StringPair> data = new ArrayList<>();
+
+        for (String field : configuration.getSourceSearchFields()) {
+            data.add(new StringPair(field, searchValue));
+        }
+
+        sources = VocabularyManager.findRecords(configuration.getSourceVocabularyName(), data);
+
+        if (sources == null || sources.isEmpty()) {
+            showNotHits = true;
+        } else {
+            showNotHits = false;
+        }
+        Collections.sort(sources);
+
+    }
+
+    /**
+     * Add selected source to the current metadata field
+     * 
+     * 
+     */
+
+    public void addSource() {
+        String sourceId = String.valueOf(selectedSource.getId());
+        String sourceUri;
+        String sourceName = "";
+        String sourceType = "";
+        String sourceLink = "";
+
+        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
+                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
+            sourceUri =
+                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
+                    + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
+        } else {
+            sourceUri = configuration.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
+        }
+
+        sourceName = getSourceFieldValue(configuration.getSourceNameFields());
+        sourceType = getSourceFieldValue(configuration.getSourceTypeFields());
+        sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
+
+        //    TODO    pages;
+        SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
+        currentField.addSource(source);
+        pages = "";
+    }
+
+
+    private String getSourceFieldValue(List<String> configuredFieldNames) {
+        for (String configuredFieldName : configuredFieldNames) {
+            String fieldname = null;
+            String lang = null;
+            if (configuredFieldName.matches(".+\\[\\w+\\]")) {
+                fieldname = configuredFieldName.substring(0, configuredFieldName.indexOf("["));
+                lang = configuredFieldName.substring(configuredFieldName.indexOf("[") + 1, configuredFieldName.length() - 1);
+            } else {
+                fieldname = configuredFieldName;
+            }
+            for (Field field : selectedSource.getFields()) {
+                if (StringUtils.isBlank(lang) && StringUtils.isBlank(field.getDefinition().getLanguage())) {
+                    if (field.getDefinition().getLabel().equals(fieldname)) {
+                        return field.getValue();
+                    }
+                } else if (StringUtils.isNotBlank(lang) && StringUtils.isNotBlank(field.getDefinition().getLanguage())) {
+                    if (field.getDefinition().getLabel().equals(fieldname) && field.getDefinition().getLanguage().equals(lang)) {
+                        return field.getValue();
+                    }
+
+                }
+            }
+
+        }
+        return "";
+    }
+
 }

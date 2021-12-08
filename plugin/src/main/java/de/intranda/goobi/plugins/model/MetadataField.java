@@ -44,7 +44,8 @@ public class MetadataField {
     private boolean valid;
     private String validationErrorMessage;
 
-    @Getter
+    private boolean allowSources;
+
     private List<SourceField> sources = new ArrayList<>();
 
     public void addSource(SourceField field) {
@@ -218,7 +219,6 @@ public class MetadataField {
     }
 
 
-
     @Data
     @RequiredArgsConstructor
     public class SourceField {
@@ -234,5 +234,16 @@ public class MetadataField {
         private String sourceLink;
         @NonNull
         private String pageRange;
+
+        private boolean showDetails;
+
+        public boolean isShowDetails() {
+            return showDetails;
+        }
+
+        public void setShowDetails(boolean showDetails) {
+            this.showDetails = showDetails;
+        }
+
     }
 }

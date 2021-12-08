@@ -1,6 +1,11 @@
 <config_plugin>
 	<global>
 		<vocabularyServerUrl>https://example.com/vocabulary/records/</vocabularyServerUrl>
+		<sources>
+			<vocabulary name="Source" id="6" searchfields="Citation" displayfields="Citation|PURL|Source Type" nameField="Citation[eng]|Citation[fre]|Citation[ger]" 
+			urlField="PURL" typeField="Source Type[eng]|Source Type[fre]|Source Type[ger]" />
+			<!--new: Citation eng 	Citation ger 	Citation fre 	PURL 	Source Type eng 	Source Type ger 	Source Type fre -->
+		</sources>
 	</global>
 
 	<type name="Person">

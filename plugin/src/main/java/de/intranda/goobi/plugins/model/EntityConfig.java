@@ -11,10 +11,31 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 public class EntityConfig {
 
     public static String vocabularyUrl;
+
+    @Getter
+    @Setter
+    private List<String> sourceSearchFields;
+
+    @Getter
+    @Setter
+    private List<String> sourceDisplayFields;
+    @Getter
+    @Setter
+    private String sourceVocabularyName;
+    @Getter
+    @Setter
+    private int sourceVocabularyId;
+    @Getter
+    private List<String> sourceNameFields;
+    @Getter
+    private List<String> sourceUrlFields;
+    @Getter
+    private List<String> sourceTypeFields;
 
     @Getter
     private List<EntityType> allTypes = new ArrayList<>();
@@ -22,6 +43,14 @@ public class EntityConfig {
     public EntityConfig(XMLConfiguration config) {
 
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
+        sourceVocabularyId = config.getInt("/global/sources/vocabulary/@id", 0);
+        sourceVocabularyName = config.getString("/global/sources/vocabulary/@name", "");
+        sourceSearchFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@searchfields"));
+        sourceDisplayFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@displayfields"));
+
+        sourceNameFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@nameField"));
+        sourceUrlFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@urlField"));
+        sourceTypeFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@typeField"));
 
         List<HierarchicalConfiguration> allTypes = config.configurationsAt("/type");
         for (HierarchicalConfiguration type : allTypes) {

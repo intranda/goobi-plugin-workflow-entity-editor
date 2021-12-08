@@ -1,0 +1,82 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup
+            id="sources"
+            rendered="#{field.allowSources}"
+            layout="block">
+            <ui:repeat
+                var="source"
+                value="#{field.sources}">
+
+                <div class="source">
+                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceName}: #{source.sourceName}" />
+                    <span>
+                        <!--  button to toggle visibility -->
+                        <button
+                            jsf:id="toggleVisibility"
+                            class="btn pull-right btn--icon-light source-btn">
+                            <i class="fa #{source.showDetails == false?'fa fa-caret-down':'fa fa-caret-up'}" />
+                            <f:ajax
+                                execute="@this"
+                                render="@form" />
+                            <f:setPropertyActionListener
+                                value="#{not source.showDetails}"
+                                target="#{source.showDetails}" />
+                        </button>
+
+                        <!--  button to remove source -->
+                        <button
+                            jsf:id="deleteSource"
+                            class="btn pull-right btn--icon-light source-btn"
+                            jsf:action="#{field.removeSource(source)}">
+                            <i class="fa fa-trash" />
+                            <f:ajax
+                                execute="@this"
+                                render="@form" />
+                        </button>
+                    </span>
+                    <ui:fragment rendered="#{source.showDetails}">
+                        <!-- show additional data  -->
+                        <div>
+                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceUrl}: #{source.sourceLink}" />
+                        </div>
+                        <div></div>
+                        <div>
+                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceType}: #{source.sourceType}" />
+                        </div>
+                        <div></div>
+                        <div>
+                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourcePage}: #{source.pageRange}" />
+                        </div>
+                        <div></div>
+                    </ui:fragment>
+                </div>
+            </ui:repeat>
+
+            <!-- button to add source-->
+            <button
+                jsf:id="addSource"
+                class="btn btn--icon-light source-btn"
+                jsf:onclick="$('#sourceSearchBox').modal('show');">
+                <i class="fa fa-file-text-o" />
+                <f:ajax
+                    execute="@this"
+                    render=":sourceModalContent" />
+<f:setPropertyActionListener value="#{field}" target="#{NavigationForm.workflowPlugin.currentField}" />
+            </button>
+
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>
