@@ -3,7 +3,9 @@ package de.intranda.goobi.plugins;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
@@ -22,6 +24,7 @@ import de.intranda.goobi.plugins.model.EntityConfig;
 import de.intranda.goobi.plugins.model.EntityConfig.EntityType;
 import de.intranda.goobi.plugins.model.MetadataField;
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
+import de.intranda.goobi.plugins.model.Relationship;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.VariableReplacer;
@@ -67,7 +70,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     // entity type of the current object
     @Getter
     private EntityType currentType;
-
 
     // contains the last opened elements
     @Getter
@@ -129,6 +131,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String pages = "";
+
+    @Getter
+    private Map<EntityType, List<Relationship>> linkedRelationships;
 
     /**
      * Constructor
@@ -215,7 +220,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         readMetadata();
         return "";
     }
-
 
     // read metadata from fileformat and initilize fields for UI
     private void readMetadata() {
@@ -365,6 +369,69 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                         }
                     }
                 }
+
+                // load relations to other entities
+                if (StringUtils.isNotBlank(configuration.getRelationshipMetadataName())) {
+                    linkedRelationships = new LinkedHashMap<>();
+                    for (EntityType et : configuration.getAllTypes()) {
+                        linkedRelationships.put(et, new ArrayList<>());
+                    }
+                    List<MetadataGroup> relations =
+                            logical.getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
+
+                    for (MetadataGroup group : relations) {
+                        String entity = null;
+                        String beginningDate = null;
+                        String endDate = null;
+                        String additionalData = null;
+                        String processId = null;
+                        String displayName = null;
+                        String type = null;
+                        String vocabularyName = null;
+                        String vocabularyUrl = null;
+
+                        for (Metadata md : group.getMetadataList()) {
+                            String metadataType = md.getType().getName();
+                            if (metadataType.equals(configuration.getRelationshipEntityType())) {
+                                entity = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipBeginningDate())) {
+                                beginningDate = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipEndDate())) {
+                                endDate = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipAdditionalData())) {
+                                additionalData = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipProcessId())) {
+                                processId = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipDisplayName())) {
+                                displayName = md.getValue();
+                            } else if (metadataType.equals(configuration.getRelationshipType())) {
+                                type = md.getValue();
+                                vocabularyName = md.getAuthorityID();
+                                vocabularyUrl = md.getAuthorityValue();
+                            }
+
+                        }
+
+                        Relationship relationship = new Relationship();
+                        relationship.setEntityName(entity);
+                        relationship.setBeginningDate(beginningDate);
+                        relationship.setEndDate(endDate);
+                        relationship.setAdditionalData(additionalData);
+                        relationship.setProcessId(processId);
+                        relationship.setDisplayName(displayName);
+                        relationship.setType(type);
+                        relationship.setVocabularyName(vocabularyName);
+                        relationship.setVocabularyUrl(vocabularyUrl);
+
+                        for (EntityType et : linkedRelationships.keySet()) {
+                            if (et.getName().equals(relationship.getEntityName())) {
+                                linkedRelationships.get(et).add(relationship);
+                            }
+                        }
+                    }
+
+                }
+
             }
 
         } catch (UGHException e) {
@@ -507,7 +574,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Collections.sort(records);
     }
 
-
     /**
      * Import data from selected vocabulary record
      * 
@@ -588,7 +654,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         pages = "";
     }
 
-
     private String getSourceFieldValue(List<String> configuredFieldNames) {
         for (String configuredFieldName : configuredFieldNames) {
             String fieldname = null;
@@ -614,6 +679,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         }
         return "";
+    }
+
+    public void removeRelationship(EntityType type, Relationship relationship) {
+
+        linkedRelationships.get(type).remove(relationship);
+    }
+
+    public void editRelationship(Relationship relationship) {
+        selectedBreadcrumb = new BreadcrumbItem(relationship.getEntityName(), "", Integer.valueOf(relationship.getProcessId()), "", "");
+        loadSelectedBreadcrumb();
     }
 
 }

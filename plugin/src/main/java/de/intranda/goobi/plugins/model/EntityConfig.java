@@ -40,17 +40,49 @@ public class EntityConfig {
     @Getter
     private List<EntityType> allTypes = new ArrayList<>();
 
+    // relationships
+    @Getter
+    private String relationshipMetadataName;
+    @Getter
+    private String relationshipEntityType;
+    @Getter
+    private String relationshipBeginningDate;
+    @Getter
+    private String relationshipEndDate;
+
+    @Getter
+    private String relationshipAdditionalData;
+    @Getter
+    private String relationshipProcessId;
+    @Getter
+    private String relationshipDisplayName;
+
+    @Getter
+    private String relationshipType;
+
     public EntityConfig(XMLConfiguration config) {
 
+        // data for vocabulary search
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
         sourceVocabularyId = config.getInt("/global/sources/vocabulary/@id", 0);
         sourceVocabularyName = config.getString("/global/sources/vocabulary/@name", "");
+
+        // data for sources
         sourceSearchFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@searchfields"));
         sourceDisplayFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@displayfields"));
-
         sourceNameFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@nameField"));
         sourceUrlFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@urlField"));
         sourceTypeFields = Arrays.asList(config.getStringArray("/global/sources/vocabulary/@typeField"));
+
+        // relations between entities
+        relationshipMetadataName = config.getString("/global/relations/metadataName", "");
+        relationshipEntityType = config.getString("/global/relations/entityType", "");
+        relationshipBeginningDate = config.getString("/global/relations/beginningDate", "");
+        relationshipEndDate = config.getString("/global/relations/endDate", "");
+        relationshipAdditionalData = config.getString("/global/relations/additionalData", "");
+        relationshipProcessId = config.getString("/global/relations/processId", "");
+        relationshipDisplayName = config.getString("/global/relations/displayName", "");
+        relationshipType = config.getString("/global/relations/type", "");
 
         List<HierarchicalConfiguration> allTypes = config.configurationsAt("/type");
         for (HierarchicalConfiguration type : allTypes) {
