@@ -21,14 +21,14 @@
                     class="box-title"
                     jsf:style="border-color: #{type.key.color}">
                     <h3>
-                        <i class="fa fa-user" />
+                        <i class="fa #{type.key.icon}" />
 
                         <h:outputText value="#{type.key.name}" />
                     </h3>
                 </div>
                 <div
-                    class="box-content scrollable"
-                    jsf:style="border-color: #{type.key.color}; padding-left:0px; padding-right:0px; max-height: 300px;">
+                    class="box-content sources"
+                    jsf:style="border-color: #{type.key.color};">
                     <ui:repeat
                         var="relationship"
                         value="#{type.value}">
@@ -37,7 +37,7 @@
                             <button
                                 jsf:id="toggleSourceVisibility"
                                 class="btn btn--icon-light source-btn">
-                                <i class="fa #{relationship.showDetails == false?'fa fa-caret-down':'fa fa-caret-up'}" />
+                                <i class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}" style="color: #{type.key.color};" />
                                 <f:ajax
                                     execute="@this"
                                     render="@form" />

@@ -239,6 +239,7 @@
 
 .main-area {
     max-height: calc(100vh - 322px);
+    overflow-y: auto;
 }
 
 .relation-row {
@@ -246,6 +247,13 @@
     grid-template-columns: 50px auto 80px 50px;
     grid-template-rows: auto auto;
     margin-bottom: 10px;
+}
+
+.sources {
+    padding-left: 0px;
+    padding-right: 0px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 </style>
 
@@ -310,7 +318,7 @@
                                     </h:panelGroup>
 
                                     <!-- list all metadata fields -->
-                                    <div class="scrollable main-area">
+                                    <div class="main-area">
                                         <ui:repeat
                                             value="#{NavigationForm.workflowPlugin.metadataFieldList}"
                                             var="configuredField"
@@ -651,7 +659,7 @@
                                                 $( ".scrollable" ).slimScroll();
                                                 break;
                                         }
-                                    });
+                                    } );
                                 </script>
 
     </composite:implementation>
