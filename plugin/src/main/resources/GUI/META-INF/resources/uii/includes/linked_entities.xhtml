@@ -27,20 +27,25 @@
                     </h3>
                 </div>
                 <div
-                    class="box-content sources"
-                    jsf:style="border-color: #{type.key.color};">
+                    class="box-content sources #{type.key.name}"
+                    jsf:style="border-color: #{type.key.color};"
+                    id="sources_#{type.key.name}">
                     <ui:repeat
                         var="relationship"
                         value="#{type.value}">
 
-                        <div class="relation-row">
+                        <h:panelGroup
+                            styleClass="relation-row"
+                            id="entity">
                             <button
                                 jsf:id="toggleSourceVisibility"
                                 class="btn btn--icon-light source-btn">
-                                <i class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}" style="color: #{type.key.color};" />
+                                <i
+                                    class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
+                                    style="color: #{type.key.color};" />
                                 <f:ajax
-                                    execute="@this"
-                                    render="@form" />
+                                    execute="entity"
+                                    render="entity" />
                                 <f:setPropertyActionListener
                                     value="#{not relationship.showDetails}"
                                     target="#{relationship.showDetails}" />
@@ -64,14 +69,14 @@
                                     jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}">
                                     <i class="fa fa-chain-broken" />
                                     <f:ajax
-                                        execute="@this"
+                                        execute="@form"
                                         render="@form" />
                                 </button>
 
                                 <button
                                     class="btn btn-mini"
                                     jsf:id="editRelationship"
-                                    style="background-color: #{type.key.color}; color: #fff;margin-left: 5px;"
+                                    style="background-color: #{type.key.color}; color: #fff; margin-left: 5px;"
                                     jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}">
                                     <i class="fa fa-pencil" />
                                 </button>
@@ -154,8 +159,11 @@
                                     </h:panelGroup>
                                 </div>
                             </ui:fragment>
-                        </div>
+                            <!--                         </div> -->
+                        </h:panelGroup>
                     </ui:repeat>
+
+
                 </div>
             </div>
         </div>

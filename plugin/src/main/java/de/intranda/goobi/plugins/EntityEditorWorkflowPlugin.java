@@ -135,6 +135,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private Map<EntityType, List<Relationship>> linkedRelationships;
 
+    @Getter
+    @Setter
+    private String mainScrollPosition;
+
     /**
      * Constructor
      */

@@ -647,6 +647,7 @@
 
             </div>
 
+<h:inputHidden value="#{NavigationForm.workflowPlugin.mainScrollPosition}" id="scrollpos"/>
 
         </div>
 
@@ -655,8 +656,13 @@
                                     jsf.ajax.addOnEvent( function( data ) {
                                         var ajaxstatus = data.status;
                                         switch ( ajaxstatus ) {
+                                            case "begin":
+                                                var scrollPosition = $('.main-area').scrollTop();
+                                                $('#scrollpos').val(scrollPosition);                                                    
+                                            break;
                                             case "success":
-                                                $( ".scrollable" ).slimScroll();
+                                                var scrollPosition =$('#scrollpos').val();
+                                                $('.main-area').scrollTop(scrollPosition)
                                                 break;
                                         }
                                     } );

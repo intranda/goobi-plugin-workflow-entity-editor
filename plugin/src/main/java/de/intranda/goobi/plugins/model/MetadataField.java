@@ -56,7 +56,6 @@ public class MetadataField {
         sources.remove(field);
     }
 
-
     // boolean values
 
     public boolean isBooleanValue() {
@@ -100,7 +99,6 @@ public class MetadataField {
         return null;
     }
 
-
     public void addSubField(MetadataField field) {
         subfields.add(field);
     }
@@ -112,7 +110,7 @@ public class MetadataField {
 
         if (configField.isGroup()) {
             for (MetadataField mf : subfields) {
-                if ("publish".equals( mf.getConfigField().getFieldType())) {
+                if ("publish".equals(mf.getConfigField().getFieldType())) {
                     publishField = mf;
                     return true;
                 }
@@ -121,24 +119,22 @@ public class MetadataField {
         return false;
     }
 
-
-
     public void dateValidator(FacesContext context, UIComponent component, Object value) {
         valid = true;
-        validationErrorMessage=null;
+        validationErrorMessage = null;
         if (value == null) {
             if (configField.isRequired()) {
-                valid=false;
+                valid = false;
                 FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "validation error", "TODO Field is required");
-                validationErrorMessage="Field is required";
+                validationErrorMessage = "Field is required";
                 throw new ValidatorException(message);
             }
         } else {
             String dateValue = (String) value;
-            if (!dateValue.matches("\\d\\d\\d\\d") && !dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d") ) {
-                valid=false;
+            if (!dateValue.matches("\\d\\d\\d\\d") && !dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+                valid = false;
                 FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "validation error", "TODO invalid format");
-                validationErrorMessage="invalid format";
+                validationErrorMessage = "invalid format";
                 throw new ValidatorException(message);
             }
 
@@ -146,9 +142,8 @@ public class MetadataField {
 
     }
 
-
-
-    @Getter @Setter
+    @Getter
+    @Setter
     private Part uploadedFile = null;
 
     /**

@@ -172,10 +172,17 @@ public class EntityConfig {
         private String identifyingMetadata;
         private String languageOrder;
 
+        private String scrollPosition;
+
         private List<ConfiguredField> configuredFields = new ArrayList<>();
 
         public void addMetadataField(ConfiguredField field) {
             configuredFields.add(field);
+        }
+
+        public void setScrollPosition(String pos) {
+            System.out.println(pos);
+            scrollPosition = pos;
         }
     }
 }
