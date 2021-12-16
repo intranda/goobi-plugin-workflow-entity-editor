@@ -15,8 +15,10 @@ import org.goobi.production.cli.helper.StringPair;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
+import org.goobi.vocabulary.Definition;
 import org.goobi.vocabulary.Field;
 import org.goobi.vocabulary.VocabRecord;
+import org.goobi.vocabulary.Vocabulary;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.ConfiguredField;
@@ -122,6 +124,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private List<VocabRecord> sources;
 
+    private Vocabulary sourceVocabulary;
+
     // selected sources to add
     @Getter
     @Setter
@@ -139,6 +143,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private String mainScrollPosition;
 
+    @Getter
+    @Setter
+    private String sourceMode;
+
     /**
      * Constructor
      */
@@ -147,6 +155,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         config.setExpressionEngine(new XPathExpressionEngine());
 
         configuration = new EntityConfig(config);
+
+        sourceVocabulary = VocabularyManager.getVocabularyById(configuration.getSourceVocabularyId());
 
         loadTestdata();
     }
@@ -652,7 +662,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         sourceType = getSourceFieldValue(configuration.getSourceTypeFields());
         sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
 
-        //    TODO    pages;
+        //  pages;
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
         currentField.addSource(source);
         pages = "";
@@ -694,5 +704,23 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         selectedBreadcrumb = new BreadcrumbItem(relationship.getEntityName(), "", Integer.valueOf(relationship.getProcessId()), "", "");
         loadSelectedBreadcrumb();
     }
+
+    public void createNewSource() {
+        selectedSource = new VocabRecord();
+        selectedSource.setVocabularyId(sourceVocabulary.getId());
+        List<Field> fieldList = new ArrayList<>();
+        for (Definition definition : sourceVocabulary.getStruct()) {
+            Field field = new Field(definition.getLabel(), definition.getLanguage(), "", definition);
+            fieldList.add(field);
+        }
+        selectedSource.setFields(fieldList);
+    }
+
+    public void saveAndAddSource() {
+        VocabularyManager.saveRecord(selectedSource.getVocabularyId(), selectedSource);
+        addSource();
+    }
+
+    // TODO button to generate bibliography
 
 }

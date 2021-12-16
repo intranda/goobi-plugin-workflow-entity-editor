@@ -74,7 +74,12 @@
                 <f:ajax
                     execute="@this"
                     render=":sourceModalContent" />
-<f:setPropertyActionListener value="#{field}" target="#{NavigationForm.workflowPlugin.currentField}" />
+                <f:setPropertyActionListener
+                    value="#{field}"
+                    target="#{NavigationForm.workflowPlugin.currentField}" />
+                <f:setPropertyActionListener
+                    value=""
+                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
             </button>
 
         </h:panelGroup>
