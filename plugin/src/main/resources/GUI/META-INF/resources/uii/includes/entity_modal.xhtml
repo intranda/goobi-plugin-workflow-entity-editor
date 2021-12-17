@@ -1,0 +1,160 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+        xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup
+            styleClass="modal fade"
+            layout="block"
+            id="entitySearchBox"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="entitySearchBox"
+            aria-hidden="true">
+            <div
+                class="modal-dialog"
+                role="document">
+                <h:panelGroup
+                    styleClass="modal-content"
+                    layout="block"
+                    id="entityModalContent">
+                    <div class="modal-header">
+                        <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">
+                                <h:outputText
+                                    value="&amp;times;"
+                                    escape="false" />
+                            </span>
+                        </button>
+                        <h4
+                            class="modal-title"
+                            style="width: 90%">#{msgs.plugin_workflow_entity_linkType} #{NavigationForm.workflowPlugin.entityType.name}</h4>
+                    </div>
+                    <div
+                        jsf:id="entity-modal-body"
+                        class="modal-body">
+
+                        <h:panelGroup
+                            layout="block"
+                            styleClass="row form-group vocabulary-searcharea nobackground">
+                            <div class="col-sm-2 noborder">
+                                <h:outputLabel
+                                    value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
+                                    for="entitySearchInput" />
+                            </div>
+                            <div class="col-sm-8 vocabulary-searchfield">
+                                <x:inputText
+                                    id="entitySearchInput"
+                                    styleClass="form-control"
+                                    value="#{NavigationForm.workflowPlugin.entitySearch}" />
+                            </div>
+
+                            <div class="col-sm-2 noborder">
+                                <button
+                                    class="btn btn-primary"
+                                    jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
+                                    <i
+                                        class="fa fa-search"
+                                        aria-hidden="true"></i>
+                                    #{msgs.search}
+                                    <f:passThroughAttribute
+                                        name="data-toggle"
+                                        value="tooltip" />
+                                    <f:ajax
+                                        execute="@form"
+                                        render="entityList" />
+                                </button>
+                              
+                            </div>
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="entityList">
+                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
+                                <hr style="border-color: #1e74c5" />
+
+                                <div class="modal__gnd-list scrollable">
+                                    <x:dataList
+                                        value="#{NavigationForm.workflowPlugin.entities}"
+                                        var="record">
+                                        <div class="row form-group nobackground">
+                                            <div class="col-sm-11 vocabulary-searchfield">
+<!--                                                 <x:dataList -->
+<!--                                                     value="#{record.fields}" -->
+<!--                                                     var="field"> -->
+<!--                                                     <div -->
+<!--                                                         class="row" -->
+<!--                                                         style="margin: 0px;"> -->
+<!--                                                         <div class="col-sm-3"> -->
+<!--                                                             <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" /> -->
+<!--                                                         </div> -->
+<!--                                                         <div class="col-sm-9"> -->
+<!--                                                             <h:outputText value="#{field.value}" /> -->
+<!--                                                         </div> -->
+<!--                                                     </div> -->
+<!--                                                 </x:dataList> -->
+                                            </div>
+
+                                            <div class="col-sm-1 vocabulary-searchfield">
+<!--                                                 <button -->
+<!--                                                     jsf:id="check" -->
+<!--                                                     class="btn btn-lightgrey greenCheckButton" -->
+<!--                                                     jsf:action="#{NavigationForm.workflowPlugin.addentity}"> -->
+<!--                                                     <f:setPropertyActionListener -->
+<!--                                                         value="#{record}" -->
+<!--                                                         target="#{NavigationForm.workflowPlugin.selectedentity}" /> -->
+
+<!--                                                     <i class="fa fa-check" /> -->
+<!--                                                 </button> -->
+                                            </div>
+                                        </div>
+
+                                        <hr style="border-color: #1e74c5;" />
+
+                                        <div class="row form-group nobackground">
+                                        <!-- TODO dropdown with link type, fields for start date +  end date -->
+<!--                                             <div class="col-sm-2 noborder"> -->
+<!--                                                 <h:outputLabel -->
+<!--                                                     value="#{msgs.plugin_workflow_entity_editor_entityPage}" -->
+<!--                                                     for="entityPage" /> -->
+<!--                                             </div> -->
+<!--                                             <div class="col-sm-4"> -->
+<!--                                                 <x:inputText -->
+<!--                                                     id="entityPage" -->
+<!--                                                     styleClass="form-control" -->
+<!--                                                     value="#{NavigationForm.workflowPlugin.pages}" /> -->
+<!--                                             </div> -->
+                                        </div>
+                                    </x:dataList>
+
+                                </div>
+                            </ui:fragment>
+
+                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
+                                <h:outputText value="#{msgs.NORM_noHits}" />
+                            </ui:fragment>
+
+                        </h:panelGroup>
+
+
+                    </div>
+                </h:panelGroup>
+            </div>
+        </h:panelGroup>
+
+    </composite:implementation>
+</ui:composition>

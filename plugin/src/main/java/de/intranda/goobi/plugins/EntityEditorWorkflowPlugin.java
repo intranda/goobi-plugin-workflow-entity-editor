@@ -3,12 +3,14 @@ package de.intranda.goobi.plugins;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.production.cli.helper.StringPair;
@@ -216,7 +218,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return "/uii/index.xhtml";
         }
 
-        // TODO: only if it doesn't exist in list?
         // create BreadcrumbItem for the current object
         BreadcrumbItem item =
                 new BreadcrumbItem(currentType.getName(), entityName, currentProcess.getId(), currentType.getColor(), currentType.getIcon());
@@ -781,6 +782,60 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
         }
+    }
+
+    @Getter
+    @Setter
+    private String entitySearch;
+
+    @Getter
+    private List entities = new ArrayList<>();
+
+    @Getter
+    private EntityType entityType;
+
+    public void addRelationship(EntityType type) {
+        entitySearch = "";
+        entityType = type;
+        entities.clear();
+        // TODO open modal, search field for entities of the type
+
+        // TODO get all relationship types for the link type
+    }
+
+    public void searchEntity() {
+        //  search for all metadata with type: entityType and title/metadata: entitySearch
+        String sql = "select processid, name, value from metadata where processid in (select processid from metadata where name=\"index."
+                + entityType.getName() + "Search\" and value like \"%" + StringEscapeUtils.escapeSql(entitySearch) + "%\" )";
+
+        Map<String, Map<String, String>> metadataMap = new HashMap<>();
+
+        List<?> rows = ProcessManager.runSQL(sql);
+        for (Object obj : rows) {
+            Object[] objArr = (Object[]) obj;
+            String processid = (String) objArr[0];
+            String metadataName = (String) objArr[1];
+            String metadataValue = (String) objArr[2];
+            System.out.println(processid + ", " + metadataName + ": " + metadataValue);
+        }
+
+        // or search for processes, load metadata from mets file?
+        sql = "select processid from metadata where name=\"docstruct\" and value =\"" + entityType.getName()
+        + "\" and  processid in (select processid from metadata where name=\"index." + entityType.getName() + "Search\" and value like \"%"
+        + StringEscapeUtils.escapeSql(entitySearch) + "%\" )";
+        // load mets files, open entities
+
+    }
+
+    public void createEntity(EntityType type) {
+        // TODO save + close current entity
+        // TODO create breadcrumb
+        // TODO create new entity with given type
+
+    }
+
+    public void saveEntity() {
+        // TODO save metadata
     }
 
 }

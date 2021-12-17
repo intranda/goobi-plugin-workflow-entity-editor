@@ -25,6 +25,26 @@
 
                         <h:outputText value="#{type.key.name}" />
                     </h3>
+                    <button
+                        class="btn toggle pull-right"
+                        jsf:id="createEntity"
+                        style="color: #{type.key.color}; margin-left: 5px;  margin-right: 5px;"
+                        jsf:action="#{NavigationForm.workflowPlugin.createEntity(type.key)}">
+                        <i class="fa fa-plus" />
+                    </button>
+                    <button
+                        class="btn toggle pull-right"
+                        jsf:id="addRelationship"
+                        style="color:  #{type.key.color};"
+                        jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
+                        jsf:onclick="$('#entitySearchBox').modal('show');">
+                        <i class="fa fa-chain" />
+                        <f:ajax
+                            execute="@this"
+                            render=":entityModalContent" />
+                    </button>
+
+
                 </div>
                 <div
                     class="box-content sources #{type.key.name}"
