@@ -311,7 +311,7 @@
                                             <ui:fragment>
                                                 <entity:entity_badge
                                                     styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
-                                                    fieldname="#{msgs['plugin_administration_archive_'.concat(item.name)]}"
+                                                    fieldname="#{msgs[item.name]}"
                                                     showfield="#{item.showField}" />
                                             </ui:fragment>
                                         </x:dataList>
@@ -617,12 +617,25 @@
                                                 </div>
                                             </ui:repeat>
                                         </ui:repeat>
+                                        <button
+                                            class="btn "
+                                            jsf:id="generateBibliography"
+                                            jsf:action="#{NavigationForm.workflowPlugin.generateBibliography}">
+                                            <i class="fa fa-plus-circle" />
+                                            #{msgs.plugin_workflow_entity_createBibliography}
+                                            <f:ajax
+                                                execute="@this"
+                                                render="@form" />
+                                        </button>
                                     </div>
                                     <!-- vocabulary search modal -->
                                     <ui:include src="includes/vocabulary_search_modal.xhtml" />
 
                                     <!-- sources modal -->
                                     <ui:include src="includes/source_modal.xhtml" />
+
+
+
                                 </h:form>
                             </div>
                         </div>
@@ -647,7 +660,9 @@
 
             </div>
 
-<h:inputHidden value="#{NavigationForm.workflowPlugin.mainScrollPosition}" id="scrollpos"/>
+            <h:inputHidden
+                value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
+                id="scrollpos" />
 
         </div>
 
@@ -657,12 +672,12 @@
                                         var ajaxstatus = data.status;
                                         switch ( ajaxstatus ) {
                                             case "begin":
-                                                var scrollPosition = $('.main-area').scrollTop();
-                                                $('#scrollpos').val(scrollPosition);                                                    
-                                            break;
+                                                var scrollPosition = $( '.main-area' ).scrollTop();
+                                                $( '#scrollpos' ).val( scrollPosition );
+                                                break;
                                             case "success":
-                                                var scrollPosition =$('#scrollpos').val();
-                                                $('.main-area').scrollTop(scrollPosition)
+                                                var scrollPosition = $( '#scrollpos' ).val();
+                                                $( '.main-area' ).scrollTop( scrollPosition )
                                                 break;
                                         }
                                     } );

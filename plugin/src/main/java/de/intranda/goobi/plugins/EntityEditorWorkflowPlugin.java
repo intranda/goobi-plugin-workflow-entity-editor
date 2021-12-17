@@ -721,6 +721,66 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         addSource();
     }
 
-    // TODO button to generate bibliography
+    // button to generate bibliography
+
+    public void generateBibliography() {
+        List<SourceField> allSources = new ArrayList<>();
+        ConfiguredField bibliography = null;
+        for (ConfiguredField cf : metadataFieldList) {
+            for (MetadataField mf : cf.getMetadataList()) {
+                List<SourceField> sourceFields = mf.getSources();
+                for (SourceField s : sourceFields) {
+                    if (!allSources.contains(s)) {
+                        allSources.add(s);
+                    }
+                }
+            }
+            if (cf.getMetadataName().equals("Bibliography")) {
+                bibliography = cf;
+            }
+        }
+
+        // create bibliography from exported sources
+        for (SourceField currentSource : allSources) {
+            boolean sourceMatched = false;
+            String sourceId = currentSource.getSourceId();
+
+            for (MetadataField mf : bibliography.getMetadataList()) {
+                for (Metadata md : mf.getGroup().getMetadataList()) {
+                    if (md.getType().getName().equals("SourceID") && sourceId.equals(md.getValue())) {
+                        sourceMatched = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!sourceMatched) {
+                // create new field
+                bibliography.setShowField(true);
+                // if filled, create new entry
+                if (bibliography.isFilled()) {
+                    bibliography.addValue();
+                }
+                // get created field
+                MetadataField field = bibliography.getMetadataList().get(bibliography.getMetadataList().size() - 1);
+
+                for (MetadataField subfield : field.getSubfields()) {
+                    if (subfield.getConfigField().getLabel().equals("Citation")) {
+                        subfield.getMetadata().setValue(currentSource.getSourceName());
+                        // TODO distinct between source type and bibliography type
+                    } else if (subfield.getConfigField().getLabel().equals("Type")) {
+                        subfield.getMetadata().setValue(currentSource.getSourceType());
+                    } else if (subfield.getConfigField().getLabel().equals("Link")) {
+                        subfield.getMetadata().setValue(currentSource.getSourceLink());
+                    } else if (subfield.getConfigField().getLabel().equals("SourceID")) {
+                        Metadata md = subfield.getMetadata();
+                        md.setValue(currentSource.getSourceId());
+                        md.setAutorityFile("Source", currentSource.getSourceId(), currentSource.getSourceUri());
+                    }
+
+                }
+            }
+        }
+    }
 
 }

@@ -213,7 +213,6 @@ public class MetadataField {
         return null;
     }
 
-
     @Data
     @RequiredArgsConstructor
     public class SourceField {
@@ -239,6 +238,34 @@ public class MetadataField {
         public void setShowDetails(boolean showDetails) {
             this.showDetails = showDetails;
         }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getEnclosingInstance().hashCode();
+            result = prime * result + ((pageRange == null) ? 0 : pageRange.hashCode());
+            result = prime * result + (showDetails ? 1231 : 1237);
+            result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
+            result = prime * result + ((sourceLink == null) ? 0 : sourceLink.hashCode());
+            result = prime * result + ((sourceName == null) ? 0 : sourceName.hashCode());
+            result = prime * result + ((sourceType == null) ? 0 : sourceType.hashCode());
+            result = prime * result + ((sourceUri == null) ? 0 : sourceUri.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            SourceField other = (SourceField) obj;
+
+            return sourceId.equals(other.sourceId);
+        }
+
+        private MetadataField getEnclosingInstance() {
+            return MetadataField.this;
+        }
+
+
 
     }
 }
