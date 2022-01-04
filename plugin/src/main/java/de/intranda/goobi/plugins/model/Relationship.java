@@ -19,11 +19,8 @@ public class Relationship {
     private String vocabularyName;
     private String vocabularyUrl;
 
-    // additional data
+    // TODO how to define process status?
     private String processStatus = "Published";
-
-    // TODO display some metadata
-
 
 
     private boolean showDetails;

@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.goobi.vocabulary.Field;
+import org.goobi.vocabulary.VocabRecord;
+import org.goobi.vocabulary.Vocabulary;
 
-import lombok.Data;
+import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 public class EntityConfig {
@@ -99,6 +101,74 @@ public class EntityConfig {
                 ConfiguredField metadataField = extractField(field);
                 newType.addMetadataField(metadataField);
             }
+
+            for (HierarchicalConfiguration field : type.configurationsAt("/relations/relation")) {
+                int id = field.getInt("@id", 0);
+                boolean reverse = field.getBoolean("@reverse", false);
+                String destinationEntity = field.getString("@destinationEntity");
+                String sourceEntity = entityName;
+                if (id != 0) {
+                    Vocabulary v = VocabularyManager.getVocabularyById(id);
+                    VocabularyManager.getAllRecords(v);
+                    for (VocabRecord record : v.getRecords()) {
+                        RelationshipType relationType = new RelationshipType();
+                        relationType.setReversed(reverse);
+                        relationType.setSourceType(sourceEntity);
+                        relationType.setDestinationType(destinationEntity);
+
+                        for (Field f : record.getFields()) {
+                            switch (f.getDefinition().getLabel()) {
+                                case "Relationship type":
+                                    if (!reverse) {
+                                        if ("eng".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameEn(f.getValue());
+                                        } else if ("ger".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameDe(f.getValue());
+                                        } else if ("fre".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameFr(f.getValue());
+                                        }
+                                    }
+                                    break;
+                                case "Reverse relationship":
+                                    if (reverse && StringUtils.isNotBlank(f.getValue())) {
+                                        if ("eng".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameEn(f.getValue());
+                                        } else if ("ger".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameDe(f.getValue());
+                                        } else if ("fre".equals(f.getLanguage())) {
+                                            relationType.setRelationshipNameFr(f.getValue());
+                                        }
+                                    }
+                                    break;
+
+                                case "Date beginning allowed":
+                                    if ("yes".equals(f.getValue())) {
+                                        relationType.setDisplayStartDate(true);
+                                    }
+                                    break;
+                                case "Date end allowed":
+                                    if ("yes".equals(f.getValue())) {
+                                        relationType.setDisplayEndDate(true);
+                                    }
+                                    break;
+                                case "Additional text field allowed":
+                                    if ("yes".equals(f.getValue())) {
+                                        relationType.setDisplayAdditionalData(true);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if (StringUtils.isNotBlank(relationType.getRelationshipNameEn())) {
+                            newType.addRelationshipType(relationType);
+                        }
+                    }
+
+                }
+
+            }
+
         }
     }
 
@@ -158,31 +228,6 @@ public class EntityConfig {
         return null;
     }
 
-    @Data
-    @RequiredArgsConstructor
-    public class EntityType {
-        @NonNull
-        private String name;
-        @NonNull
-        private String color;
-        @NonNull
-        private String icon;
-        @NonNull
 
-        private String identifyingMetadata;
-        private String languageOrder;
 
-        private String scrollPosition;
-
-        private List<ConfiguredField> configuredFields = new ArrayList<>();
-
-        public void addMetadataField(ConfiguredField field) {
-            configuredFields.add(field);
-        }
-
-        public void setScrollPosition(String pos) {
-            System.out.println(pos);
-            scrollPosition = pos;
-        }
-    }
 }

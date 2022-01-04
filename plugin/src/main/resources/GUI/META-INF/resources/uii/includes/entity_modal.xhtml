@@ -93,20 +93,61 @@
                                         var="record">
                                         <div class="row form-group nobackground">
                                             <div class="col-sm-11 vocabulary-searchfield">
-<!--                                                 <x:dataList -->
-<!--                                                     value="#{record.fields}" -->
-<!--                                                     var="field"> -->
-<!--                                                     <div -->
-<!--                                                         class="row" -->
-<!--                                                         style="margin: 0px;"> -->
-<!--                                                         <div class="col-sm-3"> -->
-<!--                                                             <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" /> -->
-<!--                                                         </div> -->
-<!--                                                         <div class="col-sm-9"> -->
-<!--                                                             <h:outputText value="#{field.value}" /> -->
-<!--                                                         </div> -->
-<!--                                                     </div> -->
-<!--                                                 </x:dataList> -->
+                                                <x:dataList
+                                                    value="#{record.metadataFieldList}"
+                                                    var="configuredField">
+                                                
+                                                <ui:repeat
+                                                var="field"
+                                                value="#{configuredField.metadataList}"
+                                                rendered="#{configuredField.showField}">
+
+                                                <div class="form-group">
+                                                    <div class="col-sm-3 control-label">
+                                                        <h:outputLabel
+                                                            for="field_#{status.index}"
+                                                            value="#{msgs[configuredField.label]}" />
+                                                    </div>
+
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        rendered="#{!field.configField.group}"
+                                                        styleClass="col-sm-9">
+<h:outputText  styleClass="form-control"
+                                                                value="#{field.metadata.value}" />
+                                                    </h:panelGroup>
+
+                                                    <h:panelGroup
+                                                        id="group"
+                                                        layout="block"
+                                                        rendered="#{field.configField.group}"
+                                                        styleClass="col-sm-9">
+                                                        <ui:repeat
+                                                            var="subfield"
+                                                            value="#{field.subfields}">
+                                                            <h:panelGroup
+                                                                layout="block"
+                                                                styleClass="group-metadata #{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                                rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                                <h:outputText
+                                                                    styleClass="field-label"
+                                                                    value="#{msgs[subfield.configField.label]}"
+                                                                    rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
+<h:outputText  styleClass="form-control"
+                                                                value="#{subfield.metadata.value}" />
+                                                                
+
+
+                                                            </h:panelGroup>
+                                                        </ui:repeat>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </ui:repeat>
+                                                
+
+                                                </x:dataList>
                                             </div>
 
                                             <div class="col-sm-1 vocabulary-searchfield">

@@ -280,19 +280,19 @@
             <div class="left">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.currentType.name}">
+                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
                             <div
                                 class="box-title"
-                                jsf:style="background: #{NavigationForm.workflowPlugin.currentType.color}; border-color: #{NavigationForm.workflowPlugin.currentType.color};">
+                                jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
                                 <h3>
-                                    <i class="fa #{NavigationForm.workflowPlugin.currentType.icon}" />
+                                    <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon}" />
 
-                                    <h:outputText value="#{NavigationForm.workflowPlugin.entityName}" />
+                                    <h:outputText value="#{NavigationForm.workflowPlugin.entity.entityName}" />
                                 </h3>
                             </div>
                             <div
                                 class="box-content nopadding"
-                                jsf:style="border-color: #{NavigationForm.workflowPlugin.currentType.color}; min-height: 600px;">
+                                jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color}; min-height: 600px;">
 
                                 <h:form
                                     styleClass="form-horizontal form-bordered"
@@ -307,7 +307,7 @@
                                         styleClass="badge-area">
                                         <x:dataList
                                             var="item"
-                                            value="#{NavigationForm.workflowPlugin.metadataFieldList}">
+                                            value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}">
                                             <ui:fragment>
                                                 <entity:entity_badge
                                                     styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
@@ -320,7 +320,7 @@
                                     <!-- list all metadata fields -->
                                     <div class="main-area">
                                         <ui:repeat
-                                            value="#{NavigationForm.workflowPlugin.metadataFieldList}"
+                                            value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}"
                                             var="configuredField"
                                             varStatus="status">
                                             <ui:repeat
@@ -339,7 +339,7 @@
                                                         <button
                                                             class="btn pull-right toggle"
                                                             jsf:id="remove"
-                                                            jsf:action="#{NavigationForm.workflowPlugin.removeMetadata(field)}">
+                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}">
                                                             <i class="fa fa-minus-circle" />
                                                             <f:ajax
                                                                 execute="@this"
@@ -352,7 +352,7 @@
                                                             class="btn pull-right toggle"
                                                             jsf:id="duplicate"
                                                             jsf:rendered="#{field.configField.repeatable}"
-                                                            jsf:action="#{NavigationForm.workflowPlugin.duplicateMetadata(configuredField)}">
+                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}">
                                                             <i class="fa fa-plus-circle" />
                                                             <f:ajax
                                                                 execute="@this"
@@ -620,7 +620,7 @@
                                         <button
                                             class="btn "
                                             jsf:id="generateBibliography"
-                                            jsf:action="#{NavigationForm.workflowPlugin.generateBibliography}">
+                                            jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
                                             <i class="fa fa-plus-circle" />
                                             #{msgs.plugin_workflow_entity_createBibliography}
                                             <f:ajax
@@ -649,7 +649,7 @@
                     <h:form>
                         <ui:repeat
                             var="type"
-                            value="#{NavigationForm.workflowPlugin.linkedRelationships}">
+                            value="#{NavigationForm.workflowPlugin.entity.linkedRelationships}">
 
                             <ui:include src="includes/linked_entities.xhtml" />
 
