@@ -127,16 +127,34 @@ public class EntityConfig {
                                         } else if ("fre".equals(f.getLanguage())) {
                                             relationType.setRelationshipNameFr(f.getValue());
                                         }
+                                    } else {
+                                        if ("eng".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameEn(f.getValue());
+                                        } else if ("ger".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameDe(f.getValue());
+                                        } else if ("fre".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameFr(f.getValue());
+                                        }
                                     }
                                     break;
                                 case "Reverse relationship":
-                                    if (reverse && StringUtils.isNotBlank(f.getValue())) {
-                                        if ("eng".equals(f.getLanguage())) {
-                                            relationType.setRelationshipNameEn(f.getValue());
-                                        } else if ("ger".equals(f.getLanguage())) {
-                                            relationType.setRelationshipNameDe(f.getValue());
-                                        } else if ("fre".equals(f.getLanguage())) {
-                                            relationType.setRelationshipNameFr(f.getValue());
+                                    if (StringUtils.isNotBlank(f.getValue())) {
+                                        if (reverse) {
+                                            if ("eng".equals(f.getLanguage())) {
+                                                relationType.setRelationshipNameEn(f.getValue());
+                                            } else if ("ger".equals(f.getLanguage())) {
+                                                relationType.setRelationshipNameDe(f.getValue());
+                                            } else if ("fre".equals(f.getLanguage())) {
+                                                relationType.setRelationshipNameFr(f.getValue());
+                                            }
+                                        } else {
+                                            if ("eng".equals(f.getLanguage())) {
+                                                relationType.setReversedRelationshipNameEn(f.getValue());
+                                            } else if ("ger".equals(f.getLanguage())) {
+                                                relationType.setReversedRelationshipNameDe(f.getValue());
+                                            } else if ("fre".equals(f.getLanguage())) {
+                                                relationType.setReversedRelationshipNameFr(f.getValue());
+                                            }
                                         }
                                     }
                                     break;
@@ -190,6 +208,9 @@ public class EntityConfig {
         boolean repeatable = field.getBoolean("@repeatable", false);
         metadataField.setRepeatable(repeatable);
 
+        boolean showInSearch = field.getBoolean("@showInSearch", false);
+        metadataField.setShowInSearch(showInSearch);
+
         if ("vocabularyList".equals(fieldType)) {
             String vocabularyName = field.getString("/vocabulary/@name");
             String vocabularyId = field.getString("/vocabulary/@id");
@@ -227,7 +248,5 @@ public class EntityConfig {
         }
         return null;
     }
-
-
 
 }

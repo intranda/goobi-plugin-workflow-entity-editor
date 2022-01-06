@@ -106,6 +106,10 @@ public class ConfiguredField {
     /** contains a human readable error text */
     private String validationError;
 
+    @Getter
+    @Setter
+    private boolean showInSearch = false;
+
     // actual data
     @Getter
     @Setter

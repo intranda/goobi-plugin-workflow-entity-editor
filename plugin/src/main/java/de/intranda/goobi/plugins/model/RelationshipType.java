@@ -23,4 +23,8 @@ public class RelationshipType {
 
     private boolean reversed = false;
 
+    private String reversedRelationshipNameEn;
+    private String reversedRelationshipNameDe;
+    private String reversedRelationshipNameFr;
+
 }

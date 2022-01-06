@@ -364,7 +364,27 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private List<RelationshipType> relationshipTypes = new ArrayList<>();
 
+    @Getter
+    @Setter
+    private Entity selectedEntity;
+    @Getter
+    @Setter
+    private RelationshipType selectedRelationship;
+
+    @Getter
+    @Setter
+    private String relationshipStartDate;
+
+    @Getter
+    @Setter
+    private String relationshipEndDate;
+
+    @Getter
+    @Setter
+    private String relationshipData;
+
     public void addRelationship(EntityType type) {
+        selectedEntity = null;
         entitySearch = "";
         entityType = type;
         entities.clear();
@@ -406,6 +426,65 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void saveEntity() {
         // TODO save metadata
+    }
+
+    // TODO which language?
+    public void setRelationship(String selectedRelationship) {
+        if (selectedRelationship == null) {
+            this.selectedRelationship = null;
+        } else {
+            for (RelationshipType r : relationshipTypes) {
+                if (selectedRelationship.equals(r.getRelationshipNameEn())) {
+                    this.selectedRelationship = r;
+                    break;
+                }
+            }
+        }
+    }
+
+    public String getRelationship() {
+        if (selectedRelationship == null) {
+            return null;
+        }
+        return selectedRelationship.getRelationshipNameEn();
+    }
+
+    public void addRelationshipBetweenEntities() {
+        List<Relationship> relationships = entity.getLinkedRelationships().get(selectedEntity.getCurrentType());
+
+        Relationship rel = new Relationship();
+        rel.setAdditionalData(relationshipData);
+        rel.setBeginningDate(relationshipStartDate);
+        rel.setEndDate(relationshipEndDate);
+        rel.setDisplayName(selectedEntity.getEntityName());
+        rel.setEntityName(selectedEntity.getCurrentType().getName());
+        rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
+        rel.setProcessStatus("TODO");
+        rel.setType(selectedRelationship.getRelationshipNameEn());
+        rel.setVocabularyName(selectedRelationship.getVocabularyName());
+        rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+        relationships.add(rel);
+
+        // reverse relationship in other
+
+        relationships = selectedEntity.getLinkedRelationships().get(entity.getCurrentType());
+        Relationship reverse = new Relationship();
+        reverse.setAdditionalData(relationshipData);
+        reverse.setBeginningDate(relationshipStartDate);
+        reverse.setEndDate(relationshipEndDate);
+        reverse.setDisplayName(entity.getEntityName());
+        reverse.setEntityName(entity.getCurrentType().getName());
+        reverse.setProcessId(String.valueOf(entity.getCurrentProcess().getId()));
+        reverse.setProcessStatus("TODO");
+        if (StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
+            reverse.setType(selectedRelationship.getReversedRelationshipNameEn());
+        } else {
+            reverse.setType(selectedRelationship.getRelationshipNameEn());
+        }
+        reverse.setVocabularyName(selectedRelationship.getVocabularyName());
+        reverse.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+        relationships.add(reverse);
+        // TODO save both entities
     }
 
 }

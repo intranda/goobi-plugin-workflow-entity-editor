@@ -282,6 +282,16 @@ public class Entity {
     // generate the display name for the current entity
     private void getDisplayName(DocStruct logical, String entityType) {
         // read main name from metadata
+
+        String configuredLanguages = currentType.getLanguageOrder();
+        List<String> languages = new ArrayList<>();
+        boolean checkLanguages = false;
+        if (StringUtils.isNotBlank(configuredLanguages)) {
+            checkLanguages = true;
+            for (String lang : configuredLanguages.split(",")) {
+                languages.add(lang.trim());
+            }
+        }
         StringBuilder sb = new StringBuilder();
         for (String metadata : currentType.getIdentifyingMetadata().split(" ")) {
             if (metadata.contains("/")) {
@@ -290,29 +300,53 @@ public class Entity {
                 for (MetadataGroup mg : logical.getAllMetadataGroups()) {
                     if (mg.getType().getName().equals(parts[0])) {
                         // last part metadata name
-                        for (Metadata md : mg.getMetadataList()) {
-                            if (md.getType().getName().equals(parts[1])) {
-                                if (sb.length() > 0) {
-                                    sb.append(" ");
+                        if (checkLanguages) {
+                            boolean found = false;
+                            for (String lang : languages) {
+                                if (!found) {
+                                    for (Metadata md : mg.getMetadataList()) {
+                                        if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
+                                            if (sb.length() > 0) {
+                                                sb.append(" ");
+                                            }
+                                            sb.append(md.getValue());
+                                            found = true;
+                                            break;
+                                        }
+                                    }
                                 }
-                                sb.append(md.getValue());
+                            }
+                        } else {
+                            for (Metadata md : mg.getMetadataList()) {
+                                if (md.getType().getName().equals(parts[1])) {
+                                    if (sb.length() > 0) {
+                                        sb.append(" ");
+                                    }
+                                    sb.append(md.getValue());
+                                }
                             }
                         }
                     }
                 }
             } else {
-                for (Metadata md : logical.getAllMetadata()) {
-                    if (md.getType().getName().equals(metadata)) {
-                        if (sb.length() > 0) {
-                            sb.append(" ");
+                if (checkLanguages) {
+
+                } else {
+                    for (Metadata md : logical.getAllMetadata()) {
+                        if (md.getType().getName().equals(metadata)) {
+                            if (sb.length() > 0) {
+                                sb.append(" ");
+                            }
+                            sb.append(md.getValue());
                         }
-                        sb.append(md.getValue());
                     }
                 }
             }
         }
         entityName = sb.toString();
-        if (StringUtils.isBlank(entityName)) {
+        if (StringUtils.isBlank(entityName))
+
+        {
             entityName = entityType;
         }
     }

@@ -255,6 +255,12 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.noborder{
+    border:0;
+    background: #fff !important;
+
+}
 </style>
 
         <div class="grid">
@@ -633,9 +639,6 @@
 
                                     <!-- sources modal -->
                                     <ui:include src="includes/source_modal.xhtml" />
-
-                                    <!-- link entity modal -->
-                                    <ui:include src="includes/entity_modal.xhtml" />
                                 </h:form>
                             </div>
                         </div>
@@ -659,6 +662,11 @@
                 </div>
 
             </div>
+
+
+
+                                    <!-- link entity modal -->
+                                    <ui:include src="includes/entity_modal.xhtml" />
 
             <h:inputHidden
                 value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
