@@ -62,7 +62,14 @@ public class EntityConfig {
     @Getter
     private String relationshipType;
 
+
+    @Getter
+    private int processTemplateId;
+
     public EntityConfig(XMLConfiguration config) {
+
+
+        processTemplateId= config.getInt("/global/processTemplateId");
 
         // data for vocabulary search
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
@@ -115,6 +122,10 @@ public class EntityConfig {
                         relationType.setReversed(reverse);
                         relationType.setSourceType(sourceEntity);
                         relationType.setDestinationType(destinationEntity);
+
+                        relationType.setVocabularyName(v.getTitle());
+                        relationType.setVocabularyUrl(vocabularyUrl + v.getId() + "/" + record.getId());
+
 
                         for (Field f : record.getFields()) {
                             switch (f.getDefinition().getLabel()) {
@@ -178,6 +189,7 @@ public class EntityConfig {
                                     break;
                             }
                         }
+
                         if (StringUtils.isNotBlank(relationType.getRelationshipNameEn())) {
                             newType.addRelationshipType(relationType);
                         }

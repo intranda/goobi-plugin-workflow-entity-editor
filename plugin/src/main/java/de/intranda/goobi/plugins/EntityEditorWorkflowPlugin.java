@@ -3,6 +3,7 @@ package de.intranda.goobi.plugins;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
@@ -28,13 +29,21 @@ import de.intranda.goobi.plugins.model.Relationship;
 import de.intranda.goobi.plugins.model.RelationshipType;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.BeanHelper;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import ugh.dl.DigitalDocument;
+import ugh.dl.DocStruct;
+import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
+import ugh.dl.Prefs;
+import ugh.exceptions.PreferencesException;
+import ugh.exceptions.UGHException;
+import ugh.fileformats.mets.MetsMods;
 
 @PluginImplementation
 @Log4j2
@@ -118,6 +127,38 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private Entity entity;
 
+    @Getter
+    @Setter
+    private String entitySearch;
+
+    @Getter
+    private List<Entity> entities = new ArrayList<>();
+
+    @Getter
+    private EntityType entityType;
+
+    @Getter
+    private List<RelationshipType> relationshipTypes = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private Entity selectedEntity;
+    @Getter
+    @Setter
+    private RelationshipType selectedRelationship;
+
+    @Getter
+    @Setter
+    private String relationshipStartDate;
+
+    @Getter
+    @Setter
+    private String relationshipEndDate;
+
+    @Getter
+    @Setter
+    private String relationshipData;
+
     /**
      * Constructor
      */
@@ -177,8 +218,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      */
 
     public String loadSelectedBreadcrumb() {
-        // TODO save current entity?
-
+        // save current entity
+        entity.saveEntity();
         //  check if dashboard was selected -> exit to start page
         if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
             return "/uii/index.xhtml";
@@ -349,40 +390,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         addSource();
     }
 
-    // button to generate bibliography
-
-    @Getter
-    @Setter
-    private String entitySearch;
-
-    @Getter
-    private List<Entity> entities = new ArrayList<>();
-
-    @Getter
-    private EntityType entityType;
-
-    @Getter
-    private List<RelationshipType> relationshipTypes = new ArrayList<>();
-
-    @Getter
-    @Setter
-    private Entity selectedEntity;
-    @Getter
-    @Setter
-    private RelationshipType selectedRelationship;
-
-    @Getter
-    @Setter
-    private String relationshipStartDate;
-
-    @Getter
-    @Setter
-    private String relationshipEndDate;
-
-    @Getter
-    @Setter
-    private String relationshipData;
-
     public void addRelationship(EntityType type) {
         selectedEntity = null;
         entitySearch = "";
@@ -418,14 +425,47 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void createEntity(EntityType type) {
-        // TODO save + close current entity
-        // TODO create breadcrumb
-        // TODO create new entity with given type
+        // save + close current entity
+        entity.saveEntity();
 
-    }
+        // create breadcrumb
+        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
+                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
+        breadcrumbList.add(item);
 
-    public void saveEntity() {
-        // TODO save metadata
+        Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
+
+        String processname = UUID.randomUUID().toString();
+
+        Fileformat fileformat = null;
+
+        try {
+            // create new metadata file with given type
+            Prefs prefs = entity.getPrefs();
+            fileformat = new MetsMods(entity.getPrefs());
+            DigitalDocument dd = new DigitalDocument();
+            fileformat.setDigitalDocument(dd);
+            DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(type.getName()));
+            dd.setLogicalDocStruct(logical);
+            Metadata id = new Metadata(prefs.getMetadataTypeByName("CatalogIDDigital"));
+            id.setValue(processname);
+            logical.addMetadata(id);
+            DocStruct physical = dd.createDocStruct(prefs.getDocStrctTypeByName("BoundBook"));
+            dd.setPhysicalDocStruct(physical);
+            Metadata mdForPath = new Metadata(prefs.getMetadataTypeByName("pathimagefiles"));
+            mdForPath.setValue("file:///");
+            physical.addMetadata(mdForPath);
+        } catch (UGHException e) {
+            log.error(e);
+        }
+
+        // create process
+        Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
+        // create and open new entity
+        entity = new Entity(configuration, newProcess);
+
+        // TODO mark as new process, delete process, if edition is canceled?
+
     }
 
     // TODO which language?
@@ -450,41 +490,53 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void addRelationshipBetweenEntities() {
-        List<Relationship> relationships = entity.getLinkedRelationships().get(selectedEntity.getCurrentType());
 
-        Relationship rel = new Relationship();
-        rel.setAdditionalData(relationshipData);
-        rel.setBeginningDate(relationshipStartDate);
-        rel.setEndDate(relationshipEndDate);
-        rel.setDisplayName(selectedEntity.getEntityName());
-        rel.setEntityName(selectedEntity.getCurrentType().getName());
-        rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
-        rel.setProcessStatus("TODO");
-        rel.setType(selectedRelationship.getRelationshipNameEn());
-        rel.setVocabularyName(selectedRelationship.getVocabularyName());
-        rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
-        relationships.add(rel);
+        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false);
 
-        // reverse relationship in other
+        // reverse relationship in other entity
+        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true);
 
-        relationships = selectedEntity.getLinkedRelationships().get(entity.getCurrentType());
-        Relationship reverse = new Relationship();
-        reverse.setAdditionalData(relationshipData);
-        reverse.setBeginningDate(relationshipStartDate);
-        reverse.setEndDate(relationshipEndDate);
-        reverse.setDisplayName(entity.getEntityName());
-        reverse.setEntityName(entity.getCurrentType().getName());
-        reverse.setProcessId(String.valueOf(entity.getCurrentProcess().getId()));
-        reverse.setProcessStatus("TODO");
-        if (StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
-            reverse.setType(selectedRelationship.getReversedRelationshipNameEn());
-        } else {
-            reverse.setType(selectedRelationship.getRelationshipNameEn());
-        }
-        reverse.setVocabularyName(selectedRelationship.getVocabularyName());
-        reverse.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
-        relationships.add(reverse);
-        // TODO save both entities
+
+        // save both entities
+        entity.saveEntity();
+        selectedEntity.saveEntity();
     }
 
+    public void removeRelationship(EntityType type, Relationship relationship) {
+
+        entity.getLinkedRelationships().get(type).remove(relationship);
+
+        try {
+            entity.getCurrentFileformat().getDigitalDocument().getLogicalDocStruct().removeMetadataGroup(relationship.getMetadataGroup());
+        } catch (PreferencesException e) {
+            log.error(e);
+        }
+
+        entity.saveEntity();
+
+        // load other process, remove relationship from there
+        Process otherProcess = ProcessManager.getProcessById(Integer.parseInt(relationship.getProcessId()));
+        if (otherProcess == null) {
+            return;
+        }
+        Entity other = new Entity(configuration, otherProcess);
+        List<Relationship> relationships = other.getLinkedRelationships().get(entity.getCurrentType());
+        String processid = String.valueOf(entity.getCurrentProcess().getId());
+        Relationship otherRleationship = null;
+        for (Relationship r : relationships) {
+            if (r.getProcessId().equals(processid) && r.getVocabularyUrl().equals(relationship.getVocabularyUrl())) {
+                otherRleationship = r;
+                break;
+            }
+        }
+        if (otherRleationship != null) {
+            try {
+                relationships.remove(otherRleationship);
+                other.getCurrentFileformat().getDigitalDocument().getLogicalDocStruct().removeMetadataGroup(otherRleationship.getMetadataGroup());
+            } catch (PreferencesException e) {
+                log.error(e);
+            }
+            other.saveEntity();
+        }
+    }
 }

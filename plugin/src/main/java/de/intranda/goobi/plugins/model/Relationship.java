@@ -1,6 +1,7 @@
 package de.intranda.goobi.plugins.model;
 
 import lombok.Data;
+import ugh.dl.MetadataGroup;
 
 @Data
 public class Relationship {
@@ -24,4 +25,6 @@ public class Relationship {
 
 
     private boolean showDetails;
+
+    private MetadataGroup metadataGroup;
 }

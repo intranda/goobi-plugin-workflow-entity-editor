@@ -256,10 +256,9 @@
     overflow-y: auto;
 }
 
-.noborder{
-    border:0;
+.noborder {
+    border: 0;
     background: #fff !important;
-
 }
 </style>
 
@@ -295,6 +294,15 @@
 
                                     <h:outputText value="#{NavigationForm.workflowPlugin.entity.entityName}" />
                                 </h3>
+
+                                <button
+                                    class="btn pull-right toggle"
+                                    jsf:id="save"
+                                    jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
+                                    <i class="fa fa-floppy-o" />
+
+                                </button>
+
                             </div>
                             <div
                                 class="box-content nopadding"
@@ -665,8 +673,8 @@
 
 
 
-                                    <!-- link entity modal -->
-                                    <ui:include src="includes/entity_modal.xhtml" />
+            <!-- link entity modal -->
+            <ui:include src="includes/entity_modal.xhtml" />
 
             <h:inputHidden
                 value="#{NavigationForm.workflowPlugin.mainScrollPosition}"

@@ -22,6 +22,9 @@ import ugh.dl.MetadataGroup;
 import ugh.dl.MetadataGroupType;
 import ugh.dl.MetadataType;
 import ugh.dl.Prefs;
+import ugh.exceptions.DocStructHasNoTypeException;
+import ugh.exceptions.MetadataTypeNotAllowedException;
+import ugh.exceptions.PreferencesException;
 import ugh.exceptions.UGHException;
 import ugh.fileformats.mets.MetsMods;
 
@@ -85,15 +88,24 @@ public class Entity {
                         mf.adMetadataField(field);
                         metadataFieldList.add(mf);
                         for (ConfiguredField subfield : mf.getSubfieldList()) {
-                            MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
-                            Metadata metadata = new Metadata(metadataType);
-                            group.addMetadata(metadata);
-                            MetadataField sub = new MetadataField();
-                            sub.setConfigField(subfield);
-                            sub.setMetadata(metadata);
-                            subfield.adMetadataField(sub);
-                            field.addSubField(sub);
+                            if (!"Source".equals(subfield.getMetadataName())) {
+                                List<Metadata> mdl = group.getMetadataByType(subfield.getMetadataName());
+                                Metadata metadata = null;
+                                if (mdl != null && mdl.size() > 0) {
+                                    metadata = mdl.get(0);
+                                } else {
+                                    MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
+                                    metadata = new Metadata(metadataType);
+                                    group.addMetadata(metadata);
+                                }
+                                MetadataField sub = new MetadataField();
+                                sub.setConfigField(subfield);
+                                sub.setMetadata(metadata);
+                                subfield.adMetadataField(sub);
+                                field.addSubField(sub);
+                            }
                         }
+
                     } else {
                         for (MetadataGroup group : groups) {
                             MetadataField field = new MetadataField();
@@ -208,72 +220,73 @@ public class Entity {
                         }
                     }
                 }
+            }
+            // load relations to other entities
+            if (StringUtils.isNotBlank(configuration.getRelationshipMetadataName())) {
+                linkedRelationships = new LinkedHashMap<>();
+                for (EntityType et : configuration.getAllTypes()) {
+                    linkedRelationships.put(et, new ArrayList<>());
+                }
+                List<MetadataGroup> relations =
+                        logical.getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
 
-                // load relations to other entities
-                if (StringUtils.isNotBlank(configuration.getRelationshipMetadataName())) {
-                    linkedRelationships = new LinkedHashMap<>();
-                    for (EntityType et : configuration.getAllTypes()) {
-                        linkedRelationships.put(et, new ArrayList<>());
-                    }
-                    List<MetadataGroup> relations =
-                            logical.getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
+                for (MetadataGroup group : relations) {
+                    String entity = null;
+                    String beginningDate = null;
+                    String endDate = null;
+                    String additionalData = null;
+                    String processId = null;
+                    String displayName = null;
+                    String type = null;
+                    String vocabularyName = null;
+                    String vocabularyUrl = null;
 
-                    for (MetadataGroup group : relations) {
-                        String entity = null;
-                        String beginningDate = null;
-                        String endDate = null;
-                        String additionalData = null;
-                        String processId = null;
-                        String displayName = null;
-                        String type = null;
-                        String vocabularyName = null;
-                        String vocabularyUrl = null;
-
-                        for (Metadata md : group.getMetadataList()) {
-                            String metadataType = md.getType().getName();
-                            if (metadataType.equals(configuration.getRelationshipEntityType())) {
-                                entity = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipBeginningDate())) {
-                                beginningDate = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipEndDate())) {
-                                endDate = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipAdditionalData())) {
-                                additionalData = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipProcessId())) {
-                                processId = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipDisplayName())) {
-                                displayName = md.getValue();
-                            } else if (metadataType.equals(configuration.getRelationshipType())) {
-                                type = md.getValue();
-                                vocabularyName = md.getAuthorityID();
-                                vocabularyUrl = md.getAuthorityValue();
-                            }
-
+                    for (Metadata md : group.getMetadataList()) {
+                        String metadataType = md.getType().getName();
+                        if (metadataType.equals(configuration.getRelationshipEntityType())) {
+                            entity = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipBeginningDate())) {
+                            beginningDate = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipEndDate())) {
+                            endDate = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipAdditionalData())) {
+                            additionalData = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipProcessId())) {
+                            processId = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipDisplayName())) {
+                            displayName = md.getValue();
+                        } else if (metadataType.equals(configuration.getRelationshipType())) {
+                            type = md.getValue();
+                            vocabularyName = md.getAuthorityID();
+                            vocabularyUrl = md.getAuthorityValue();
                         }
-                        // TODO type from allowed list
-                        Relationship relationship = new Relationship();
-                        relationship.setEntityName(entity);
-                        relationship.setBeginningDate(beginningDate);
-                        relationship.setEndDate(endDate);
-                        relationship.setAdditionalData(additionalData);
-                        relationship.setProcessId(processId);
-                        relationship.setDisplayName(displayName);
-                        relationship.setType(type);
-                        relationship.setVocabularyName(vocabularyName);
-                        relationship.setVocabularyUrl(vocabularyUrl);
 
-                        for (EntityType et : linkedRelationships.keySet()) {
-                            if (et.getName().equals(relationship.getEntityName())) {
-                                linkedRelationships.get(et).add(relationship);
-                            }
+                    }
+                    Relationship relationship = new Relationship();
+                    relationship.setEntityName(entity);
+                    relationship.setBeginningDate(beginningDate);
+                    relationship.setEndDate(endDate);
+                    relationship.setAdditionalData(additionalData);
+                    relationship.setProcessId(processId);
+                    relationship.setDisplayName(displayName);
+                    // TODO type from allowed list
+                    relationship.setType(type);
+                    relationship.setVocabularyName(vocabularyName);
+                    relationship.setVocabularyUrl(vocabularyUrl);
+                    relationship.setMetadataGroup(group);
+
+                    for (EntityType et : linkedRelationships.keySet()) {
+                        if (et.getName().equals(relationship.getEntityName())) {
+                            linkedRelationships.get(et).add(relationship);
                         }
                     }
-
                 }
 
             }
 
-        } catch (UGHException e) {
+        } catch (
+
+                UGHException e) {
             log.error(e);
         }
 
@@ -297,32 +310,34 @@ public class Entity {
             if (metadata.contains("/")) {
                 String[] parts = metadata.split("/");
                 // first part -> group name
-                for (MetadataGroup mg : logical.getAllMetadataGroups()) {
-                    if (mg.getType().getName().equals(parts[0])) {
-                        // last part metadata name
-                        if (checkLanguages) {
-                            boolean found = false;
-                            for (String lang : languages) {
-                                if (!found) {
-                                    for (Metadata md : mg.getMetadataList()) {
-                                        if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
-                                            if (sb.length() > 0) {
-                                                sb.append(" ");
+                if (logical.getAllMetadataGroups() != null) {
+                    for (MetadataGroup mg : logical.getAllMetadataGroups()) {
+                        if (mg.getType().getName().equals(parts[0])) {
+                            // last part metadata name
+                            if (checkLanguages) {
+                                boolean found = false;
+                                for (String lang : languages) {
+                                    if (!found) {
+                                        for (Metadata md : mg.getMetadataList()) {
+                                            if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
+                                                if (sb.length() > 0) {
+                                                    sb.append(" ");
+                                                }
+                                                sb.append(md.getValue());
+                                                found = true;
+                                                break;
                                             }
-                                            sb.append(md.getValue());
-                                            found = true;
-                                            break;
                                         }
                                     }
                                 }
-                            }
-                        } else {
-                            for (Metadata md : mg.getMetadataList()) {
-                                if (md.getType().getName().equals(parts[1])) {
-                                    if (sb.length() > 0) {
-                                        sb.append(" ");
+                            } else {
+                                for (Metadata md : mg.getMetadataList()) {
+                                    if (md.getType().getName().equals(parts[1])) {
+                                        if (sb.length() > 0) {
+                                            sb.append(" ");
+                                        }
+                                        sb.append(md.getValue());
                                     }
-                                    sb.append(md.getValue());
                                 }
                             }
                         }
@@ -419,12 +434,7 @@ public class Entity {
             duplicateMetadata(cf);
             cf.setShowField(false);
             // generate empty field
-
         }
-    }
-
-    public void removeRelationship(EntityType type, Relationship relationship) {
-        linkedRelationships.get(type).remove(relationship);
     }
 
     public void generateBibliography() {
@@ -485,6 +495,119 @@ public class Entity {
                 }
             }
         }
+    }
+
+    public void saveEntity() {
+        try {
+            currentProcess.writeMetadataFile(currentFileformat);
+        } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
+            log.error(e);
+        }
+    }
+
+    public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
+            RelationshipType selectedRelationship, boolean reversed) {
+        List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
+
+        Relationship rel = new Relationship();
+        rel.setAdditionalData(relationshipData);
+        rel.setBeginningDate(relationshipStartDate);
+        rel.setEndDate(relationshipEndDate);
+        rel.setDisplayName(selectedEntity.getEntityName());
+        rel.setEntityName(selectedEntity.getCurrentType().getName());
+        rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
+        rel.setProcessStatus("TODO");
+        if (reversed && StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
+            rel.setType(selectedRelationship.getReversedRelationshipNameEn());
+        } else {
+            rel.setType(selectedRelationship.getRelationshipNameEn());
+        }
+        rel.setVocabularyName(selectedRelationship.getVocabularyName());
+        rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+
+        MetadataGroup relationGroup = null;
+
+        try {
+            relationGroup = new MetadataGroup(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
+            List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipEntityType());
+            if (mdl != null && !mdl.isEmpty()) {
+                mdl.get(0).setValue(rel.getEntityName());
+            } else {
+                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEntityType()));
+                relationGroup.addMetadata(md);
+                md.setValue(rel.getEntityName());
+            }
+            if (StringUtils.isNotBlank(relationshipStartDate)) {
+                mdl = relationGroup.getMetadataByType(configuration.getRelationshipBeginningDate());
+                if (mdl != null && !mdl.isEmpty()) {
+                    mdl.get(0).setValue(relationshipStartDate);
+                } else {
+                    Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipBeginningDate()));
+                    relationGroup.addMetadata(md);
+                    md.setValue(relationshipStartDate);
+                }
+            }
+            if (StringUtils.isNotBlank(relationshipEndDate)) {
+                mdl = relationGroup.getMetadataByType(configuration.getRelationshipEndDate());
+                if (mdl != null && !mdl.isEmpty()) {
+                    mdl.get(0).setValue(relationshipEndDate);
+                } else {
+                    Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEndDate()));
+                    relationGroup.addMetadata(md);
+                    md.setValue(relationshipEndDate);
+                }
+            }
+
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
+            if (mdl != null && !mdl.isEmpty()) {
+                mdl.get(0).setValue(rel.getProcessId());
+            } else {
+                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipProcessId()));
+                relationGroup.addMetadata(md);
+                md.setValue(rel.getProcessId());
+            }
+
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
+            if (mdl != null && !mdl.isEmpty()) {
+                mdl.get(0).setValue(rel.getDisplayName());
+            } else {
+                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipDisplayName()));
+                relationGroup.addMetadata(md);
+                md.setValue(rel.getDisplayName());
+            }
+
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipType());
+            Metadata md = null;
+            if (mdl != null && !mdl.isEmpty()) {
+                md = mdl.get(0);
+            } else {
+                md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipType()));
+                relationGroup.addMetadata(md);
+            }
+            md.setValue(rel.getType());
+            md.setAutorityFile(rel.getVocabularyName(), configuration.vocabularyUrl, rel.getVocabularyUrl());
+
+            if (StringUtils.isNotBlank(relationshipData)) {
+
+                mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
+                if (mdl != null && !mdl.isEmpty()) {
+                    mdl.get(0).setValue(relationshipData);
+                } else {
+                    md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipAdditionalData()));
+                    relationGroup.addMetadata(md);
+                    md.setValue(relationshipData);
+                }
+            }
+
+            currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadataGroup(relationGroup);
+
+        } catch (MetadataTypeNotAllowedException | DocStructHasNoTypeException | PreferencesException e) {
+            log.error(e);
+        }
+
+        rel.setMetadataGroup(relationGroup);
+        relationships.add(rel);
+
     }
 
 }

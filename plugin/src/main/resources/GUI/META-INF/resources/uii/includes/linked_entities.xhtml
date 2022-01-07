@@ -86,7 +86,7 @@
                                     class="btn toggle"
                                     jsf:id="removeRelationship"
                                     style="color:  #{type.key.color};"
-                                    jsf:action="#{NavigationForm.workflowPlugin.entity.removeRelationship(type.key, relationship)}">
+                                    jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}">
                                     <i class="fa fa-chain-broken" />
                                     <f:ajax
                                         execute="@form"
