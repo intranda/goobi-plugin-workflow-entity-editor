@@ -62,14 +62,18 @@ public class EntityConfig {
     @Getter
     private String relationshipType;
 
-
     @Getter
     private int processTemplateId;
 
+
+    @Getter
+    private String exportPluginName;
+
     public EntityConfig(XMLConfiguration config) {
 
+        processTemplateId = config.getInt("/global/processTemplateId");
+        exportPluginName = config.getString("/global/exportPlugin", "intranda_export_luxArtistDictionary");
 
-        processTemplateId= config.getInt("/global/processTemplateId");
 
         // data for vocabulary search
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
@@ -125,7 +129,6 @@ public class EntityConfig {
 
                         relationType.setVocabularyName(v.getTitle());
                         relationType.setVocabularyUrl(vocabularyUrl + v.getId() + "/" + record.getId());
-
 
                         for (Field f : record.getFields()) {
                             switch (f.getDefinition().getLabel()) {
@@ -222,6 +225,9 @@ public class EntityConfig {
 
         boolean showInSearch = field.getBoolean("@showInSearch", false);
         metadataField.setShowInSearch(showInSearch);
+
+        String defaultValue = field.getString("@defaultValue", null);
+        metadataField.setDefaultValue(defaultValue);
 
         if ("vocabularyList".equals(fieldType)) {
             String vocabularyName = field.getString("/vocabulary/@name");

@@ -8,11 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
+import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
+import de.sub.goobi.persistence.managers.ProcessManager;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.DocStruct;
@@ -96,6 +98,9 @@ public class Entity {
                                 } else {
                                     MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());
                                     metadata = new Metadata(metadataType);
+                                    if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
+                                        metadata.setValue(subfield.getDefaultValue());
+                                    }
                                     group.addMetadata(metadata);
                                 }
                                 MetadataField sub = new MetadataField();
@@ -155,6 +160,9 @@ public class Entity {
                                     if (mdl.isEmpty()) {
                                         // create new metadata
                                         Metadata metadata = new Metadata(metadataType);
+                                        if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
+                                            metadata.setValue(subfield.getDefaultValue());
+                                        }
                                         group.addMetadata(metadata);
                                         MetadataField sub = new MetadataField();
                                         sub.setConfigField(subfield);
@@ -193,6 +201,10 @@ public class Entity {
                     if (mdl.isEmpty()) {
                         // create new metadata
                         Metadata metadata = new Metadata(metadataType);
+                        if (StringUtils.isNotBlank(mf.getDefaultValue())) {
+                            metadata.setValue(mf.getDefaultValue());
+                        }
+
                         logical.addMetadata(metadata);
                         MetadataField field = new MetadataField();
                         field.setConfigField(mf);
@@ -223,12 +235,15 @@ public class Entity {
             }
             // load relations to other entities
             if (StringUtils.isNotBlank(configuration.getRelationshipMetadataName())) {
+
                 linkedRelationships = new LinkedHashMap<>();
                 for (EntityType et : configuration.getAllTypes()) {
                     linkedRelationships.put(et, new ArrayList<>());
                 }
                 List<MetadataGroup> relations =
                         logical.getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
+
+                StringBuilder processids = new StringBuilder();
 
                 for (MetadataGroup group : relations) {
                     String entity = null;
@@ -253,6 +268,12 @@ public class Entity {
                             additionalData = md.getValue();
                         } else if (metadataType.equals(configuration.getRelationshipProcessId())) {
                             processId = md.getValue();
+                            if (StringUtils.isNumeric(processId)) {
+                                if (processids.length() > 0) {
+                                    processids.append(", ");
+                                }
+                                processids.append(processId);
+                            }
                         } else if (metadataType.equals(configuration.getRelationshipDisplayName())) {
                             displayName = md.getValue();
                         } else if (metadataType.equals(configuration.getRelationshipType())) {
@@ -269,24 +290,38 @@ public class Entity {
                     relationship.setAdditionalData(additionalData);
                     relationship.setProcessId(processId);
                     relationship.setDisplayName(displayName);
-                    // TODO type from allowed list
                     relationship.setType(type);
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
                     relationship.setMetadataGroup(group);
-
                     for (EntityType et : linkedRelationships.keySet()) {
                         if (et.getName().equals(relationship.getEntityName())) {
                             linkedRelationships.get(et).add(relationship);
                         }
                     }
                 }
+                if (processids.length() > 0) {
+                    // get current status from database
+                    String sql = "select prozesseID, Wert from prozesseeigenschaften where titel = 'ProcessStatus' and prozesseID in ("
+                            + processids.toString() + ")";
+                    List<?> rows = ProcessManager.runSQL(sql);
+                    for (Object obj : rows) {
+                        Object[] objArr = (Object[]) obj;
+                        String processid = (String) objArr[0];
+                        String processStatus = (String) objArr[1];
 
+                        for (EntityType et : linkedRelationships.keySet()) {
+                            for (Relationship r : linkedRelationships.get(et)) {
+                                if (r.getProcessId().equals(processid)) {
+                                    r.setProcessStatus(processStatus);
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-        } catch (
-
-                UGHException e) {
+        } catch (UGHException e) {
             log.error(e);
         }
 
@@ -388,6 +423,9 @@ public class Entity {
                         Metadata otherMetadata = subfield.getMetadataList().get(0).getMetadata();
                         MetadataType metadataType = otherMetadata.getType();
                         Metadata metadata = new Metadata(metadataType);
+                        if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
+                            metadata.setValue(subfield.getDefaultValue());
+                        }
                         group.addMetadata(metadata);
                         MetadataField sub = new MetadataField();
                         sub.setConfigField(subfield);
@@ -401,6 +439,9 @@ public class Entity {
         } else {
             try {
                 Metadata metadata = new Metadata(prefs.getMetadataTypeByName(field.getMetadataName()));
+                if (StringUtils.isNotBlank(field.getDefaultValue())) {
+                    metadata.setValue(field.getDefaultValue());
+                }
                 currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadata(metadata);
                 MetadataField f = new MetadataField();
                 f.setConfigField(field);
@@ -499,6 +540,14 @@ public class Entity {
 
     public void saveEntity() {
         try {
+
+            for (Processproperty pp : currentProcess.getEigenschaften()) {
+                if (pp.getTitel().equals("New")) {
+                    pp.setWert("In work");
+                    ProcessManager.saveProcess(currentProcess);
+                }
+            }
+
             currentProcess.writeMetadataFile(currentFileformat);
         } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
             log.error(e);
@@ -508,6 +557,13 @@ public class Entity {
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
             RelationshipType selectedRelationship, boolean reversed) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
+        String relationshipStatus = "New";
+
+        for (Processproperty pp : selectedEntity.getCurrentProcess().getEigenschaften()) {
+            if (pp.getTitel().equals("ProcessStatus")) {
+                relationshipStatus = pp.getWert();
+            }
+        }
 
         Relationship rel = new Relationship();
         rel.setAdditionalData(relationshipData);
@@ -516,7 +572,7 @@ public class Entity {
         rel.setDisplayName(selectedEntity.getEntityName());
         rel.setEntityName(selectedEntity.getCurrentType().getName());
         rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
-        rel.setProcessStatus("TODO");
+        rel.setProcessStatus(relationshipStatus);
         if (reversed && StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
             rel.setType(selectedRelationship.getReversedRelationshipNameEn());
         } else {
@@ -585,7 +641,7 @@ public class Entity {
                 relationGroup.addMetadata(md);
             }
             md.setValue(rel.getType());
-            md.setAutorityFile(rel.getVocabularyName(), configuration.vocabularyUrl, rel.getVocabularyUrl());
+            md.setAutorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
 
             if (StringUtils.isNotBlank(relationshipData)) {
 

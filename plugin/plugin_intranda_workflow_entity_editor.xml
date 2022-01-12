@@ -2,13 +2,35 @@
 	<global>
 		<vocabularyServerUrl>https://example.com/vocabulary/records/</vocabularyServerUrl>
 		<sources>
-			<vocabulary name="Source" id="6" searchfields="Citation" displayfields="Citation|PURL|Source Type" nameField="Citation[eng]|Citation[fre]|Citation[ger]" 
-			urlField="PURL" typeField="Source Type[eng]|Source Type[fre]|Source Type[ger]" />
+			<vocabulary name="Source" id="6" searchfields="Citation" displayfields="Citation|PURL|Source Type" nameField="Citation[eng]|Citation[fre]|Citation[ger]" urlField="PURL" typeField="Source Type[eng]|Source Type[fre]|Source Type[ger]" />
 			<!--new: Citation eng 	Citation ger 	Citation fre 	PURL 	Source Type eng 	Source Type ger 	Source Type fre -->
 		</sources>
+		<relations>
+			<metadataName>Relationship</metadataName>
+			<entityType>RelationEntityType</entityType>
+			<beginningDate>BeginningDate</beginningDate>
+			<endDate>EndDate</endDate>
+			<processId>RelationProcessID</processId>
+			<displayName>RelationName</displayName>
+			<type>Type</type>
+			<additionalData>AwardDegree</additionalData>
+		</relations>
+
+		<processTemplateId>6</processTemplateId>
+
+		<exportPlugin>intranda_export_luxArtistDictionary</exportPlugin>
 	</global>
 
 	<type name="Person">
+		<relations>
+			<relation id="26" name="R01 Relationship Person - Person" reverse="false" destinationEntity="Person" />
+			<relation id="26" name="R01 Relationship Person - Person" reverse="true" destinationEntity="Person" />
+			<relation id="28" name="R03a Relationship Person - Collective agent" reverse="false" destinationEntity="Agent"/>
+			<relation id="30" name="R04 Relationship Person - Event" reverse="false" destinationEntity="Event"/>
+			<relation id="32" name="R06 Relationship Person - Work" reverse="false" destinationEntity="Work"/>
+			<relation id="35" name="R09 Relationship Person - Award" reverse="false" destinationEntity="Award"/>
+		</relations>
+
 		<color>#df07b9</color>
 		<icon>fa-user</icon>
 		<identifyingMetadata languageOrder="ORIG, FR, DE, EN">PersonMainName/Firstname PersonMainName/Lastname</identifyingMetadata>
@@ -28,7 +50,7 @@
 
 		<displayMetadata>
 			<field label="Publish record" metadata="Published" type="checkbox" required="true" />
-			<field label="identifier" metadata="CatalogIDDigital" type="input" required="true" />
+			<field label="identifier" metadata="CatalogIDDigital" type="input" required="true" showInSearch="true" />
 			<field label="Primary Role" metadata="PrimaryRole" type="vocabularyList" required="false">
 				<vocabulary name="Person - Primary Role in Database" id="12" />
 			</field>
@@ -41,13 +63,13 @@
 			</field>
 
 
-			<field label="PURL" metadata="PURL" type="generated" required="false" readonly="true">
+			<field label="PURL" metadata="PURL" type="generated" required="false" readonly="true" showInSearch="true">
 				<rule>http://example.com/viewer/resolver?id=${meta.CatalogIDDigital}</rule>
 			</field>
 
 			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
-				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" />
-				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" />
+				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" defaultValue="12345" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" defaultValue="Y" />
 				<field label="Type" metadata="Type" type="select" required="false" labelPosition="top">
 					<value>GND</value>
 					<value>ISNI</value>
@@ -56,18 +78,18 @@
 			</field>
 
 
-			<field label="Main Name" metadata="PersonMainName" repeatable="false" group="true">
+			<field label="Main Name" metadata="PersonMainName" repeatable="false" group="true" showInSearch="true">
 				<field label="Firstname (orig)" metadata="FirstnameOrig" type="input" required="false" labelPosition="left" />
 				<field label="Lastname (orig)" metadata="LastnameOrig" type="input" required="false" labelPosition="left" />
 
-				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" showInSearch="true"/>
+				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" showInSearch="true"/>
 
-				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" showInSearch="true" />
+				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" showInSearch="true" />
 
-				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" showInSearch="true" />
+				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" showInSearch="true" />
 
 				<field label="Numeration" metadata="Numeration" type="input" required="false" labelPosition="left" />
 				<field label="Title" metadata="Title" type="input" required="false" labelPosition="left" />
@@ -77,21 +99,21 @@
 			</field>
 
 
-			<field label="Other Name" metadata="PersonOtherName" repeatable="true" group="true">
-				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="left">
+			<field label="Other Name" metadata="PersonOtherName" repeatable="true" group="true" showInSearch="false">
+				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="left" showInSearch="false">
 					<vocabulary name="Person - Other Name Forms Type" id="3" />
 				</field>
-				<field label="Firstname (orig)" metadata="FirstnameOrig" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (orig)" metadata="LastnameOrig" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (orig)" metadata="FirstnameOrig" type="input" required="false" labelPosition="left" showInSearch="false" />
+				<field label="Lastname (orig)" metadata="LastnameOrig" type="input" required="false" labelPosition="left" showInSearch="false" />
 
-				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (fre)" metadata="FirstnameFr" type="input" required="false" labelPosition="left" showInSearch="false" />
+				<field label="Lastname (fre)" metadata="LastnameFr" type="input" required="false" labelPosition="left" showInSearch="false" />
 
-				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (ger)" metadata="FirstnameDe" type="input" required="false" labelPosition="left" showInSearch="false" />
+				<field label="Lastname (ger)" metadata="LastnameDe" type="input" required="false" labelPosition="left" showInSearch="false" />
 
-				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" />
-				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" />
+				<field label="Firstname (eng)" metadata="FirstnameEn" type="input" required="false" labelPosition="left" showInSearch="false" />
+				<field label="Lastname (eng)" metadata="LastnameEn" type="input" required="false" labelPosition="left" showInSearch="false" />
 
 				<field label="Numeration" metadata="Numeration" type="input" required="false" labelPosition="left" />
 				<field label="Title" metadata="Title" type="input" required="false" labelPosition="left" />
@@ -99,9 +121,9 @@
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
-			<field label="Date of Birth" metadata="BirthDateGroup" repeatable="false" group="true">
+			<field label="Date of Birth" metadata="BirthDateGroup" repeatable="false" group="true" showInSearch="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Birthdate" metadata="Birthdate" type="input" required="false" labelPosition="none" />
+				<field label="Birthdate" metadata="Birthdate" type="input" required="false" labelPosition="none" showInSearch="true" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
@@ -111,9 +133,9 @@
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
-			<field label="Birthplace" metadata="BirthplaceGroup" repeatable="true" group="true">
+			<field label="Birthplace" metadata="BirthplaceGroup" repeatable="true" group="true" showInSearch="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Birthplace" metadata="Birthplace" type="vocabularySearch" required="false" labelPosition="none">
+				<field label="Birthplace" metadata="Birthplace" type="vocabularySearch" required="false" labelPosition="none" showInSearch="true">
 					<vocabulary name="Location" id="5" searchfields="Location" displayfields="Location|Authority URI|Authority Value" />
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
@@ -215,6 +237,10 @@
 					<vocabulary name="Bibliography Type" id="19" />
 				</field>
 
+				<field label="Link" metadata="Link" required="false" />
+				<field label="SourceID" metadata="SourceID" required="false" />
+
+
 			</field>
 
 
@@ -223,6 +249,18 @@
 
 	</type>
 	<type name="Agent">
+
+		<relations>
+			<relation id="27" name="R02 Relationship Collective agent - Collective agent" reverse="false" destinationEntity="Agent" />
+			<relation id="27" name="R02 Relationship Collective agent - Collective agent" reverse="true" destinationEntity="Agent"/>
+			<relation id="29" name="R03b Relationship Collective agent - Person" reverse="false" destinationEntity="Person"/>
+			<relation id="31" name="R05 Relationship Collective agent - Event" reverse="false" destinationEntity="Event"/>
+			<relation id="33" name="R07 Relationship Collective agent - Work" reverse="false" destinationEntity="Work" />
+			<relation id="26" name="R10 Relationship Collective agent - Award" reverse="false" destinationEntity="Award"/>
+
+		</relations>
+
+
 		<color>#e81c0c</color>
 		<icon>fa-university</icon>
 		<!--always english -->
@@ -345,6 +383,15 @@
 
 	</type>
 	<type name="Event">
+
+		<relations>
+			<relation id="30" name="R04 Relationship Person - Event" reverse="true" destinationEntity="Person"/>
+			<relation id="31" name="R05 Relationship Collective agent - Event" reverse="true" destinationEntity="Agent"/>
+			<relation id="34" name="R08 Relationship Event - Work" reverse="false" destinationEntity="Work"/>
+
+
+		</relations>
+
 		<color>#19b609</color>
 		<icon>fa-calendar</icon>
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
@@ -428,6 +475,17 @@
 
 	</type>
 	<type name="Work">
+
+
+		<relations>
+
+			<relation id="32" name="R06 Relationship Person - Work" reverse="true" destinationEntity="Person"/>
+			<relation id="33" name="R07 Relationship Collective agent - Work" reverse="true" destinationEntity="Agent"/>
+			<relation id="24" name="R08 Relationship Event - Work" reverse="true" destinationEntity="Event"/>
+			<relation id="37" name="R11 Relationship Work - Award" reverse="false" destinationEntity="Work"/>
+
+
+		</relations>
 		<color>#900688</color>
 		<icon>fa-picture-o</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
@@ -496,6 +554,13 @@
 
 	</type>
 	<type name="Award">
+
+		<relations>
+
+			<relation id="35" name="R09 Relationship Person - Award" reverse="true" destinationEntity="Person"/>
+			<relation id="36" name="R10 Relationship Collective agent - Award" reverse="true" destinationEntity="Agent" />
+			<relation id="37" name="R11 Relationship Work - Award" reverse="true" destinationEntity="Work"/>
+		</relations>
 		<color>#05b8cd</color>
 		<icon>fa-trophy</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>

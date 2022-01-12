@@ -1,5 +1,6 @@
 package de.intranda.goobi.plugins;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +11,11 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
+import org.goobi.beans.Processproperty;
 import org.goobi.production.cli.helper.StringPair;
 import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.PluginLoader;
+import org.goobi.production.plugin.interfaces.IExportPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 import org.goobi.vocabulary.Definition;
@@ -30,6 +34,10 @@ import de.intranda.goobi.plugins.model.RelationshipType;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
+import de.sub.goobi.helper.exceptions.DAOException;
+import de.sub.goobi.helper.exceptions.ExportFileException;
+import de.sub.goobi.helper.exceptions.SwapException;
+import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
@@ -41,13 +49,22 @@ import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
 import ugh.dl.Prefs;
+import ugh.exceptions.DocStructHasNoTypeException;
+import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.PreferencesException;
+import ugh.exceptions.ReadException;
+import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
+import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
 
 @PluginImplementation
 @Log4j2
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
+
+    // TODO date field type
+    // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
+    // TODO display relation names in browser language?
 
     @Getter
     private String title = "intranda_workflow_entity_editor";
@@ -112,9 +129,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String pages = "";
-
-    //    @Getter
-    //    private Map<EntityType, List<Relationship>> linkedRelationships;
 
     @Getter
     @Setter
@@ -182,12 +196,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // load testdata
         Process currentProcess = ProcessManager.getProcessByExactTitle("SamplePerson");
         entity = new Entity(configuration, currentProcess);
-        //            prefs = currentProcess.getRegelsatz().getPreferences();
-        //
-        //            currentFileformat = new MetsMods(prefs);
-        //            currentFileformat.read(currentProcess.getMetadataFilePath());
-        //
-        //            readMetadata();
 
         BreadcrumbItem root = new BreadcrumbItem("Dashboard", "Dashboard", 0, "#ccc", null);
         breadcrumbList.add(root);
@@ -222,7 +230,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
         //  check if dashboard was selected -> exit to start page
         if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
-            return "/uii/index.xhtml";
+            return exitPlugin();
         }
 
         // create BreadcrumbItem for the current object
@@ -236,6 +244,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity = new Entity(configuration, currentProcess);
 
         return "";
+    }
+
+    public String exitPlugin() {
+        return "/uii/index.xhtml";
     }
 
     /**
@@ -409,9 +421,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         //  search for processes, load metadata from mets file?
         String sql = "select processid from metadata where name=\"index." + entityType.getName() + "Search\" and value like \"%"
                 + StringEscapeUtils.escapeSql(entitySearch) + "%\"";
-        // TODO exclude current entity
-        // TODO add paginator? limit to 10?
-
         // load mets files, open entities
         List<?> rows = ProcessManager.runSQL(sql);
         for (Object obj : rows) {
@@ -463,12 +472,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
         entity = new Entity(configuration, newProcess);
-
-        // TODO mark as new process, delete process, if edition is canceled?
-
     }
 
-    // TODO which language?
     public void setRelationship(String selectedRelationship) {
         if (selectedRelationship == null) {
             this.selectedRelationship = null;
@@ -495,7 +500,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         // reverse relationship in other entity
         selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true);
-
 
         // save both entities
         entity.saveEntity();
@@ -539,4 +543,75 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             other.saveEntity();
         }
     }
+
+    public void saveEntity() {
+        entity.saveEntity();
+    }
+
+    public void exportSingleRecord() {
+
+        // get current process
+        Process p = entity.getCurrentProcess();
+
+        // check export status
+        for (Processproperty pp : p.getEigenschaften()) {
+            if (pp.getTitel().equals("ProcessStatus") && !"Published".equals(pp.getWert())) {
+                // mark process as published
+                pp.setWert("Published");
+                try {
+                    ProcessManager.saveProcess(p);
+                } catch (DAOException e) {
+                    log.error(e);
+                }
+            }
+        }
+
+
+        // save
+        entity.saveEntity();
+        // run export plugin for current process
+
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        try {
+            exportPlugin.startExport(p);
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
+            log.error(e);
+        }
+    }
+
+    public void exportAllRecords() {
+        // TODO mark process as published
+
+        // save
+        entity.saveEntity();
+        // run export plugin for current process
+        Process p = entity.getCurrentProcess();
+
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        try {
+            exportPlugin.startExport(p);
+
+            for (EntityType type : entity.getLinkedRelationships().keySet()) {
+                List<Relationship> relationships = entity.getLinkedRelationships().get(type);
+                for (Relationship rel : relationships) {
+
+                    if ("Published".equals(rel.getProcessStatus()) && StringUtils.isNotBlank(rel.getProcessId())
+                            && StringUtils.isNumeric(rel.getProcessId())) {
+                        Process process = ProcessManager.getProcessById(Integer.parseInt(rel.getProcessId()));
+                        if (process != null) {
+                            exportPlugin.startExport(process);
+                        }
+                    }
+                }
+            }
+
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
+            log.error(e);
+        }
+    }
+
 }

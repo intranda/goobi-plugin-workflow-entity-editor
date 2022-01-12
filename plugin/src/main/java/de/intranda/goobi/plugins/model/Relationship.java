@@ -6,6 +6,8 @@ import ugh.dl.MetadataGroup;
 @Data
 public class Relationship {
 
+    // TODO change type to Relationship object?
+    // TODO change processStatus to enumeration
 
     // read from metadata file
     private String entityName;
@@ -20,9 +22,7 @@ public class Relationship {
     private String vocabularyName;
     private String vocabularyUrl;
 
-    // TODO how to define process status?
-    private String processStatus = "Published";
-
+    private String processStatus = "New";
 
     private boolean showDetails;
 

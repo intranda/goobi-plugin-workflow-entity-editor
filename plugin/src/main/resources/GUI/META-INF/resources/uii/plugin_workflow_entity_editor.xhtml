@@ -295,14 +295,6 @@
                                     <h:outputText value="#{NavigationForm.workflowPlugin.entity.entityName}" />
                                 </h3>
 
-                                <button
-                                    class="btn pull-right toggle"
-                                    jsf:id="save"
-                                    jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
-                                    <i class="fa fa-floppy-o" />
-
-                                </button>
-
                             </div>
                             <div
                                 class="box-content nopadding"
@@ -631,16 +623,7 @@
                                                 </div>
                                             </ui:repeat>
                                         </ui:repeat>
-                                        <button
-                                            class="btn "
-                                            jsf:id="generateBibliography"
-                                            jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
-                                            <i class="fa fa-plus-circle" />
-                                            #{msgs.plugin_workflow_entity_createBibliography}
-                                            <f:ajax
-                                                execute="@this"
-                                                render="@form" />
-                                        </button>
+
                                     </div>
                                     <!-- vocabulary search modal -->
                                     <ui:include src="includes/vocabulary_search_modal.xhtml" />
@@ -680,6 +663,49 @@
                 value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
                 id="scrollpos" />
 
+        </div>
+        <div>
+            <h:form>
+
+                <button
+                    class="btn "
+                    jsf:id="generateBibliography"
+                    jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
+                    <i class="fa fa-plus-circle margin-right-5" />
+                    <h:outputText value="#{msgs.plugin_workflow_entity_createBibliography}" />
+                </button>
+
+                <button
+                    class="btn btn-green pull-right"
+                    jsf:id="save"
+                    jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
+                    <i class="fa fa-floppy-o margin-right-5" />
+                    <h:outputText value="#{msgs.save}" />
+                </button>
+                <button
+                    class="btn btn-lightgrey pull-right margin-right-10"
+                    jsf:id="exit"
+                    jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
+                    <i class="fa fa-sign-out margin-right-5" />
+                    <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
+                </button>
+                <button
+                    class="btn btn-lightgrey pull-right margin-right-10"
+                    jsf:id="exportSingle"
+                    jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
+                    <i class="fa fa-globe margin-right-5" />
+                    <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
+                </button>
+
+                <button
+                    class="btn btn-lightgrey pull-right margin-right-10"
+                    jsf:id="exportAll"
+                    jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
+                    <i class="fa fa-globe margin-right-5" />
+                    <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
+                </button>
+
+            </h:form>
         </div>
 
 

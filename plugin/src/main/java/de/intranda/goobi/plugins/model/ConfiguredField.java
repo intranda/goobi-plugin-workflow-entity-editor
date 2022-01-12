@@ -91,6 +91,11 @@ public class ConfiguredField {
     @Getter
     @Setter
     private String generationRule;
+
+    @Getter
+    @Setter
+    private String defaultValue;
+
     @Getter
     @Setter
     private boolean group = false; // metadata or group
@@ -170,6 +175,9 @@ public class ConfiguredField {
 
                         MetadataType metadataType = otherMetadata.getType();
                         Metadata metadata = new Metadata(metadataType);
+                        if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
+                            metadata.setValue(subfield.getDefaultValue());
+                        }
                         group.addMetadata(metadata);
                         MetadataField sub = new MetadataField();
                         sub.setConfigField(subfield);
@@ -184,6 +192,9 @@ public class ConfiguredField {
             try {
                 Metadata other = metadataList.get(0).getMetadata();
                 Metadata metadata = new Metadata(other.getType());
+                if (StringUtils.isNotBlank(defaultValue)) {
+                    metadata.setValue(defaultValue);
+                }
                 other.getParent().addMetadata(metadata);
                 MetadataField field = new MetadataField();
                 field.setConfigField(this);
