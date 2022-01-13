@@ -344,7 +344,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                     ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
                     + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
         } else {
-            sourceUri = configuration.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
+            sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
         }
 
         sourceName = getSourceFieldValue(configuration.getSourceNameFields());
@@ -569,7 +569,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             }
         }
 
-
         // save
         entity.saveEntity();
         // run export plugin for current process
@@ -585,17 +584,28 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void exportAllRecords() {
-        // TODO mark process as published
+        // mark process as published
+        Process p = entity.getCurrentProcess();
 
+        // check export status
+        for (Processproperty pp : p.getEigenschaften()) {
+            if (pp.getTitel().equals("ProcessStatus") && !"Published".equals(pp.getWert())) {
+                // mark process as published
+                pp.setWert("Published");
+                try {
+                    ProcessManager.saveProcess(p);
+                } catch (DAOException e) {
+                    log.error(e);
+                }
+            }
+        }
         // save
         entity.saveEntity();
         // run export plugin for current process
-        Process p = entity.getCurrentProcess();
-
         IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
         try {
             exportPlugin.startExport(p);
-
+            // run export for all linked entities with status published
             for (EntityType type : entity.getLinkedRelationships().keySet()) {
                 List<Relationship> relationships = entity.getLinkedRelationships().get(type);
                 for (Relationship rel : relationships) {
