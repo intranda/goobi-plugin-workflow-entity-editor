@@ -542,7 +542,7 @@ public class Entity {
         try {
 
             for (Processproperty pp : currentProcess.getEigenschaften()) {
-                if (pp.getTitel().equals("New")) {
+                if (pp.getTitel().equals("ProcessStatus") && pp.getWert().equals("New")) {
                     pp.setWert("In work");
                     ProcessManager.saveProcess(currentProcess);
                 }

@@ -65,6 +65,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     // TODO date field type
     // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
     // TODO display relation names in browser language?
+    // TODO order of elements
+    // TODO save uploaded files in correct folder, add it to phys sequence
+    // TODO generate bibliography on export
 
     @Getter
     private String title = "intranda_workflow_entity_editor";

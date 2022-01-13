@@ -162,8 +162,10 @@
 			</field>
 
 			<field label="Gender" metadata="GenderGroup" repeatable="true" group="true">
-				<field label="Gender" metadata="Gender" type="vocabularyList" required="false">
-					<vocabulary name="Gender" id="9" />
+				<field label="Gender" metadata="Gender" type="select" required="false" labelPosition="top">
+					<value>Male</value>
+					<value>Female</value>
+					<value>Other</value>
 				</field>
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
