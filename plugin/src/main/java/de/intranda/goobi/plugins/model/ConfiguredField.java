@@ -123,6 +123,12 @@ public class ConfiguredField {
     @Getter
     private List<ConfiguredField> subfieldList = new ArrayList<>(); // fields for group
 
+
+    @Getter
+    @Setter
+    private Entity entity;
+
+
     public void addSubfield(ConfiguredField field) {
         subfieldList.add(field);
     }
@@ -231,10 +237,11 @@ public class ConfiguredField {
     }
 
     // only call it when new entity is loaded
-    public void clearMetadata() {
+    public void clearMetadata(Entity entity) {
+        this.entity = entity;
         metadataList.clear();
         for (ConfiguredField cf : subfieldList) {
-            cf.clearMetadata();
+            cf.clearMetadata(entity);
         }
     }
 }

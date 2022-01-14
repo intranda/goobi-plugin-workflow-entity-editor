@@ -76,7 +76,7 @@ public class Entity {
             metadataFieldList.clear();
 
             for (ConfiguredField mf : new ArrayList<>(currentType.getConfiguredFields())) {
-                mf.clearMetadata();
+                mf.clearMetadata(this);
                 if (mf.isGroup()) {
                     MetadataGroupType mgt = prefs.getMetadataGroupTypeByName(mf.getMetadataName());
                     List<MetadataGroup> groups = logical.getAllMetadataGroupsByType(mgt);

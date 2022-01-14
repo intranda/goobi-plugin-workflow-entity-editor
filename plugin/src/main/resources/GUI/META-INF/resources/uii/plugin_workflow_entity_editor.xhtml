@@ -592,16 +592,17 @@
                                                                             render="thirdtab_fileupload3_message" />
                                                                     </h:inputFile>
                                                                 </ui:fragment>
-                                                                <ui:fragment
+                                                                <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'date'}"
                                                                     id="group">
-                                                                    <!-- TODO show wrong syntax errors, add date picker validator="#{subfield.dateValidator}" -->
+                                                                    <!-- TODO show wrong syntax errors, add date picker  -->
                                                                     <x:inputText
                                                                         styleClass="form-control"
                                                                         value="#{subfield.metadata.value}"
                                                                         required="false"
                                                                         readonly="false"
-                                                                        id="dateField">
+                                                                        id="dateField"
+                                                                        validator="#{subfield.dateValidator}">
                                                                         <f:ajax
                                                                             execute="@this"
                                                                             render="badge-area group"
@@ -613,8 +614,7 @@
                                                                         styleClass="font-danger validation-message">
                                                                         <h:outputText value="#{subfield.validationErrorMessage}" />
                                                                     </h:panelGroup>
-
-                                                                </ui:fragment>
+                                                                </h:panelGroup>
 
                                                             </h:panelGroup>
                                                         </ui:repeat>

@@ -62,11 +62,10 @@ import ugh.fileformats.mets.MetsMods;
 @Log4j2
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
-    // TODO date field type
     // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
     // TODO display relation names in browser language?
     // TODO order of elements
-    // TODO save uploaded files in correct folder, add it to phys sequence
+    // TODO save uploaded files in correct folder, add it to phys sequence, prevent second upload with same filename
     // TODO generate bibliography on export
 
     @Getter

@@ -7,25 +7,28 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.faces.validator.ValidatorException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.Helper;
+import de.sub.goobi.helper.exceptions.DAOException;
+import de.sub.goobi.helper.exceptions.SwapException;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import ugh.dl.DigitalDocument;
+import ugh.dl.DocStruct;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
+import ugh.dl.Prefs;
+import ugh.exceptions.UGHException;
 
 @Data
 @Log4j2
@@ -125,21 +128,15 @@ public class MetadataField {
         if (value == null) {
             if (configField.isRequired()) {
                 valid = false;
-                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "validation error", "TODO Field is required");
                 validationErrorMessage = "Field is required";
-                throw new ValidatorException(message);
             }
         } else {
             String dateValue = (String) value;
             if (!dateValue.matches("\\d\\d\\d\\d") && !dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
                 valid = false;
-                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "validation error", "TODO invalid format");
-                validationErrorMessage = "invalid format";
-                throw new ValidatorException(message);
+                validationErrorMessage = "Invalid date format. Dates must be entered either as 'YYYY' or as 'YYYY-MM-DD'.";
             }
-
         }
-
     }
 
     @Getter
@@ -169,7 +166,7 @@ public class MetadataField {
                 basename = basename.substring(basename.lastIndexOf("\\") + 1);
             }
 
-            String filename = ConfigurationHelper.getInstance().getTemporaryFolder() + basename;
+            String filename = configField.getEntity().getCurrentProcess().getImagesOrigDirectory(false) + basename;
 
             inputStream = this.uploadedFile.getInputStream();
             outputStream = new FileOutputStream(filename);
@@ -179,9 +176,35 @@ public class MetadataField {
             while ((len = inputStream.read(buf)) > 0) {
                 outputStream.write(buf, 0, len);
             }
-            // TODO copy into process folder
             metadata.setValue(filename);
-        } catch (IOException e) {
+
+            try {
+                Prefs prefs = configField.getEntity().getPrefs();
+                DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
+                DocStruct physical = dd.getPhysicalDocStruct();
+                int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
+                DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
+
+                // phys + log page numbers
+                Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
+                mdLog.setValue("uncounted");
+                page.addMetadata(mdLog);
+
+                Metadata mdPhys = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
+                mdPhys.setValue(String.valueOf(physPageNumber));
+                page.addMetadata(mdPhys);
+
+                // link to logical docstruct
+                DocStruct logical = dd.getLogicalDocStruct();
+                logical.addReferenceTo(page, "logical_physical");
+
+                // add to physical sequence
+                physical.addChild(page);
+            } catch (UGHException e) {
+                log.error(e);
+            }
+
+        } catch (IOException | InterruptedException | SwapException | DAOException e) {
             log.error(e.getMessage(), e);
             Helper.setFehlerMeldung("uploadFailed");
         } finally {
@@ -264,8 +287,6 @@ public class MetadataField {
         private MetadataField getEnclosingInstance() {
             return MetadataField.this;
         }
-
-
 
     }
 }
