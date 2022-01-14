@@ -125,7 +125,7 @@ public class MetadataField {
     public void dateValidator(FacesContext context, UIComponent component, Object value) {
         valid = true;
         validationErrorMessage = null;
-        if (value == null) {
+        if (value == null || StringUtils.isBlank((String) value)) {
             if (configField.isRequired()) {
                 valid = false;
                 validationErrorMessage = "Field is required";
