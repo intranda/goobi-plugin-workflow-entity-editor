@@ -249,6 +249,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return "";
     }
 
+    public void removeBreadcrumb(BreadcrumbItem breadcrumb) {
+        breadcrumbList.remove(breadcrumb);
+
+    }
+
     public String exitPlugin() {
         return "/uii/index.xhtml";
     }

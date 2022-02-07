@@ -11,20 +11,29 @@
 <h:body>
     <ui:composition>
 
-        <button
-            class="btn breadcrumb-button"
-            jsf:style="border: 1px solid #{entityColor}; color: #{entityColor}"
-            jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}"
-            >
-            <x:updateActionListener value="#{breadcrumb}" property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
-            <span class="skew-fix">
-                <i
-                    class="fa #{entityIcon}"
-                    jsf:rendered="#{entityName != null}" />
-                <h:outputText value="#{entityName}" />
-            </span>
-        </button>
+        <div
+            class="breadcrumb-button-group btn-group"
+            jsf:style="border: 1px solid #{entityColor}; color: #{entityColor}">
 
+            <button
+                class="btn breadcrumb-button"
+                jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}">
+                <x:updateActionListener
+                    value="#{breadcrumb}"
+                    property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
+                <span class="skew-fix">
+                    <i
+                        class="fa #{entityIcon}"
+                        jsf:rendered="#{entityName != null}" />
+                    <h:outputText value="#{entityName}" />
+                </span>
+            </button>
+            <button class="btn breadcrumb-button" jsf:action="#{NavigationForm.workflowPlugin.removeBreadcrumb(breadcrumb)}">
+                <span class="skew-fix">
+                    <i class="fa fa-times" />
+                </span>
+            </button>
+        </div>
     </ui:composition>
 </h:body>
 </html>
