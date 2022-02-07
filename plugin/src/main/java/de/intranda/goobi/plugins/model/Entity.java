@@ -16,6 +16,7 @@ import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -46,6 +47,9 @@ public class Entity {
     private Fileformat currentFileformat;
     private Prefs prefs;
     private EntityConfig configuration;
+
+    @Setter
+    private boolean selected = false;
 
     private Map<EntityType, List<Relationship>> linkedRelationships;
 

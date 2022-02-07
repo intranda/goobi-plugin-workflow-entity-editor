@@ -23,14 +23,21 @@
                     property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
                 <span class="skew-fix">
                     <i
+                        style="color: #{entityColor}"
                         class="fa #{entityIcon}"
                         jsf:rendered="#{entityName != null}" />
-                    <h:outputText value="#{entityName}" />
+                    <h:outputText
+                        value="#{entityName}"
+                        style="color: #{entityColor}" />
                 </span>
             </button>
-            <button class="btn breadcrumb-button" jsf:action="#{NavigationForm.workflowPlugin.removeBreadcrumb(breadcrumb)}">
+            <button
+                class="btn breadcrumb-button"
+                jsf:action="#{NavigationForm.workflowPlugin.removeBreadcrumb(breadcrumb)}">
                 <span class="skew-fix">
-                    <i class="fa fa-times" />
+                    <i
+                        class="fa fa-times"
+                        style="color: #{entityColor}" />
                 </span>
             </button>
         </div>

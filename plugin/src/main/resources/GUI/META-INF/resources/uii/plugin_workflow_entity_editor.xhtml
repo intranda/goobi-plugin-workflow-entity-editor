@@ -214,13 +214,13 @@
     padding: 4px 6px;
     transform: skew(45deg);
     margin-top: 3px;
-/*     margin-left: -10px; */
-/*     border: 1px solid #000; */
+    /*     margin-left: -10px; */
+    /*     border: 1px solid #000; */
 }
 
 .breadcrumb-button-group {
     display: block;
-/*     padding: 2px 6px; */
+    /*     padding: 2px 6px; */
     float: left;
     background: #fff;
     transform: skew(45deg);
@@ -228,8 +228,8 @@
 }
 
 .breadcrumb-button {
-padding: 2px 0px;
-
+    padding: 2px 0px;
+    background: #fff;
 }
 
 .breadcrumb-button i {
@@ -243,8 +243,8 @@ padding: 2px 0px;
 .skew-fix {
     display: inline-block;
     transform: skew(-45deg);
-    margin-left: 7px;
-    margin-right: 7px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .box .box-title h3 {
@@ -422,11 +422,9 @@ padding: 2px 0px;
     background: #fff !important;
 }
 
-.breadcrumb-container{
- overflow: hidden;
-
+.breadcrumb-container {
+    overflow: hidden;
 }
-
 </style>
 
         <main>
@@ -441,22 +439,52 @@ padding: 2px 0px;
                     <h:form>
 
 
-                        <div class="search-row">boxes</div>
-
-                        <!-- header row, back to dashboard , change language, log off -->
-
                         <!-- display current type , icons to search types-->
+                        <div class="search-row">
+                            <h1>
+                                <h:outputFormat value="#{msgs.plugin_workflow_entity_header}">
+                                    <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                    <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                </h:outputFormat>
+                            </h1>
+
+                            <ul class="pull-right">
+                                <li>
+                                    <ui:repeat
+                                        var="type"
+                                        value="#{NavigationForm.workflowPlugin.allEntityTypes}">
+
+                                        <button
+                                            style="background-color: #{type.color}; color: #fff"
+                                            class="btn"
+                                            jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
+                                            jsf:onclick="$('#searchEntitySearchBox').modal('show');">
+                                            <i class="fa #{type.icon}" />
+                                            <h:outputText value="#{type.name}" />
+                                            <i class="fa fa-search" />
+                                            <f:ajax
+                                                execute="@this"
+                                                render=":searchEntityModalContent" />
+                                        </button>
+                                    </ui:repeat>
+
+                                </li>
+                            </ul>
+
+                        </div>
+                        <br />
+
 
 
                         <ul>
                             <li>
-                            <div class="breadcrumb-container">
-                                <div class="breadcrumb-label">
-                                    <h:outputText
-                                        styleClass="skew-fix"
-                                        style="margin:0"
-                                        value="My Tabs:" />
-                                </div>
+                                <div class="breadcrumb-container">
+                                    <div class="breadcrumb-label">
+                                        <h:outputText
+                                            styleClass="skew-fix"
+                                            style="margin:0"
+                                            value="My Tabs:" />
+                                    </div>
                                 </div>
                             </li>
                             <ui:repeat
@@ -470,9 +498,13 @@ padding: 2px 0px;
                                         entityIcon="#{breadcrumb.icon}" />
                                 </li>
 
-                                <!-- plus button to add new breadcrumbs -->
                             </ui:repeat>
-
+                                <!-- TOD button to add new breadcrumbs -->
+<li>
+<button class="btn" style="background: #fff">
+<i class="fa fa-plus"/>
+</button>
+</li>
                         </ul>
                     </h:form>
                 </div>
@@ -852,8 +884,8 @@ padding: 2px 0px;
 
 
                 <!-- link entity modal -->
-                <ui:include src="includes/entity_modal.xhtml" />
-
+                <ui:include src="includes/link_entity_modal.xhtml" />
+  <ui:include src="includes/search_entity_modal.xhtml" />
                 <h:inputHidden
                     value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
                     id="scrollpos" />

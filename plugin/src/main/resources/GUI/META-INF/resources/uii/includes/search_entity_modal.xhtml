@@ -1,0 +1,227 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup
+            styleClass="modal fade"
+            layout="block"
+            id="searchEntitySearchBox"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="searchEntitySearchBox"
+            aria-hidden="true">
+            <div
+                class="modal-dialog"
+                role="document">
+                <h:panelGroup
+                    styleClass="modal-content"
+                    layout="block"
+                    id="searchEntityModalContent">
+                    <h:form styleClass="form-horizontal form-bordered">
+
+                        <div class="modal-header">
+                            <button
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">
+                                    <h:outputText
+                                        value="&amp;times;"
+                                        escape="false" />
+                                </span>
+                            </button>
+                            <h4
+                                class="modal-title"
+                                style="width: 90%">
+                                <h:outputFormat
+                                    rendered="#{NavigationForm.workflowPlugin.entityType != null}"
+                                    value="#{msgs.plugin_workflow_entity_searchTabsHeader}">
+                                    <f:param value="#{NavigationForm.workflowPlugin.entityType.name}" />
+                                </h:outputFormat>
+
+                            </h4>
+                        </div>
+                        <div
+                            jsf:id="search-modal-body"
+                            class="modal-body">
+
+                            <h:panelGroup
+                                layout="block"
+                                styleClass="row form-group vocabulary-searcharea nobackground"
+                                rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
+                                <!-- TODO dropdown if type is null -->
+
+                                <div class="col-sm-2 noborder">
+                                    <h:outputLabel
+                                        value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
+                                        for="entitySearchInput" />
+                                </div>
+                                <div class="col-sm-8 vocabulary-searchfield">
+                                    <x:inputText
+                                        id="entitySearchInput"
+                                        styleClass="form-control"
+                                        value="#{NavigationForm.workflowPlugin.entitySearch}" />
+                                </div>
+
+                                <div class="col-sm-2 noborder">
+                                    <button
+                                        class="btn btn-primary"
+                                        jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
+                                        <i
+                                            class="fa fa-search"
+                                            aria-hidden="true"></i>
+                                        #{msgs.search}
+                                        <f:passThroughAttribute
+                                            name="data-toggle"
+                                            value="tooltip" />
+                                        <f:ajax
+                                            execute="@form"
+                                            render="searchEntityList" />
+                                    </button>
+
+                                </div>
+                            </h:panelGroup>
+
+
+                            <h:panelGroup
+                                id="searchEntityList"
+                                rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
+                                    <hr style="border-color: #1e74c5" />
+
+                                    <div class="modal__gnd-list scrollable">
+                                        <x:dataList
+                                            value="#{NavigationForm.workflowPlugin.entities}"
+                                            var="record">
+                                            <h3>
+                                                <h:outputText value="#{record.entityName}" />
+                                            </h3>
+                                            <div class="row form-group nobackground">
+                                                <div class="col-sm-11 vocabulary-searchfield">
+                                                    <x:dataList
+                                                        value="#{record.metadataFieldList}"
+                                                        var="configuredField">
+
+                                                        <ui:repeat
+                                                            var="field"
+                                                            value="#{configuredField.metadataList}"
+                                                            rendered="#{configuredField.showInSearch}">
+
+                                                            <h:panelGroup styleClass="form-group noborder">
+                                                                <h:panelGroup
+                                                                    styleClass="col-sm-3 control-label"
+                                                                    rendered="#{field.configField.group or field.metadata.value != null}">
+                                                                    <h:outputLabel
+                                                                        for="field_#{status.index}"
+                                                                        value="#{msgs[configuredField.label]}" />
+                                                                </h:panelGroup>
+
+                                                                <h:panelGroup
+                                                                    layout="block"
+                                                                    rendered="#{!field.configField.group and field.metadata.value != null}"
+                                                                    styleClass="col-sm-9">
+                                                                    <h:outputText
+                                                                        styleClass=""
+                                                                        value="#{field.metadata.value}" />
+                                                                </h:panelGroup>
+
+                                                                <h:panelGroup
+                                                                    id="group"
+                                                                    layout="block"
+                                                                    rendered="#{field.configField.group}"
+                                                                    styleClass="col-sm-9">
+                                                                    <ui:repeat
+                                                                        var="subfield"
+                                                                        value="#{field.subfields}">
+                                                                        <h:panelGroup
+                                                                            layout="block"
+                                                                            styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                                            rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                                            <h:outputText
+                                                                                styleClass="field-label"
+                                                                                value="#{msgs[subfield.configField.label]}"
+                                                                                rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
+                                                                            <h:outputText
+                                                                                rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
+                                                                                styleClass=""
+                                                                                value="#{subfield.metadata.value}" />
+                                                                        </h:panelGroup>
+                                                                    </ui:repeat>
+                                                                </h:panelGroup>
+                                                            </h:panelGroup>
+                                                        </ui:repeat>
+
+
+                                                    </x:dataList>
+                                                </div>
+
+                                                <div class="col-sm-1 vocabulary-searchfield">
+                                                    <button
+                                                        jsf:id="check"
+                                                        class="btn btn-lightgrey">
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="@this" />
+
+                                                        <f:setPropertyActionListener
+                                                            value="#{not record.selected}"
+                                                            target="#{record.selected}" />
+                                                        <i class="fa #{record.selected ? 'fa-check' : 'fa-minus'}" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <hr style="border-color: #1e74c5;" />
+                                        </x:dataList>
+
+                                    </div>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
+                                    <h:outputText value="#{msgs.NORM_noHits}" />
+                                </ui:fragment>
+
+                            </h:panelGroup>
+                        </div>
+
+
+                        <div class="modal-footer">
+
+                            <!-- cancel/abort -->
+                            <a
+                                class="btn pull-left"
+                                title="#{msgs.cancel}"
+                                data-dismiss="modal">
+                                <h:outputText value="#{msgs.cancel}" />
+                            </a>
+
+                            <!-- add/save buttons -->
+                            <button
+                                jsf:action="#{NavigationForm.workflowPlugin.addBreadcrumbs}"
+                                title="#{msgs.plugin_workflow_entity_addTabs}"
+                                class="btn btn-green pull-right">
+                                <i class="fa fa-floppy-o margin-right-10"></i>
+                                <h:outputText value="#{msgs.plugin_workflow_entity_addTabs}" />
+                            </button>
+                        </div>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </h:panelGroup>
+
+    </composite:implementation>
+</ui:composition>

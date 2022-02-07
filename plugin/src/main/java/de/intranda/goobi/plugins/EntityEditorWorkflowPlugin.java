@@ -237,9 +237,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
         // create BreadcrumbItem for the current object
-        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
-                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
-        breadcrumbList.add(item);
+        //        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
+        //                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
+        //        breadcrumbList.add(item);
 
         // load selected data
 
@@ -425,6 +425,36 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
+    public void searchForType(EntityType type) {
+        selectedEntity = null;
+        entitySearch = "";
+        entityType = type;
+        entities.clear();
+    }
+
+    public void addBreadcrumbs() {
+        for (Entity e : entities) {
+            if (e.isSelected()) {
+                boolean isAdded = false;
+                for (BreadcrumbItem bce : breadcrumbList) {
+                    if (bce.getProcessId() == e.getCurrentProcess().getId().intValue()) {
+                        isAdded = true;
+                    }
+
+                }
+                if (!isAdded) {
+                    BreadcrumbItem item = new BreadcrumbItem(e.getCurrentType().getName(), e.getEntityName(), e.getCurrentProcess().getId(),
+                            e.getCurrentType().getColor(), e.getCurrentType().getIcon());
+                    breadcrumbList.add(item);
+                }
+            }
+        }
+        entities = null;
+        selectedEntity = null;
+        entitySearch = "";
+        entityType = null;
+    }
+
     public void searchEntity() {
         //  search for processes, load metadata from mets file?
         String sql = "select processid from metadata where name=\"index." + entityType.getName() + "Search\" and value like \"%"
@@ -438,7 +468,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             Entity e = new Entity(configuration, process);
             entities.add(e);
         }
-
     }
 
     public void createEntity(EntityType type) {
@@ -446,9 +475,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
 
         // create breadcrumb
-        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
-                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
-        breadcrumbList.add(item);
+        //        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
+        //                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
+        //        breadcrumbList.add(item);
 
         Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
 
@@ -512,6 +541,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // save both entities
         entity.saveEntity();
         selectedEntity.saveEntity();
+
+        entities = null;
+        selectedEntity = null;
+        entitySearch = "";
+        entityType = null;
     }
 
     public void removeRelationship(EntityType type, Relationship relationship) {
@@ -632,10 +666,13 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
-
     @Override
     public PluginGuiType getPluginGuiType() {
         return PluginGuiType.FULL;
+    }
+
+    public List<EntityType> getAllEntityTypes() {
+        return configuration.getAllTypes();
     }
 
 }
