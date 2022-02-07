@@ -63,10 +63,6 @@ import ugh.fileformats.mets.MetsMods;
 @Log4j2
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
-    // TODO goobi logo: save and exit
-
-
-
     // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
     // TODO display relation names in browser language?
     // TODO order of elements
@@ -632,6 +628,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
 
+    @Override
     public PluginGuiType getPluginGuiType() {
         return PluginGuiType.FULL;
     }
