@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 import org.goobi.production.cli.helper.StringPair;
+import org.goobi.production.enums.PluginGuiType;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.PluginLoader;
 import org.goobi.production.plugin.interfaces.IExportPlugin;
@@ -61,6 +62,10 @@ import ugh.fileformats.mets.MetsMods;
 @PluginImplementation
 @Log4j2
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
+
+    // TODO goobi logo: save and exit
+
+
 
     // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
     // TODO display relation names in browser language?
@@ -199,8 +204,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process currentProcess = ProcessManager.getProcessByExactTitle("SamplePerson");
         entity = new Entity(configuration, currentProcess);
 
-        BreadcrumbItem root = new BreadcrumbItem("Dashboard", "Dashboard", 0, "#ccc", null);
-        breadcrumbList.add(root);
+        //        BreadcrumbItem root = new BreadcrumbItem("Dashboard", "Dashboard", 0, "#ccc", null);
+        //        breadcrumbList.add(root);
 
         BreadcrumbItem item = new BreadcrumbItem("Person", "John Doe", 7, "#df07b9", "fa-user");
         breadcrumbList.add(item);
@@ -624,6 +629,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 | DAOException e) {
             log.error(e);
         }
+    }
+
+
+    public PluginGuiType getPluginGuiType() {
+        return PluginGuiType.FULL;
     }
 
 }
