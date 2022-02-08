@@ -449,7 +449,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
         }
-        entities = null;
+        entities.clear();
         selectedEntity = null;
         entitySearch = "";
         entityType = null;
@@ -542,7 +542,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
         selectedEntity.saveEntity();
 
-        entities = null;
+        entities.clear();
         selectedEntity = null;
         entitySearch = "";
         entityType = null;
