@@ -200,23 +200,20 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process currentProcess = ProcessManager.getProcessByExactTitle("SamplePerson");
         entity = new Entity(configuration, currentProcess);
 
-        //        BreadcrumbItem root = new BreadcrumbItem("Dashboard", "Dashboard", 0, "#ccc", null);
-        //        breadcrumbList.add(root);
-
-        BreadcrumbItem item = new BreadcrumbItem("Person", "John Doe", 7, "#df07b9", "fa-user");
-        breadcrumbList.add(item);
-
-        BreadcrumbItem item2 = new BreadcrumbItem("Award", "Darwin Award", 11, "#05b8cd", "fa-trophy");
-        breadcrumbList.add(item2);
-
-        BreadcrumbItem item3 = new BreadcrumbItem("Work", "Mona Lisa", 10, "#900688", "fa-picture-o");
-        breadcrumbList.add(item3);
-
-        BreadcrumbItem item4 = new BreadcrumbItem("Event", "FIFA World Cup", 9, "#19b609", "fa-calendar");
-        breadcrumbList.add(item4);
-
-        BreadcrumbItem item5 = new BreadcrumbItem("Agent", "intranda", 8, "#e81c0c", "fa-university");
-        breadcrumbList.add(item5);
+        //        BreadcrumbItem item = new BreadcrumbItem("Person", "John Doe", 7, "#df07b9", "fa-user");
+        //        breadcrumbList.add(item);
+        //
+        //        BreadcrumbItem item2 = new BreadcrumbItem("Award", "Darwin Award", 11, "#05b8cd", "fa-trophy");
+        //        breadcrumbList.add(item2);
+        //
+        //        BreadcrumbItem item3 = new BreadcrumbItem("Work", "Mona Lisa", 10, "#900688", "fa-picture-o");
+        //        breadcrumbList.add(item3);
+        //
+        //        BreadcrumbItem item4 = new BreadcrumbItem("Event", "FIFA World Cup", 9, "#19b609", "fa-calendar");
+        //        breadcrumbList.add(item4);
+        //
+        //        BreadcrumbItem item5 = new BreadcrumbItem("Agent", "intranda", 8, "#e81c0c", "fa-university");
+        //        breadcrumbList.add(item5);
 
     }
 
@@ -432,6 +429,13 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entities.clear();
     }
 
+    public void searchWithoutType() {
+        selectedEntity = null;
+        entitySearch = "";
+        entityType = null;
+        entities.clear();
+    }
+
     public void addBreadcrumbs() {
         for (Entity e : entities) {
             if (e.isSelected()) {
@@ -457,10 +461,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void searchEntity() {
         //  search for processes, load metadata from mets file?
-        String sql = "select processid from metadata where name=\"index." + entityType.getName() + "Search\" and value like \"%"
-                + StringEscapeUtils.escapeSql(entitySearch) + "%\"";
+
+        //index.EntitySearch
+        StringBuilder sql = new StringBuilder();
+        sql.append("select m1.processid from metadata m1 ");
+        sql.append("left join metadata m2 on m1.processid = m2.processid ");
+        sql.append("where  m1.name=\"docstruct\" and m1.value =\"");
+        sql.append(entityType.getRulesetName());
+        sql.append("\" and m2.name=\"index.EntitySearch\" and m2.value like \"%");
+        sql.append(StringEscapeUtils.escapeSql(entitySearch));
+        sql.append("%\"; ");
         // load mets files, open entities
-        List<?> rows = ProcessManager.runSQL(sql);
+        List<?> rows = ProcessManager.runSQL(sql.toString());
         for (Object obj : rows) {
             Object[] objArr = (Object[]) obj;
             String processid = (String) objArr[0];
@@ -491,7 +503,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             fileformat = new MetsMods(entity.getPrefs());
             DigitalDocument dd = new DigitalDocument();
             fileformat.setDigitalDocument(dd);
-            DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(type.getName()));
+            DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(type.getRulesetName()));
             dd.setLogicalDocStruct(logical);
             Metadata id = new Metadata(prefs.getMetadataTypeByName("CatalogIDDigital"));
             id.setValue(processname);
@@ -675,4 +687,21 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return configuration.getAllTypes();
     }
 
+    public void setTypeAsString(String type) {
+        if (StringUtils.isNotBlank(type)) {
+            for (EntityType et : getAllEntityTypes()) {
+                if (et.getName().equals(type)) {
+                    entityType = et;
+                    break;
+                }
+            }
+        }
+    }
+
+    public String getTypeAsString() {
+        if (entityType != null) {
+            return entityType.getName();
+        }
+        return "";
+    }
 }

@@ -22,8 +22,12 @@
                     jsf:style="border-color: #{type.key.color}">
                     <h3>
                         <i class="fa #{type.key.icon}" />
+                                        <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
+                                            <f:param value="#{type.key.plural}" />
+                                            
+                                            <f:param value="#{type.value.size()}" />
+                                        </h:outputFormat>
 
-                        <h:outputText value="#{type.key.name}" />
                     </h3>
                     <button
                         class="btn toggle pull-right"

@@ -100,11 +100,13 @@ public class EntityConfig {
         List<HierarchicalConfiguration> allTypes = config.configurationsAt("/type");
         for (HierarchicalConfiguration type : allTypes) {
             String entityName = type.getString("@name");
+            String namePlural = type.getString("@plural");
+            String rulesetName = type.getString("@rulesetName");
             String entityColor = type.getString("/color");
             String entityIcon = type.getString("/icon");
             String metadataName = type.getString("/identifyingMetadata");
             String order = type.getString("/identifyingMetadata/@languageOrder");
-            EntityType newType = new EntityType(entityName, entityColor, entityIcon, metadataName);
+            EntityType newType = new EntityType(entityName, namePlural, rulesetName, entityColor, entityIcon, metadataName);
             newType.setLanguageOrder(order);
             this.allTypes.add(newType);
 

@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 public class EntityType {
     @NonNull
     private String name;
+    @NonNull
+    private String plural;
+    @NonNull
+    private String rulesetName;
 
     @NonNull
     private String color;

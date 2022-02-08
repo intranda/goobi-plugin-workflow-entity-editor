@@ -50,7 +50,9 @@
                                     value="#{msgs.plugin_workflow_entity_searchTabsHeader}">
                                     <f:param value="#{NavigationForm.workflowPlugin.entityType.name}" />
                                 </h:outputFormat>
-
+                                <h:outputText
+                                    rendered="#{NavigationForm.workflowPlugin.entityType == null}"
+                                    value="#{msgs.plugin_workflow_entity_searchTabsHeaderAllTypes}" />
                             </h4>
                         </div>
                         <div
@@ -61,36 +63,62 @@
                                 layout="block"
                                 styleClass="row form-group vocabulary-searcharea nobackground"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
-                                <!-- TODO dropdown if type is null -->
 
-                                <div class="col-sm-2 noborder">
-                                    <h:outputLabel
-                                        value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
-                                        for="entitySearchInput" />
-                                </div>
-                                <div class="col-sm-8 vocabulary-searchfield">
-                                    <x:inputText
-                                        id="entitySearchInput"
-                                        styleClass="form-control"
-                                        value="#{NavigationForm.workflowPlugin.entitySearch}" />
-                                </div>
+                                <!-- dropdown if type is null -->
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.entityType == null}">
+                                    <div class="row">
+                                        <div class="col-sm-2 noborder">
+                                            <h:outputLabel
+                                                value="#{msgs.plugin_workflow_entity_editor_entityType}"
+                                                for="entityTypeSelection" />
+                                        </div>
+                                        <div class="col-sm-8 vocabulary-searchfield">
+                                            <h:selectOneMenu
+                                                id="entityTypeSelection"
+                                                styleClass="form-control"
+                                                value="#{NavigationForm.workflowPlugin.typeAsString}">
+                                                <f:selectItems
+                                                    value="#{NavigationForm.workflowPlugin.allEntityTypes}"
+                                                    var="t"
+                                                    itemLabel="#{t.name}"
+                                                    itemValue="#{t.name}" />
+                                            </h:selectOneMenu>
+                                        </div>
 
-                                <div class="col-sm-2 noborder">
-                                    <button
-                                        class="btn btn-primary"
-                                        jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
-                                        <i
-                                            class="fa fa-search"
-                                            aria-hidden="true"></i>
-                                        #{msgs.search}
-                                        <f:passThroughAttribute
-                                            name="data-toggle"
-                                            value="tooltip" />
-                                        <f:ajax
-                                            execute="@form"
-                                            render="searchEntityList" />
-                                    </button>
+                                    </div>
+                                </ui:fragment>
 
+
+                                <div class="row">
+                                    <div class="col-sm-2 noborder">
+                                        <h:outputLabel
+                                            value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
+                                            for="entitySearchInput" />
+                                    </div>
+                                    <div class="col-sm-8 vocabulary-searchfield">
+                                        <x:inputText
+                                            id="entitySearchInput"
+                                            styleClass="form-control"
+                                            value="#{NavigationForm.workflowPlugin.entitySearch}" />
+                                    </div>
+
+                                    <div class="col-sm-2 noborder">
+                                        <button
+                                            class="btn btn-primary"
+                                            jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
+                                            <i
+                                                class="fa fa-search"
+                                                aria-hidden="true"></i>
+                                            #{msgs.search}
+                                            <f:passThroughAttribute
+                                                name="data-toggle"
+                                                value="tooltip" />
+                                            <f:ajax
+                                                execute="@form"
+                                                render="searchEntityList" />
+                                        </button>
+
+                                    </div>
                                 </div>
                             </h:panelGroup>
 

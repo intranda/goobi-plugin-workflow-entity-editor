@@ -21,7 +21,7 @@
 		<exportPlugin>intranda_export_luxArtistDictionary</exportPlugin>
 	</global>
 
-	<type name="Person">
+	<type name="Person" plural="Persons" rulesetName="Person">
 		<relations>
 			<relation id="26" name="R01 Relationship Person - Person" reverse="false" destinationEntity="Person" />
 			<relation id="26" name="R01 Relationship Person - Person" reverse="true" destinationEntity="Person" />
@@ -250,7 +250,7 @@
 
 
 	</type>
-	<type name="Agent">
+	<type name="Agent" plural="Agents" rulesetName="Agent">
 
 		<relations>
 			<relation id="27" name="R02 Relationship Collective agent - Collective agent" reverse="false" destinationEntity="Agent" />
@@ -384,7 +384,7 @@
 
 
 	</type>
-	<type name="Event">
+	<type name="Event" plural="Events" rulesetName="Event">
 
 		<relations>
 			<relation id="30" name="R04 Relationship Person - Event" reverse="true" destinationEntity="Person"/>
@@ -476,7 +476,7 @@
 
 
 	</type>
-	<type name="Work">
+	<type name="Work" plural="Works" rulesetName="Work">
 
 
 		<relations>
@@ -555,7 +555,7 @@
 
 
 	</type>
-	<type name="Award">
+	<type name="Award" plural="Awards" rulesetName="Award">
 
 		<relations>
 

@@ -460,7 +460,7 @@
                                             jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
                                             jsf:onclick="$('#searchEntitySearchBox').modal('show');">
                                             <i class="fa #{type.icon}" />
-                                            <h:outputText value="#{type.name}" />
+                                            <h:outputText value="#{type.plural}" />
                                             <i class="fa fa-search" />
                                             <f:ajax
                                                 execute="@this"
@@ -499,12 +499,21 @@
                                 </li>
 
                             </ui:repeat>
-                                <!-- TOD button to add new breadcrumbs -->
-<li>
-<button class="btn" style="background: #fff">
-<i class="fa fa-plus"/>
-</button>
-</li>
+                            <!-- button to add new breadcrumbs -->
+                            <li>
+                                <button
+                                    class="btn"
+                                    style="background: #fff"
+                                    jsf:action="#{NavigationForm.workflowPlugin.searchWithoutType}"
+                                    jsf:onclick="$('#searchEntitySearchBox').modal('show');">
+                                    <i class="fa #{type.icon}" />
+                                    <h:outputText value="#{type.name}" />
+                                    <f:ajax
+                                        execute="@this"
+                                        render=":searchEntityModalContent" />
+                                    <i class="fa fa-plus" />
+                                </button>
+                            </li>
                         </ul>
                     </h:form>
                 </div>
@@ -519,7 +528,10 @@
                                     <h3>
                                         <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon}" />
 
-                                        <h:outputText value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                        <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
+                                            <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                        </h:outputFormat>
+
                                     </h3>
 
                                 </div>
@@ -885,7 +897,7 @@
 
                 <!-- link entity modal -->
                 <ui:include src="includes/link_entity_modal.xhtml" />
-  <ui:include src="includes/search_entity_modal.xhtml" />
+                <ui:include src="includes/search_entity_modal.xhtml" />
                 <h:inputHidden
                     value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
                     id="scrollpos" />
