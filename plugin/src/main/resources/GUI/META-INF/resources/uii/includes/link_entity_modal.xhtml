@@ -79,12 +79,37 @@
                                             value="tooltip" />
                                         <f:ajax
                                             execute="@form"
-                                            render="entityList" />
+                                            render="entityList createEntity" />
                                     </button>
 
                                 </div>
                             </h:panelGroup>
 
+                            <h:panelGroup
+                                layout="block"
+                                id="createEntity"
+                                styleClass="row form-group vocabulary-searcharea nobackground">
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                    <div class="col-sm-2 noborder"></div>
+                                    <div class="col-sm-8 noborder">
+                                        <h:outputText value="#{msgs.NORM_noHits}" />
+                                    </div>
+                                    <div class="col-sm-2 noborder">
+                                        <button
+                                            class="btn btn-primary"
+                                            jsf:id="createEntityButton"
+                                            style="color: #{type.key.color};"
+                                            jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
+                                            <i
+                                                class="fa fa-plus"
+                                                style="margin-right: 5px;" />
+                                            <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
+
+                                        </button>
+
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
 
                             <h:panelGroup
                                 id="entityList"
@@ -182,11 +207,12 @@
                                     </div>
                                 </ui:fragment>
 
-                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
-                                    <h:outputText value="#{msgs.NORM_noHits}" />
-                                </ui:fragment>
+
 
                             </h:panelGroup>
+
+
+
 
 
                             <h:panelGroup
@@ -276,7 +302,7 @@
                                     </div>
                                     <div class="col-sm-9">
                                         <h:selectOneMenu
-                                         required="true"
+                                            required="true"
                                             id="relationshipType"
                                             styleClass="form-control"
                                             value="#{NavigationForm.workflowPlugin.relationship}">
@@ -376,7 +402,7 @@
                             <!-- add/save buttons -->
 
                             <button
-                            jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
+                                jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
                                 jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
                                 title="#{msgs.save}"
                                 class="btn btn-green pull-right">

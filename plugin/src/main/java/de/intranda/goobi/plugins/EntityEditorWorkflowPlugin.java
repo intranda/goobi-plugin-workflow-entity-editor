@@ -482,7 +482,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
     }
 
-    public void createEntity(EntityType type) {
+    public void createEntity() {
         // save + close current entity
         entity.saveEntity();
 
@@ -503,7 +503,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             fileformat = new MetsMods(entity.getPrefs());
             DigitalDocument dd = new DigitalDocument();
             fileformat.setDigitalDocument(dd);
-            DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(type.getRulesetName()));
+            DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(entityType.getRulesetName()));
             dd.setLogicalDocStruct(logical);
             Metadata id = new Metadata(prefs.getMetadataTypeByName("CatalogIDDigital"));
             id.setValue(processname);

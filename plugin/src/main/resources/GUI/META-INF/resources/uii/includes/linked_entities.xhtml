@@ -29,13 +29,6 @@
                         </h:outputFormat>
 
                     </h3>
-                    <!--                     <button -->
-                    <!--                         class="btn toggle pull-right" -->
-                    <!--                         jsf:id="createEntity" -->
-                    <!--                         style="color: #{type.key.color}; margin-left: 5px;  margin-right: 5px;" -->
-                    <!--                         jsf:action="#{NavigationForm.workflowPlugin.createEntity(type.key)}"> -->
-                    <!--                         <i class="fa fa-plus" /> -->
-                    <!--                     </button> -->
 
                     <button
                         class="btn toggle pull-right"
@@ -58,7 +51,8 @@
                         style="color:  #{type.key.color}; margin-right: 5px;"
                         jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
                         jsf:onclick="$('#entitySearchBox').modal('show');">
-                        <i class="fa fa-chain" />
+<!--                         <i class="fa fa-chain" /> -->
+<i class="fa fa-plus" />
                         <f:ajax
                             execute="@this"
                             render=":entityModalContent" />
@@ -201,7 +195,6 @@
                                     </h:panelGroup>
                                 </div>
                             </ui:fragment>
-                            <!--                         </div> -->
                         </h:panelGroup>
                     </ui:repeat>
 
