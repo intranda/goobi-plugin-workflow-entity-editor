@@ -34,6 +34,9 @@ public class EntityType {
 
     private List<RelationshipType> configuredRelations = new ArrayList<>();
 
+
+    private boolean showLinkedContent = true;
+
     public void addMetadataField(ConfiguredField field) {
         configuredFields.add(field);
     }

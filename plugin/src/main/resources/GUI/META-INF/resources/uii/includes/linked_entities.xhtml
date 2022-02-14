@@ -22,24 +22,40 @@
                     jsf:style="border-color: #{type.key.color}">
                     <h3>
                         <i class="fa #{type.key.icon}" />
-                                        <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
-                                            <f:param value="#{type.key.plural}" />
-                                            
-                                            <f:param value="#{type.value.size()}" />
-                                        </h:outputFormat>
+                        <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
+                            <f:param value="#{type.key.plural}" />
+
+                            <f:param value="#{type.value.size()}" />
+                        </h:outputFormat>
 
                     </h3>
+                    <!--                     <button -->
+                    <!--                         class="btn toggle pull-right" -->
+                    <!--                         jsf:id="createEntity" -->
+                    <!--                         style="color: #{type.key.color}; margin-left: 5px;  margin-right: 5px;" -->
+                    <!--                         jsf:action="#{NavigationForm.workflowPlugin.createEntity(type.key)}"> -->
+                    <!--                         <i class="fa fa-plus" /> -->
+                    <!--                     </button> -->
+
                     <button
                         class="btn toggle pull-right"
-                        jsf:id="createEntity"
-                        style="color: #{type.key.color}; margin-left: 5px;  margin-right: 5px;"
-                        jsf:action="#{NavigationForm.workflowPlugin.createEntity(type.key)}">
-                        <i class="fa fa-plus" />
+                        jsf:id="showContent"
+                        style="color:  #{type.key.color}; margin-right: 5px;">
+
+                        <f:setPropertyActionListener
+                            value="#{not type.key.showLinkedContent}"
+                            target="#{type.key.showLinkedContent}" />
+                        <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'}" />
+                        <f:ajax
+                            execute="@this"
+                            render="@form" />
                     </button>
+
+
                     <button
                         class="btn toggle pull-right"
                         jsf:id="addRelationship"
-                        style="color:  #{type.key.color};"
+                        style="color:  #{type.key.color}; margin-right: 5px;"
                         jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
                         jsf:onclick="$('#entitySearchBox').modal('show');">
                         <i class="fa fa-chain" />
@@ -50,17 +66,19 @@
 
 
                 </div>
-                <div
-                    class="box-content sources #{type.key.name}"
-                    jsf:style="border-color: #{type.key.color};"
-                    id="sources_#{type.key.name}">
+                <h:panelGroup
+                    layout="block"
+                    styleClass="box-content sources #{type.key.name}"
+                    style="border-color: #{type.key.color};"
+                    id="sources">
                     <ui:repeat
                         var="relationship"
                         value="#{type.value}">
 
                         <h:panelGroup
                             styleClass="relation-row"
-                            id="entity">
+                            id="entity"
+                            rendered="#{type.key.showLinkedContent}">
                             <button
                                 jsf:id="toggleSourceVisibility"
                                 class="btn btn--icon-light source-btn">
@@ -188,7 +206,7 @@
                     </ui:repeat>
 
 
-                </div>
+                </h:panelGroup>
             </div>
         </div>
 
