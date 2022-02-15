@@ -21,21 +21,17 @@
                 value="#{field.sources}">
 
                 <div class="source">
-                    <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceName}: #{source.sourceName}" />
+                
+                        <x:inputTextarea
+                                                                        styleClass="form-control"
+                                                                        value="#{source.sourceName}"
+                                                                        required="false"
+                                                                        readonly="true">
+                                   
+                                                                    </x:inputTextarea>
+                
+                
                     <span>
-                        <!--  button to toggle visibility -->
-                        <button
-                            jsf:id="toggleVisibility"
-                            class="btn pull-right btn--icon-light source-btn">
-                            <i class="fa #{source.showDetails == false?'fa fa-caret-down':'fa fa-caret-up'}" />
-                            <f:ajax
-                                execute="@this"
-                                render="@form" />
-                            <f:setPropertyActionListener
-                                value="#{not source.showDetails}"
-                                target="#{source.showDetails}" />
-                        </button>
-
                         <!--  button to remove source -->
                         <button
                             jsf:id="deleteSource"
@@ -47,21 +43,7 @@
                                 render="@form" />
                         </button>
                     </span>
-                    <ui:fragment rendered="#{source.showDetails}">
-                        <!-- show additional data  -->
-                        <div>
-                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceUrl}: #{source.sourceLink}" />
-                        </div>
-                        <div></div>
-                        <div>
-                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourceType}: #{source.sourceType}" />
-                        </div>
-                        <div></div>
-                        <div>
-                            <h:outputText value="#{msgs.plugin_workflow_entity_editor_sourcePage}: #{source.pageRange}" />
-                        </div>
-                        <div></div>
-                    </ui:fragment>
+                   
                 </div>
             </ui:repeat>
 
