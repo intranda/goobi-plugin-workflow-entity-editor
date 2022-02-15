@@ -65,22 +65,6 @@
                 </div>
             </ui:repeat>
 
-            <!-- button to add source-->
-            <button
-                jsf:id="addSource"
-                class="btn btn--icon-light source-btn"
-                jsf:onclick="$('#sourceSearchBox').modal('show');">
-                <i class="fa fa-file-text-o" />
-                <f:ajax
-                    execute="@this"
-                    render=":sourceModalContent" />
-                <f:setPropertyActionListener
-                    value="#{field}"
-                    target="#{NavigationForm.workflowPlugin.currentField}" />
-                <f:setPropertyActionListener
-                    value=""
-                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
-            </button>
 
         </h:panelGroup>
     </composite:implementation>

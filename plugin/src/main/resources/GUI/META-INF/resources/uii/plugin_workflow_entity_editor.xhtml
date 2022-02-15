@@ -216,6 +216,8 @@
     margin-top: 3px;
     /*     margin-left: -10px; */
     /*     border: 1px solid #000; */
+    background-color: #f6f6f6;
+    margin-left: -15px;
 }
 
 .breadcrumb-button-group {
@@ -237,7 +239,8 @@
 }
 
 .box-content {
-/*     min-height: 200px; */
+    /*     min-height: 200px; */
+    
 }
 
 .skew-fix {
@@ -245,6 +248,7 @@
     transform: skew(-45deg);
     margin-left: 10px;
     margin-right: 10px;
+    height: 23px;
 }
 
 .box .box-title h3 {
@@ -253,6 +257,11 @@
 
 .toggle {
     background: #f6f6f6;
+    padding: 0px 2px;
+}
+
+.nobackground {
+    background: #fff;
     padding: 0px 2px;
 }
 
@@ -415,6 +424,7 @@
     padding-right: 0px;
     max-height: 300px;
     overflow-y: auto;
+    margin-top: -10px;
 }
 
 .noborder {
@@ -424,6 +434,29 @@
 
 .breadcrumb-container {
     overflow: hidden;
+}
+
+.btn-text {
+    font-size: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.entity-search {
+    margin-left: 10px;
+}
+
+.big-icon {
+    font-size: 20px !important;
+}
+
+.header {
+    font-weight: bold;
+    background: #f6f6f6;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #555;    
 }
 </style>
 
@@ -440,49 +473,53 @@
 
 
                         <!-- display current type , icons to search types-->
-                        <div class="search-row">
-                            <h1>
-                                <h:outputFormat value="#{msgs.plugin_workflow_entity_header}">
-                                    <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
-                                    <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
-                                </h:outputFormat>
-                            </h1>
+                        <div class="search-row row">
+                            <div class="col-sm-4">
+                                <h1>
+                                    <h:outputFormat value="#{msgs.plugin_workflow_entity_header}">
+                                        <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                        <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                    </h:outputFormat>
+                                </h1>
+                            </div>
+                            <div class="col-sm-8">
+                                <ul class="pull-right">
+                                    <li>
+                                        <ui:repeat
+                                            var="type"
+                                            value="#{NavigationForm.workflowPlugin.allEntityTypes}">
 
-                            <ul class="pull-right">
-                                <li>
-                                    <ui:repeat
-                                        var="type"
-                                        value="#{NavigationForm.workflowPlugin.allEntityTypes}">
+                                            <button
+                                                style="background-color: #{type.color}; color: #fff"
+                                                class="btn entity-search"
+                                                jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
+                                                jsf:onclick="$('#searchEntitySearchBox').modal('show');">
+                                                <i class="fa #{type.icon} big-icon" />
+                                                <h:outputText
+                                                    value="#{type.plural}"
+                                                    styleClass="btn-text" />
+                                                <i class="fa fa-search big-icon" />
+                                                <f:ajax
+                                                    execute="@this"
+                                                    render=":searchEntityModalContent" />
+                                            </button>
+                                        </ui:repeat>
 
-                                        <button
-                                            style="background-color: #{type.color}; color: #fff"
-                                            class="btn"
-                                            jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
-                                            jsf:onclick="$('#searchEntitySearchBox').modal('show');">
-                                            <i class="fa #{type.icon}" />
-                                            <h:outputText value="#{type.plural}" />
-                                            <i class="fa fa-search" />
-                                            <f:ajax
-                                                execute="@this"
-                                                render=":searchEntityModalContent" />
-                                        </button>
-                                    </ui:repeat>
-
-                                </li>
-                            </ul>
-
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                         <br />
 
 
 
-                        <ul>
+                        <ul class="breadcrumb-container">
                             <li>
-                                <div class="breadcrumb-container">
+                                <div>
                                     <div class="breadcrumb-label">
                                         <h:outputText
                                             styleClass="skew-fix"
-                                            style="margin:0"
+                                            style="padding-left: 5px"
                                             value="My Tabs:" />
                                     </div>
                                 </div>
@@ -506,12 +543,10 @@
                                     style="background: #fff"
                                     jsf:action="#{NavigationForm.workflowPlugin.searchWithoutType}"
                                     jsf:onclick="$('#searchEntitySearchBox').modal('show');">
-                                    <i class="fa #{type.icon}" />
-                                    <h:outputText value="#{type.name}" />
                                     <f:ajax
                                         execute="@this"
                                         render=":searchEntityModalContent" />
-                                    <i class="fa fa-plus" />
+                                    <i class="fa fa-plus  big-icon" />
                                 </button>
                             </li>
                         </ul>
@@ -526,7 +561,7 @@
                                     class="box-title"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
                                     <h3>
-                                        <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon}" />
+                                        <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
 
                                         <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                             <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
@@ -579,6 +614,19 @@
                                                             <h:outputLabel
                                                                 for="field_#{status.index}"
                                                                 value="#{msgs[configuredField.label]}" />
+                                                            <!-- publish button -->
+                                                            <button
+                                                                class="btn pull-right toggle"
+                                                                jsf:id="toggle-export"
+                                                                jsf:rendered="#{field.displayPublishButton}">
+                                                                <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render="@this" />
+                                                                <f:setPropertyActionListener
+                                                                    value="#{not field.publishField.booleanValue}"
+                                                                    target="#{field.publishField.booleanValue}" />
+                                                            </button>
 
                                                             <!-- delete button -->
                                                             <button
@@ -604,19 +652,23 @@
                                                                     render="@form" />
                                                             </button>
 
-                                                            <!-- publish button -->
-                                                            <button
-                                                                class="btn pull-right toggle"
-                                                                jsf:id="toggle-export"
-                                                                jsf:rendered="#{field.displayPublishButton}">
-                                                                <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
-                                                                <f:ajax
-                                                                    execute="@this"
-                                                                    render="@this" />
-                                                                <f:setPropertyActionListener
-                                                                    value="#{not field.publishField.booleanValue}"
-                                                                    target="#{field.publishField.booleanValue}" />
-                                                            </button>
+            <!-- button to add source-->
+            <button
+            jsf:rendered="#{field.allowSources}"
+                jsf:id="addSource"
+                class="btn pull-right toggle "
+                jsf:onclick="$('#sourceSearchBox').modal('show');">
+                <i class="fa fa-quote-left" />
+                <f:ajax
+                    execute="@this"
+                    render=":sourceModalContent" />
+                <f:setPropertyActionListener
+                    value="#{field}"
+                    target="#{NavigationForm.workflowPlugin.currentField}" />
+                <f:setPropertyActionListener
+                    value=""
+                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
+            </button>
 
 
                                                         </div>
@@ -910,7 +962,7 @@
                         class="btn "
                         jsf:id="generateBibliography"
                         jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
-                        <i class="fa fa-plus-circle margin-right-5" />
+                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.plugin_workflow_entity_createBibliography}" />
                     </button>
 
@@ -918,21 +970,21 @@
                         class="btn btn-green pull-right"
                         jsf:id="save"
                         jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
-                        <i class="fa fa-floppy-o margin-right-5" />
+                        <i class="fa fa-floppy-o margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.save}" />
                     </button>
                     <button
                         class="btn btn-lightgrey pull-right margin-right-10"
                         jsf:id="exit"
                         jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
-                        <i class="fa fa-sign-out margin-right-5" />
+                        <i class="fa fa-sign-out margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
                     </button>
                     <button
                         class="btn btn-lightgrey pull-right margin-right-10"
                         jsf:id="exportSingle"
                         jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
-                        <i class="fa fa-globe margin-right-5" />
+                        <i class="fa fa-globe margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
                     </button>
 
@@ -940,7 +992,7 @@
                         class="btn btn-lightgrey pull-right margin-right-10"
                         jsf:id="exportAll"
                         jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
-                        <i class="fa fa-globe margin-right-5" />
+                        <i class="fa fa-globe margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
                     </button>
 

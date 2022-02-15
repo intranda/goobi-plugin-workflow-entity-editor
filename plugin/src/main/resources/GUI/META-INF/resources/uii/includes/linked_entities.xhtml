@@ -21,7 +21,7 @@
                     class="box-title"
                     jsf:style="border-color: #{type.key.color}">
                     <h3>
-                        <i class="fa #{type.key.icon}" />
+                        <i class="fa #{type.key.icon} big-icon" />
                         <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
                             <f:param value="#{type.key.plural}" />
 
@@ -31,14 +31,14 @@
                     </h3>
 
                     <button
-                        class="btn toggle pull-right"
+                        class="btn nobackground pull-right"
                         jsf:id="showContent"
                         style="color:  #{type.key.color}; margin-right: 5px;">
 
                         <f:setPropertyActionListener
                             value="#{not type.key.showLinkedContent}"
                             target="#{type.key.showLinkedContent}" />
-                        <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'}" />
+                        <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'} big-icon" />
                         <f:ajax
                             execute="@this"
                             render="@form" />
@@ -46,13 +46,13 @@
 
 
                     <button
-                        class="btn toggle pull-right"
+                        class="btn nobackground pull-right"
                         jsf:id="addRelationship"
                         style="color:  #{type.key.color}; margin-right: 5px;"
                         jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
                         jsf:onclick="$('#entitySearchBox').modal('show');">
-<!--                         <i class="fa fa-chain" /> -->
-<i class="fa fa-plus" />
+                        <!--                         <i class="fa fa-chain big-icon" /> -->
+                        <i class="fa fa-plus big-icon" />
                         <f:ajax
                             execute="@this"
                             render=":entityModalContent" />
@@ -62,142 +62,160 @@
                 </div>
                 <h:panelGroup
                     layout="block"
-                    styleClass="box-content sources #{type.key.name}"
-                    style="border-color: #{type.key.color};"
+                    styleClass="box-content nopadding #{type.key.name}"
+                    style="border-color: #{type.key.color}; #{type.key.showLinkedContent ? '' : 'display:none'}"
                     id="sources">
-                    <ui:repeat
-                        var="relationship"
-                        value="#{type.value}">
 
-                        <h:panelGroup
-                            styleClass="relation-row"
-                            id="entity"
-                            rendered="#{type.key.showLinkedContent}">
-                            <button
-                                jsf:id="toggleSourceVisibility"
-                                class="btn btn--icon-light source-btn">
-                                <i
-                                    class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
-                                    style="color: #{type.key.color};" />
-                                <f:ajax
-                                    execute="entity"
-                                    render="entity" />
-                                <f:setPropertyActionListener
-                                    value="#{not relationship.showDetails}"
-                                    target="#{relationship.showDetails}" />
-                            </button>
+                    <h:panelGroup
+                        styleClass="relation-row header"
+                        rendered="#{type.key.showLinkedContent}">
 
-                            <div>
-                                <h:outputText
-                                    value="#{relationship.displayName}"
-                                    style="color: #333" />
-                            </div>
+                        <div></div>
+                        <div>Name</div>
+                        <div>Status</div>
+                        <div>Action</div>
 
-                            <h:outputText
-                                value="#{relationship.processStatus}"
-                                styleClass="badge-bordered" />
+                    </h:panelGroup>
+                    <h:panelGroup
+                        layout="block"
+                        styleClass="sources"
+                        rendered="#{type.key.showLinkedContent}">
+                        <ui:repeat
+                            var="relationship"
+                            value="#{type.value}">
 
-                            <div>
+
+
+
+
+                            <h:panelGroup
+                                styleClass="relation-row"
+                                id="entity">
                                 <button
-                                    class="btn toggle"
-                                    jsf:id="removeRelationship"
-                                    style="color:  #{type.key.color};"
-                                    jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}">
-                                    <i class="fa fa-chain-broken" />
+                                    jsf:id="toggleSourceVisibility"
+                                    class="btn btn--icon-light source-btn nobackground">
+                                    <i
+                                        class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
+                                        style="color: #{type.key.color};" />
                                     <f:ajax
-                                        execute="@form"
-                                        render="@form" />
+                                        execute="entity"
+                                        render="entity" />
+                                    <f:setPropertyActionListener
+                                        value="#{not relationship.showDetails}"
+                                        target="#{relationship.showDetails}" />
                                 </button>
 
-                                <button
-                                    class="btn btn-mini"
-                                    jsf:id="editRelationship"
-                                    style="background-color: #{type.key.color}; color: #fff; margin-left: 5px;"
-                                    jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}">
-                                    <i class="fa fa-pencil" />
-                                </button>
-
-                            </div>
-
-                            <ui:fragment rendered="#{relationship.showDetails}">
-                                <div style="grid-column-start: 1; grid-column-end: 5;">
-                                    <h:panelGroup
-                                        layout="block"
-                                        styleClass="row"
-                                        style="padding-left: 20px"
-                                        rendered="#{relationship.type != null}">
-                                        <div class="col-sm-4">
-                                            <h:outputText
-                                                value="#{msgs.plugin_workflow_entity_editor_type}"
-                                                style="color: #333" />
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <h:outputText
-                                                value="#{relationship.type}"
-                                                style="color: #333" />
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup
-                                        layout="block"
-                                        styleClass="row"
-                                        style="padding-left: 20px"
-                                        rendered="#{relationship.beginningDate != null}">
-                                        <div class="col-sm-4">
-                                            <h:outputText
-                                                value="#{msgs.plugin_workflow_entity_editor_beginnDate}"
-                                                rendered="#{relationship.beginningDate != null}"
-                                                style="color: #333" />
-                                        </div>
-
-                                        <div class="col-sm-8">
-                                            <h:outputText
-                                                value="#{relationship.beginningDate}"
-                                                rendered="#{relationship.beginningDate != null}"
-                                                style="color: #333" />
-                                        </div>
-
-                                    </h:panelGroup>
-                                    <h:panelGroup
-                                        layout="block"
-                                        styleClass="row"
-                                        style="padding-left: 20px"
-                                        rendered="#{relationship.endDate != null}">
-                                        <div class="col-sm-4">
-                                            <h:outputText
-                                                value="#{msgs.plugin_workflow_entity_editor_endDate}"
-                                                rendered="#{relationship.endDate != null}"
-                                                style="color: #333" />
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <h:outputText
-                                                value="#{relationship.endDate}"
-                                                rendered="#{relationship.endDate != null}"
-                                                style="color: #333" />
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup
-                                        layout="block"
-                                        styleClass="row"
-                                        style="padding-left: 20px"
-                                        rendered="#{relationship.additionalData != null}">
-                                        <div class="col-sm-4">
-                                            <h:outputText
-                                                value="#{msgs.plugin_workflow_entity_editor_additionalData}"
-                                                rendered="#{relationship.additionalData != null}"
-                                                style="color: #333" />
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <h:outputText
-                                                value="#{relationship.additionalData}"
-                                                rendered="#{relationship.additionalData != null}"
-                                                style="color: #333" />
-                                        </div>
-                                    </h:panelGroup>
+                                <div>
+                                    <h:outputText
+                                        value="#{relationship.displayName}"
+                                        style="color: #333" />
                                 </div>
-                            </ui:fragment>
-                        </h:panelGroup>
-                    </ui:repeat>
+                                <div>
+                                    <h:outputText
+                                        value="#{relationship.processStatus}"
+                                        styleClass="badge-bordered" />
+                                </div>
+                                <div>
+                                    <button
+                                        class="btn nobackground"
+                                        jsf:id="removeRelationship"
+                                        style="color:  #{type.key.color};"
+                                        jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}">
+                                        <i class="fa fa-chain-broken" />
+                                        <f:ajax
+                                            execute="@form"
+                                            render="@form" />
+                                    </button>
 
+                                    <button
+                                        class="btn btn-mini"
+                                        jsf:id="editRelationship"
+                                        style="background-color: #{type.key.color}; color: #fff; margin-left: 5px;"
+                                        jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}">
+                                        <i class="fa fa-pencil" />
+                                    </button>
+
+                                </div>
+
+                                <ui:fragment rendered="#{relationship.showDetails}">
+                                    <div style="grid-column-start: 1; grid-column-end: 5;">
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="row"
+                                            style="padding-left: 20px; width: 80%;"
+                                            rendered="#{relationship.type != null}">
+                                            <div class="col-sm-4">
+                                                <h:outputText
+                                                    value="#{msgs.plugin_workflow_entity_editor_type}"
+                                                    style="color: #333" />
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <h:outputText
+                                                    value="#{relationship.type}"
+                                                    style="color: #333" />
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="row"
+                                            style="padding-left: 20px; width: 80%;"
+                                            rendered="#{relationship.beginningDate != null}">
+                                            <div class="col-sm-4">
+                                                <h:outputText
+                                                    value="#{msgs.plugin_workflow_entity_editor_beginnDate}"
+                                                    rendered="#{relationship.beginningDate != null}"
+                                                    style="color: #333" />
+                                            </div>
+
+                                            <div class="col-sm-8">
+                                                <h:outputText
+                                                    value="#{relationship.beginningDate}"
+                                                    rendered="#{relationship.beginningDate != null}"
+                                                    style="color: #333" />
+                                            </div>
+
+                                        </h:panelGroup>
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="row"
+                                            style="padding-left: 20px; width: 80%;"
+                                            rendered="#{relationship.endDate != null}">
+                                            <div class="col-sm-4">
+                                                <h:outputText
+                                                    value="#{msgs.plugin_workflow_entity_editor_endDate}"
+                                                    rendered="#{relationship.endDate != null}"
+                                                    style="color: #333" />
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <h:outputText
+                                                    value="#{relationship.endDate}"
+                                                    rendered="#{relationship.endDate != null}"
+                                                    style="color: #333" />
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="row"
+                                            style="padding-left: 20px; width: 80%;"
+                                            rendered="#{relationship.additionalData != null}">
+                                            <div class="col-sm-4">
+                                                <h:outputText
+                                                    value="#{msgs.plugin_workflow_entity_editor_additionalData}"
+                                                    rendered="#{relationship.additionalData != null}"
+                                                    style="color: #333" />
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <h:outputText
+                                                    value="#{relationship.additionalData}"
+                                                    rendered="#{relationship.additionalData != null}"
+                                                    style="color: #333" />
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
+                        </ui:repeat>
+                    </h:panelGroup>
 
                 </h:panelGroup>
             </div>
