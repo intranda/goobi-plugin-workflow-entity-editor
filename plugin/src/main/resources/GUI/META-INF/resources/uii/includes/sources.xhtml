@@ -21,16 +21,13 @@
                 value="#{field.sources}">
 
                 <div class="source">
-                
-                        <x:inputTextarea
-                                                                        styleClass="form-control"
-                                                                        value="#{source.sourceName}"
-                                                                        required="false"
-                                                                        readonly="true">
-                                   
-                                                                    </x:inputTextarea>
-                
-                
+
+                    <x:inputTextarea
+                        styleClass="form-control"
+                        value="#{source.sourceName}"
+                        required="false"
+                        readonly="true">
+                    </x:inputTextarea>
                     <span>
                         <!--  button to remove source -->
                         <button
@@ -43,7 +40,7 @@
                                 render="@form" />
                         </button>
                     </span>
-                   
+
                 </div>
             </ui:repeat>
 
