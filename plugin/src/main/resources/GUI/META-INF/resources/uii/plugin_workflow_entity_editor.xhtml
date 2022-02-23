@@ -457,7 +457,7 @@
     background: #f6f6f6;
     padding-top: 5px;
     padding-bottom: 5px;
-    color: #555;    
+    color: #555;
 }
 </style>
 
@@ -653,23 +653,23 @@
                                                                     render="@form" />
                                                             </button>
 
-            <!-- button to add source-->
-            <button
-            jsf:rendered="#{field.allowSources}"
-                jsf:id="addSource"
-                class="btn pull-right toggle "
-                jsf:onclick="$('#sourceSearchBox').modal('show');">
-                <i class="fa fa-quote-left" />
-                <f:ajax
-                    execute="@this"
-                    render=":sourceModalContent" />
-                <f:setPropertyActionListener
-                    value="#{field}"
-                    target="#{NavigationForm.workflowPlugin.currentField}" />
-                <f:setPropertyActionListener
-                    value=""
-                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
-            </button>
+                                                            <!-- button to add source-->
+                                                            <button
+                                                                jsf:rendered="#{field.allowSources}"
+                                                                jsf:id="addSource"
+                                                                class="btn pull-right toggle "
+                                                                jsf:onclick="$('#sourceSearchBox').modal('show');">
+                                                                <i class="fa fa-quote-left" />
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render=":sourceModalContent" />
+                                                                <f:setPropertyActionListener
+                                                                    value="#{field}"
+                                                                    target="#{NavigationForm.workflowPlugin.currentField}" />
+                                                                <f:setPropertyActionListener
+                                                                    value=""
+                                                                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
+                                                            </button>
 
 
                                                         </div>

@@ -112,6 +112,8 @@ public class Entity {
                                 sub.setMetadata(metadata);
                                 subfield.adMetadataField(sub);
                                 field.addSubField(sub);
+                            } else {
+                                field.setAllowSources(true);
                             }
                         }
 

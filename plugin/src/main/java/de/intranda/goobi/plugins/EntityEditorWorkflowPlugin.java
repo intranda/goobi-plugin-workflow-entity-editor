@@ -232,16 +232,24 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
             return exitPlugin();
         }
-
-        // create BreadcrumbItem for the current object
-        //        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
-        //                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
-        //        breadcrumbList.add(item);
-
         // load selected data
 
         Process currentProcess = ProcessManager.getProcessById(selectedBreadcrumb.getProcessId());
         entity = new Entity(configuration, currentProcess);
+
+        // create breadcrumb item for new entity
+        boolean isAdded = false;
+        for (BreadcrumbItem bce : breadcrumbList) {
+            if (bce.getProcessId() == entity.getCurrentProcess().getId().intValue()) {
+                isAdded = true;
+            }
+
+        }
+        if (!isAdded) {
+            BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
+                    entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
+            breadcrumbList.add(item);
+        }
 
         return "";
     }
@@ -461,6 +469,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void searchEntity() {
         //  search for processes, load metadata from mets file?
+        entities.clear();
 
         //index.EntitySearch
         StringBuilder sql = new StringBuilder();
