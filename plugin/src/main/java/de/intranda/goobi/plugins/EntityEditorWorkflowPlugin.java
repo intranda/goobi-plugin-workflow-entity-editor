@@ -11,7 +11,6 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
-import org.goobi.beans.Processproperty;
 import org.goobi.production.cli.helper.StringPair;
 import org.goobi.production.enums.PluginGuiType;
 import org.goobi.production.enums.PluginType;
@@ -68,6 +67,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     // TODO order of elements
     // TODO save uploaded files in correct folder, add it to phys sequence, prevent second upload with same filename
     // TODO generate bibliography on export
+
+    // TODO update date on status property while saving
+
+    // TODO save/update display title as a property
 
     @Getter
     private String title = "intranda_workflow_entity_editor";
@@ -617,16 +620,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process p = entity.getCurrentProcess();
 
         // check export status
-        for (Processproperty pp : p.getEigenschaften()) {
-            if (pp.getTitel().equals("ProcessStatus") && !"Published".equals(pp.getWert())) {
-                // mark process as published
-                pp.setWert("Published");
-                try {
-                    ProcessManager.saveProcess(p);
-                } catch (DAOException e) {
-                    log.error(e);
-                }
-            }
+
+        if (!"Published".equals(entity.getStatusProperty().getWert())) {
+            // mark process as published
+            entity.getStatusProperty().setWert("Published");
         }
 
         // save
@@ -648,16 +645,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process p = entity.getCurrentProcess();
 
         // check export status
-        for (Processproperty pp : p.getEigenschaften()) {
-            if (pp.getTitel().equals("ProcessStatus") && !"Published".equals(pp.getWert())) {
-                // mark process as published
-                pp.setWert("Published");
-                try {
-                    ProcessManager.saveProcess(p);
-                } catch (DAOException e) {
-                    log.error(e);
-                }
-            }
+        if (!"Published".equals(entity.getStatusProperty().getWert())) {
+            // mark process as published
+            entity.getStatusProperty().setWert("Published");
         }
         // save
         entity.saveEntity();
@@ -669,7 +659,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             for (EntityType type : entity.getLinkedRelationships().keySet()) {
                 List<Relationship> relationships = entity.getLinkedRelationships().get(type);
                 for (Relationship rel : relationships) {
-
                     if ("Published".equals(rel.getProcessStatus()) && StringUtils.isNotBlank(rel.getProcessId())
                             && StringUtils.isNumeric(rel.getProcessId())) {
                         Process process = ProcessManager.getProcessById(Integer.parseInt(rel.getProcessId()));

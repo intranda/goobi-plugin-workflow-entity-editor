@@ -2,6 +2,7 @@ package de.intranda.goobi.plugins.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
+import de.sub.goobi.persistence.managers.PropertyManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -56,9 +58,41 @@ public class Entity {
     // list of all metadata fields
     private List<ConfiguredField> metadataFieldList = new ArrayList<>();
 
+    private Processproperty statusProperty = null;
+    private Processproperty displayNameProperty = null;
+
     public Entity(EntityConfig configuration, Process process) {
         this.configuration = configuration;
         this.currentProcess = process;
+        if (process.getEigenschaftenSize() > 0) {
+            for (Processproperty property : process.getEigenschaften()) {
+                if (property.getTitel().equals("ProcessStatus")) {
+                    statusProperty = property;
+                } else if (property.getTitel().equals("DisplayName")) {
+                    displayNameProperty = property;
+                }
+            }
+        }
+
+        if (statusProperty == null) {
+            statusProperty = new Processproperty();
+            statusProperty = new Processproperty();
+            statusProperty.setTitel("ProcessStatus");
+            statusProperty.setProzess(process);
+            statusProperty.setWert("New");
+            process.getEigenschaften().add(statusProperty);
+            PropertyManager.saveProcessProperty(statusProperty);
+        }
+
+        if (displayNameProperty == null) {
+            displayNameProperty = new Processproperty();
+            displayNameProperty = new Processproperty();
+            displayNameProperty.setTitel("DisplayName");
+            displayNameProperty.setProzess(process);
+            process.getEigenschaften().add(displayNameProperty);
+            PropertyManager.saveProcessProperty(displayNameProperty);
+        }
+
         try {
             prefs = currentProcess.getRegelsatz().getPreferences();
             currentFileformat = new MetsMods(prefs);
@@ -547,12 +581,13 @@ public class Entity {
     public void saveEntity() {
         try {
 
-            for (Processproperty pp : currentProcess.getEigenschaften()) {
-                if (pp.getTitel().equals("ProcessStatus") && pp.getWert().equals("New")) {
-                    pp.setWert("In work");
-                    ProcessManager.saveProcess(currentProcess);
-                }
+            if (statusProperty.getWert().equals("New")) {
+                statusProperty.setWert("In work");
             }
+            statusProperty.setCreationDate(new Date());
+            displayNameProperty.setWert(entityName);
+
+            ProcessManager.saveProcess(currentProcess);
 
             currentProcess.writeMetadataFile(currentFileformat);
         } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
@@ -565,11 +600,7 @@ public class Entity {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
         String relationshipStatus = "New";
 
-        for (Processproperty pp : selectedEntity.getCurrentProcess().getEigenschaften()) {
-            if (pp.getTitel().equals("ProcessStatus")) {
-                relationshipStatus = pp.getWert();
-            }
-        }
+        relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
         Relationship rel = new Relationship();
         rel.setAdditionalData(relationshipData);
