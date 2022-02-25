@@ -155,6 +155,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private List<Entity> entities = new ArrayList<>();
 
     @Getter
+    @Setter
     private EntityType entityType;
 
     @Getter
@@ -179,6 +180,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private String relationshipData;
 
+    @Getter
+    @Setter
+    private Prefs prefs;
+
     /**
      * Constructor
      */
@@ -189,36 +194,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         configuration = new EntityConfig(config);
 
         sourceVocabulary = VocabularyManager.getVocabularyById(configuration.getSourceVocabularyId());
-
-        loadTestdata();
     }
 
-    /**
-     * generate some test data - remove it once we have a real entry
-     * 
-     */
-    public void loadTestdata() {
-
-        // load testdata
-        Process currentProcess = ProcessManager.getProcessByExactTitle("SamplePerson");
-        entity = new Entity(configuration, currentProcess);
-
-        //        BreadcrumbItem item = new BreadcrumbItem("Person", "John Doe", 7, "#df07b9", "fa-user");
-        //        breadcrumbList.add(item);
-        //
-        //        BreadcrumbItem item2 = new BreadcrumbItem("Award", "Darwin Award", 11, "#05b8cd", "fa-trophy");
-        //        breadcrumbList.add(item2);
-        //
-        //        BreadcrumbItem item3 = new BreadcrumbItem("Work", "Mona Lisa", 10, "#900688", "fa-picture-o");
-        //        breadcrumbList.add(item3);
-        //
-        //        BreadcrumbItem item4 = new BreadcrumbItem("Event", "FIFA World Cup", 9, "#19b609", "fa-calendar");
-        //        breadcrumbList.add(item4);
-        //
-        //        BreadcrumbItem item5 = new BreadcrumbItem("Agent", "intranda", 8, "#e81c0c", "fa-university");
-        //        breadcrumbList.add(item5);
-
-    }
 
     /**
      * Close the current element and open the selected breadcrumb
@@ -230,7 +207,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public String loadSelectedBreadcrumb() {
         // save current entity
-        entity.saveEntity();
+        if ( entity!= null) {
+            entity.saveEntity();
+        }
         //  check if dashboard was selected -> exit to start page
         if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
             return exitPlugin();
@@ -238,6 +217,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // load selected data
 
         Process currentProcess = ProcessManager.getProcessById(selectedBreadcrumb.getProcessId());
+        prefs = currentProcess.getRegelsatz().getPreferences();
         entity = new Entity(configuration, currentProcess);
 
         // create breadcrumb item for new entity
@@ -496,13 +476,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void createEntity() {
         // save + close current entity
-        entity.saveEntity();
-
-        // create breadcrumb
-        //        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
-        //                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
-        //        breadcrumbList.add(item);
-
+        if (entity != null) {
+            entity.saveEntity();
+        }
         Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
 
         String processname = UUID.randomUUID().toString();
@@ -511,8 +487,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         try {
             // create new metadata file with given type
-            Prefs prefs = entity.getPrefs();
-            fileformat = new MetsMods(entity.getPrefs());
+            fileformat = new MetsMods(prefs);
             DigitalDocument dd = new DigitalDocument();
             fileformat.setDigitalDocument(dd);
             DocStruct logical = dd.createDocStruct(prefs.getDocStrctTypeByName(entityType.getRulesetName()));

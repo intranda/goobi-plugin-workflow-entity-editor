@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.event.AjaxBehaviorEvent;
+
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
@@ -434,9 +436,7 @@ public class Entity {
             }
         }
         entityName = sb.toString();
-        if (StringUtils.isBlank(entityName))
-
-        {
+        if (StringUtils.isBlank(entityName)) {
             entityName = entityType;
         }
     }
@@ -700,6 +700,16 @@ public class Entity {
 
         rel.setMetadataGroup(relationGroup);
         relationships.add(rel);
+
+    }
+
+    public void updateDisplayName(AjaxBehaviorEvent event) {
+        try {
+            DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
+            getDisplayName(logical, logical.getType().getName());
+        } catch (PreferencesException e) {
+            log.error(e);
+        }
 
     }
 
