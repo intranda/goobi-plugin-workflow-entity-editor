@@ -34,6 +34,9 @@ public class EntityType {
 
     private List<RelationshipType> configuredRelations = new ArrayList<>();
 
+    private String searchValue;
+
+
 
     private boolean showLinkedContent = true;
 
