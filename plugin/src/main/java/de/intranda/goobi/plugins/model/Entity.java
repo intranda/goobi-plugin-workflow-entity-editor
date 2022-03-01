@@ -14,6 +14,7 @@ import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
+import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -585,11 +586,49 @@ public class Entity {
                 statusProperty.setWert("In work");
             }
             statusProperty.setCreationDate(new Date());
+
+            // check if the display name was changed, in this case linked entities must be updated
+            boolean updatedName = !entityName.equals(displayNameProperty.getWert());
+
             displayNameProperty.setWert(entityName);
 
             ProcessManager.saveProcess(currentProcess);
 
             currentProcess.writeMetadataFile(currentFileformat);
+
+            // update link name in other entities
+            if (updatedName) {
+                for (EntityType type : linkedRelationships.keySet()) {
+                    List<Relationship> relationships = linkedRelationships.get(type);
+
+                    for (Relationship r : relationships) {
+                        MetsMods other = new MetsMods(prefs);
+                        String metsFile = ConfigurationHelper.getInstance().getMetadataFolder() + r.getProcessId() + "/meta.xml";
+                        other.read(metsFile);
+
+                        DocStruct logical = other.getDigitalDocument().getLogicalDocStruct();
+                        for (MetadataGroup relationGroup : logical.getAllMetadataGroups()) {
+                            if (relationGroup.getType().getName().equals(configuration.getRelationshipMetadataName())) {
+
+                                List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
+                                if (mdl != null && !mdl.isEmpty()) {
+                                    String processId = mdl.get(0).getValue();
+                                    if (processId.equals(String.valueOf(currentProcess.getId()))) {
+                                        mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
+                                        if (mdl != null && !mdl.isEmpty()) {
+                                            mdl.get(0).setValue(entityName);
+                                            break;
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        other.write(metsFile);
+                    }
+                }
+            }
+
         } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
             log.error(e);
         }
