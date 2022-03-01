@@ -98,10 +98,15 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private MetadataField searchField;
 
-    // search value
+    // search value for vocabularies
     @Getter
     @Setter
     private String searchValue;
+
+    // search value for sources
+    @Getter
+    @Setter
+    private String sourceSearchValue;
 
     // display all vocabulary records or
     @Getter
@@ -257,7 +262,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         List<StringPair> data = new ArrayList<>();
 
         for (String field : searchField.getConfigField().getSearchFields()) {
-            data.add(new StringPair(field, searchValue));
+            data.add(new StringPair(field, sourceSearchValue));
         }
 
         records = VocabularyManager.findRecords(searchField.getConfigField().getVocabularyName(), data);
