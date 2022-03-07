@@ -459,6 +459,19 @@
     padding-bottom: 5px;
     color: #555;
 }
+
+@media only screen and (max-width: 1440px) {
+    .grid {
+        display: grid;
+        grid-template-columns: 70% 30%;
+        grid-template-rows: auto auto;
+        grid-row-gap: 1px;
+        grid-column-gap: 9px;
+    }
+    .entity-box {
+        width: 100%;
+    }
+}
 </style>
 
         <main>
@@ -470,12 +483,16 @@
 
             <div class="grid">
                 <div class="head">
-                    <h:form id="headform" prependId="false">
+                    <h:form
+                        id="headform"
+                        prependId="false">
 
 
                         <!-- display current type , icons to search types-->
                         <div class="search-row row">
-                            <div class="col-sm-4" jsf:id="header">
+                            <div
+                                class="col-sm-4"
+                                jsf:id="header">
                                 <h1>
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_header}">
                                         <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
@@ -690,8 +707,7 @@
                                                                         execute="@this"
                                                                         render="badge-area :header"
                                                                         event="blur"
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}"
-                                                                         />
+                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
                                                                 </x:inputText>
                                                             </ui:fragment>
 
@@ -702,8 +718,7 @@
                                                                     value="#{field.booleanValue}">
                                                                     <f:ajax
                                                                         event="change"
-                                                                        render="badge-area" 
-                                                                        />
+                                                                        render="badge-area" />
                                                                 </h:selectBooleanCheckbox>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
@@ -712,8 +727,8 @@
                                                                     value="#{field.metadata.value}">
                                                                     <f:ajax
                                                                         event="change"
-                                                                        render="badge-area :header" 
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}"/>
+                                                                        render="badge-area :header"
+                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
                                                                     <f:selectItem
                                                                         itemValue=""
                                                                         itemLabel="#{msgs.bitteAuswaehlen}"
@@ -732,8 +747,8 @@
                                                                     value="#{field.vocabularyValue}">
                                                                     <f:ajax
                                                                         event="change"
-                                                                        render="badge-area :header" 
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}"/>
+                                                                        render="badge-area :header"
+                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
                                                                     <f:selectItem
                                                                         itemValue=""
                                                                         itemLabel="#{msgs.bitteAuswaehlen}"
@@ -775,8 +790,8 @@
                                                                         <f:ajax
                                                                             execute="@this"
                                                                             render="badge-area :header"
-                                                                            event="blur" 
-                                                                            listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}"/>
+                                                                            event="blur"
+                                                                            listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
                                                                     </x:inputText>
 
                                                                     <x:inputTextarea

@@ -201,7 +201,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         sourceVocabulary = VocabularyManager.getVocabularyById(configuration.getSourceVocabularyId());
     }
 
-
     /**
      * Close the current element and open the selected breadcrumb
      * 
@@ -212,7 +211,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public String loadSelectedBreadcrumb() {
         // save current entity
-        if ( entity!= null) {
+        if (entity != null) {
             entity.saveEntity();
         }
         //  check if dashboard was selected -> exit to start page
@@ -320,7 +319,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             showNotHits = false;
         }
         Collections.sort(sources);
-
     }
 
     /**
