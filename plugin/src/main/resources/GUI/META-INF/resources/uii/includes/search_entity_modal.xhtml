@@ -64,7 +64,7 @@
                                 styleClass="row form-group vocabulary-searcharea nobackground"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
 
-                                <!-- dropdown if type is null -->
+                                <!-- dropdown if type is not set -->
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.entityType == null}">
                                     <div class="row">
                                         <div class="col-sm-2 noborder">
@@ -126,6 +126,35 @@
                             <h:panelGroup
                                 id="searchEntityList"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
+
+
+                                <h:panelGroup
+                                    layout="block"
+                                    id="createNewEntity"
+                                    styleClass="row form-group vocabulary-searcharea nobackground">
+                                    <ui:fragment rendered="#{NavigationForm.workflowPlugin.entitySearch != '' and  (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                        <div class="col-sm-2 noborder"></div>
+                                        <div class="col-sm-8 noborder">
+                                            <h:outputText value="#{msgs.NORM_noHits}" />
+                                        </div>
+                                        <div class="col-sm-2 noborder">
+                                            <button
+                                                class="btn btn-primary"
+                                                jsf:id="createNewEntityButton"
+                                                jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
+                                                <i
+                                                    class="fa fa-plus"
+                                                    style="margin-right: 5px;" />
+                                                <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
+
+                                            </button>
+
+                                        </div>
+                                    </ui:fragment>
+                                </h:panelGroup>
+
+
+
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
                                     <hr style="border-color: #1e74c5" />
 
