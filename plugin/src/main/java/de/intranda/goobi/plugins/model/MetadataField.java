@@ -132,9 +132,12 @@ public class MetadataField {
             }
         } else {
             String dateValue = (String) value;
-            if (!dateValue.matches("\\d\\d\\d\\d") && !dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+            if (dateValue.matches("\\d\\d\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+                return;
+            }
+            else {
                 valid = false;
-                validationErrorMessage = "Invalid date format. Dates must be entered either as 'YYYY' or as 'YYYY-MM-DD'.";
+                validationErrorMessage = "Invalid date format. Dates must be entered as 'YYYY', 'YYYY-MM' or as 'YYYY-MM-DD'.";
             }
         }
     }
