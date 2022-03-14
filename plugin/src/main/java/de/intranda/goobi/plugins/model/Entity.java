@@ -460,21 +460,33 @@ public class Entity {
                 f.setGroup(group);
                 field.adMetadataField(f);
                 for (ConfiguredField subfield : field.getSubfieldList()) {
+                    if ("source".equals(subfield.getFieldType())) {
+                        f.setAllowSources(true);
+                    }
                     if (!subfield.isGroup()) {
                         Metadata otherMetadata = subfield.getMetadataList().get(0).getMetadata();
                         MetadataType metadataType = otherMetadata.getType();
-                        Metadata metadata = new Metadata(metadataType);
+                        List<Metadata> defaultMetadata = group.getMetadataByType(metadataType.getName());
+                        Metadata metadata = null;
+                        if (!defaultMetadata.isEmpty()) {
+                            metadata = defaultMetadata.get(0);
+                        } else {
+                            metadata = new Metadata(metadataType);
+                            group.addMetadata(metadata);
+                        }
                         if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
                             metadata.setValue(subfield.getDefaultValue());
                         }
-                        group.addMetadata(metadata);
                         MetadataField sub = new MetadataField();
                         sub.setConfigField(subfield);
                         sub.setMetadata(metadata);
                         f.addSubField(sub);
-                    }
+                    } 
                 }
-            } catch (UGHException e) {
+            }
+
+            
+            catch (UGHException e) {
                 log.error(e);
             }
         } else {

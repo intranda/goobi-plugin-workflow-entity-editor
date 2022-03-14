@@ -239,6 +239,7 @@ public class ConfiguredField {
     // only call it when new entity is loaded
     public void clearMetadata(Entity entity) {
         this.entity = entity;
+        showField=false;
         metadataList.clear();
         for (ConfiguredField cf : subfieldList) {
             cf.clearMetadata(entity);
