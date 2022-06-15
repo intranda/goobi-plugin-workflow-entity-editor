@@ -201,6 +201,14 @@
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
+			
+			<field label="Artistic movement" metadata="ArtisticMovementGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Artistic movement" metadata="ArtisticMovement" type="vocabularyList" required="false" labelPosition="none">
+					<vocabulary name="Artistic Movement" id="39" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
 
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
@@ -350,6 +358,14 @@
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
+			<field label="Artistic movement" metadata="ArtisticMovementGroup" repeatable="true" group="true">
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Artistic movement" metadata="ArtisticMovement" type="vocabularyList" required="false" labelPosition="none">
+					<vocabulary name="Artistic Movement" id="39" />
+				</field>
+				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
+			</field>
+			
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
