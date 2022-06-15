@@ -132,10 +132,12 @@
                                     layout="block"
                                     id="createNewEntity"
                                     styleClass="row form-group vocabulary-searcharea nobackground">
-                                    <ui:fragment rendered="#{NavigationForm.workflowPlugin.entitySearch != '' and  (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                    <ui:fragment rendered="#{NavigationForm.workflowPlugin.entitySearch != ''}">
                                         <div class="col-sm-2 noborder"></div>
                                         <div class="col-sm-8 noborder">
-                                            <h:outputText value="#{msgs.NORM_noHits}" />
+                                        	<ui:fragment rendered="#{(NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                            	<h:outputText value="#{msgs.NORM_noHits}" />
+                                            </ui:fragment>
                                         </div>
                                         <div class="col-sm-2 noborder">
                                             <button
