@@ -464,8 +464,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         sql.append("where  m1.name=\"docstruct\" and m1.value =\"");
         sql.append(entityType.getRulesetName());
         sql.append("\" and m2.name=\"index.EntitySearch\" and m2.value like \"%");
-        sql.append(StringEscapeUtils.escapeSql(entitySearch).replace(" ", "%"));
+        String searchTerm = entitySearch;
+        searchTerm = searchTerm.replace(" ", "%");
+        searchTerm = searchTerm.replace("`", "_");
+        searchTerm = searchTerm.replace("’", "_");
+        searchTerm = searchTerm.replace("\'", "_");
+        sql.append(searchTerm);
         sql.append("%\"; ");
+        System.out.println("Now searching...");
+        System.out.println(sql.toString());
+        System.out.println(searchTerm);
         // load mets files, open entities
         List<?> rows = ProcessManager.runSQL(sql.toString());
         for (Object obj : rows) {
