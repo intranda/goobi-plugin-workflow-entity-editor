@@ -471,9 +471,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         searchTerm = searchTerm.replace("\'", "_");
         sql.append(searchTerm);
         sql.append("%\"; ");
-        System.out.println("Now searching...");
-        System.out.println(sql.toString());
-        System.out.println(searchTerm);
+        
         // load mets files, open entities
         List<?> rows = ProcessManager.runSQL(sql.toString());
         for (Object obj : rows) {
