@@ -214,8 +214,9 @@
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
 				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="Description" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />
-				<field label="Location" metadata="Location" type="vocabularySearch" required="false" labelPosition="top">
+				<field label="Description (fre)" metadata="ShortDescriptionFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Description (ger)" metadata="ShortDescriptionDE" type="textarea" required="false" labelPosition="top" />
+				<field label="Description (eng)" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />				<field label="Location" metadata="Location" type="vocabularySearch" required="false" labelPosition="top">
 					<vocabulary name="Location" id="5" searchfields="Location" displayfields="Location|Authority URI|Authority Value" />
 				</field>
 				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
@@ -370,8 +371,9 @@
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
 				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="Description" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />
-				<field label="Location" metadata="Location" type="vocabularySearch" required="false" labelPosition="top">
+				<field label="Description (fre)" metadata="ShortDescriptionFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Description (ger)" metadata="ShortDescriptionDE" type="textarea" required="false" labelPosition="top" />
+				<field label="Description (eng)" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />				<field label="Location" metadata="Location" type="vocabularySearch" required="false" labelPosition="top">
 					<vocabulary name="Location" id="5" searchfields="Location" displayfields="Location|Authority URI|Authority Value" />
 				</field>
 				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
