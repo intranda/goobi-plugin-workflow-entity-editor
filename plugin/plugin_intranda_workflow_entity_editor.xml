@@ -67,10 +67,10 @@
 				<rule>http://example.com/viewer/resolver?id=${meta.CatalogIDDigital}</rule>
 			</field>
 
-			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
-				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" defaultValue="12345" />
-				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" defaultValue="Y" />
-				<field label="Type" metadata="Type" type="select" required="false" labelPosition="top">
+			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true" showInSearch="true">
+				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="left" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Type" metadata="Type" type="select" required="false" labelPosition="left">
 					<value>GND</value>
 					<value>ISNI</value>
 				</field>
@@ -295,10 +295,10 @@
 				<rule>http://example.com/viewer/resolver?id=${meta.CatalogIDDigital}</rule>
 			</field>
 
-			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
-				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" />
-				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" />
-				<field label="Type" metadata="Type" type="select" required="false" labelPosition="top">
+			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true" showInSearch="true">
+				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="left" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Type" metadata="Type" type="select" required="false" labelPosition="left">
 					<value>GND</value>
 					<value>ISNI</value>
 				</field>
@@ -520,10 +520,10 @@
 				<rule>http://example.com/viewer/resolver?id=${meta.CatalogIDDigital}</rule>
 			</field>
 
-			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true">
-				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="top" />
-				<field label="Publish field" metadata="Published" type="publish" required="true" labelPosition="none" />
-				<field label="Type" metadata="Type" type="select" required="false" labelPosition="top">
+			<field label="ExternalIdentifier" metadata="ExternalIdentifier" repeatable="true" group="true" showInSearch="true">
+				<field label="identifier" metadata="Identifier" type="input" required="false" labelPosition="left" />
+				<field label="Publish field" metadata="Published" type="publish" required="true" />
+				<field label="Type" metadata="Type" type="select" required="false" labelPosition="left">
 					<value>GND</value>
 					<value>ISNI</value>
 				</field>
