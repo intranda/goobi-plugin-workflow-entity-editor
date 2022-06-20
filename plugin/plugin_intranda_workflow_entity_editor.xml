@@ -161,8 +161,9 @@
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
-			<field label="Gender" metadata="GenderGroup" repeatable="true" group="true">
+			<field label="Gender" metadata="GenderGroup" repeatable="false" group="true">
 				<field label="Gender" metadata="Gender" type="select" required="false" labelPosition="top">
+					<value>Please select</value>
 					<value>Male</value>
 					<value>Female</value>
 					<value>Other</value>
@@ -170,7 +171,6 @@
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
-
 
 			<field label="Media" metadata="Media" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
