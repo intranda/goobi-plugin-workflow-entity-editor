@@ -28,6 +28,8 @@ import ugh.dl.DocStruct;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
 import ugh.dl.Prefs;
+import ugh.exceptions.DocStructHasNoTypeException;
+import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.UGHException;
 
 @Data
@@ -51,12 +53,35 @@ public class MetadataField {
 
     private List<SourceField> sources = new ArrayList<>();
 
-    public void addSource(SourceField field) {
+    public void addSource(SourceField field, MetadataGroup grp) {
         sources.add(field);
+        if (group != null && grp != null) {
+            try {
+                group.addMetadataGroup(grp);
+            } catch (MetadataTypeNotAllowedException | DocStructHasNoTypeException e) {
+                log.error(e);
+            }
+        }
     }
 
     public void removeSource(SourceField field) {
         sources.remove(field);
+        if (group != null) {
+            MetadataGroup toRemove = null;
+            for (MetadataGroup mg : group.getAllMetadataGroups()) {
+                if (mg.getType().getName().equals("Source")) {
+                    for (Metadata md : mg.getMetadataByType("SourceID")) {
+                        if (md.getValue().equals(field.getSourceId())) {
+                            toRemove = mg;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (toRemove != null) {
+                group.removeMetadataGroup(toRemove, true);
+            }
+        }
     }
 
     // boolean values
@@ -134,8 +159,7 @@ public class MetadataField {
             String dateValue = (String) value;
             if (dateValue.matches("\\d\\d\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
                 return;
-            }
-            else {
+            } else {
                 valid = false;
                 validationErrorMessage = "Invalid date format. Dates must be entered as 'YYYY', 'YYYY-MM' or as 'YYYY-MM-DD'.";
             }

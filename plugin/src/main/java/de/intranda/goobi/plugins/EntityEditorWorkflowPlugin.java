@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.production.cli.helper.StringPair;
@@ -48,6 +47,7 @@ import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
+import ugh.dl.MetadataGroup;
 import ugh.dl.Prefs;
 import ugh.exceptions.DocStructHasNoTypeException;
 import ugh.exceptions.MetadataTypeNotAllowedException;
@@ -349,7 +349,38 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         //  pages;
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
-        currentField.addSource(source);
+
+
+        MetadataGroup mg = null;
+
+        try {
+            mg =new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
+            Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
+            sourceIdMetadata.setValue(sourceId);
+            sourceIdMetadata.setAutorityFile(sourceName, sourceUri, sourceLink);
+            mg.addMetadata(sourceIdMetadata);
+
+            Metadata sourceNameMetadata = new Metadata(prefs.getMetadataTypeByName("SourceName"));
+            sourceNameMetadata.setValue(sourceName);
+            mg.addMetadata(sourceNameMetadata);
+
+            Metadata sourceTypeMetadata = new Metadata(prefs.getMetadataTypeByName("SourceType"));
+            sourceTypeMetadata.setValue(sourceType);
+            mg.addMetadata(sourceTypeMetadata);
+            Metadata sourceLinkMetadata = new Metadata(prefs.getMetadataTypeByName("SourceLink"));
+            sourceLinkMetadata.setValue(sourceLink);
+            mg.addMetadata(sourceLinkMetadata);
+            Metadata sourcePageMetadata = new Metadata(prefs.getMetadataTypeByName("SourcePage"));
+            sourcePageMetadata.setValue(pages);
+            mg.addMetadata(sourcePageMetadata);
+        } catch (MetadataTypeNotAllowedException e) {
+            log.error(e);
+        }
+
+
+
+
+        currentField.addSource(source, mg);
         pages = "";
     }
 
@@ -471,7 +502,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         searchTerm = searchTerm.replace("\'", "_");
         sql.append(searchTerm);
         sql.append("%\"; ");
-        
+
         // load mets files, open entities
         List<?> rows = ProcessManager.runSQL(sql.toString());
         for (Object obj : rows) {

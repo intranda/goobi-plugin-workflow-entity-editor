@@ -193,7 +193,7 @@ public class Entity {
                                             }
                                             SourceField source =
                                                     field.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, sourcePageRange);
-                                            field.addSource(source);
+                                            field.addSource(source, null);
                                         }
                                     }
 
@@ -481,11 +481,11 @@ public class Entity {
                         sub.setConfigField(subfield);
                         sub.setMetadata(metadata);
                         f.addSubField(sub);
-                    } 
+                    }
                 }
             }
 
-            
+
             catch (UGHException e) {
                 log.error(e);
             }
