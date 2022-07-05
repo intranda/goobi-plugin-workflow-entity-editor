@@ -5,7 +5,7 @@
   <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <goobi.version>22.05.7</goobi.version>
+    <goobi.version>22.06</goobi.version>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
   </properties>
@@ -15,8 +15,8 @@
       <url>https://nexus.intranda.com/repository/maven-releases</url>
     </repository>
     <snapshotRepository>
-        <id>intranda-snapshots</id>
-        <url>https://nexus.intranda.com/repository/maven-snapshots</url>
+      <id>intranda-snapshots</id>
+      <url>https://nexus.intranda.com/repository/maven-snapshots</url>
     </snapshotRepository>
   </distributionManagement>
   <repositories>
