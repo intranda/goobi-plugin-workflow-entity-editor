@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
+import de.sub.goobi.validator.EDTFValidator;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
@@ -147,10 +148,10 @@ public class MetadataField {
         return false;
     }
 
-    public void dateValidator(FacesContext context, UIComponent component, Object value) {
+    public void dateValidatorOld(FacesContext context, UIComponent component, Object value) {
         valid = true;
         validationErrorMessage = null;
-        if (value == null || StringUtils.isBlank((String) value)) {
+        if (isEmpty(value)) {
             if (configField.isRequired()) {
                 valid = false;
                 validationErrorMessage = "Field is required";
@@ -165,7 +166,46 @@ public class MetadataField {
             }
         }
     }
+    
+    public void dateValidator(FacesContext context, UIComponent component, Object value) {
+        valid = true;
+        validationErrorMessage = null;
+        if (isEmpty(value)) {
+            if (configField.isRequired()) {
+                valid = false;
+                validationErrorMessage = "Field is required";
+            }
+        } else {
+            String dateValue = (String) value;
+            EDTFValidator validator = new EDTFValidator();
+            if (validator.isValid(dateValue)) {
+                return;
+            } else {
+                valid = false;
+                validationErrorMessage = "Invalid date format. Dates must comply with EDTF specifications.";
+            }
+        }
+    }
 
+    public void requiredValidator(FacesContext context, UIComponent component, Object value) {
+        valid = true;
+        validationErrorMessage = null;
+        if (configField.isRequired() && isEmpty(value)) {
+            valid = false;
+            validationErrorMessage = "Field is required";
+        }
+        return;
+    }
+    
+    private boolean isEmpty(Object value) {
+        String fieldContents = (String) value;
+        if (value == null || StringUtils.isBlank(fieldContents)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     @Getter
     @Setter
     private Part uploadedFile = null;
