@@ -148,33 +148,12 @@ public class MetadataField {
         return false;
     }
 
-    public void dateValidatorOld(FacesContext context, UIComponent component, Object value) {
-        valid = true;
-        validationErrorMessage = null;
-        if (isEmpty(value)) {
-            if (configField.isRequired()) {
-                valid = false;
-                validationErrorMessage = "Field is required";
-            }
-        } else {
-            String dateValue = (String) value;
-            if (dateValue.matches("\\d\\d\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d") || dateValue.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
-                return;
-            } else {
-                valid = false;
-                validationErrorMessage = "Invalid date format. Dates must be entered as 'YYYY', 'YYYY-MM' or as 'YYYY-MM-DD'.";
-            }
-        }
-    }
-    
     public void dateValidator(FacesContext context, UIComponent component, Object value) {
         valid = true;
         validationErrorMessage = null;
-        if (isEmpty(value)) {
-            if (configField.isRequired()) {
-                valid = false;
-                validationErrorMessage = "Field is required";
-            }
+        if (configField.isRequired() && isEmpty(value)) {
+            valid = false;
+            validationErrorMessage = "Field is required";
         } else {
             String dateValue = (String) value;
             EDTFValidator validator = new EDTFValidator();
