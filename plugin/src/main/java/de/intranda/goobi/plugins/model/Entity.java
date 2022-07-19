@@ -155,13 +155,13 @@ public class Entity {
                         }
 
                     } else {
+                        metadataFieldList.add(mf);
                         for (MetadataGroup group : groups) {
                             MetadataField field = new MetadataField();
                             field.setConfigField(mf);
                             field.setGroup(group);
                             mf.adMetadataField(field);
                             mf.setShowField(true);
-                            metadataFieldList.add(mf);
                             for (ConfiguredField subfield : mf.getSubfieldList()) {
                                 if ("source".equals(subfield.getFieldType())) {
                                     // Sources
