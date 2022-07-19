@@ -701,6 +701,7 @@
                                                                     styleClass="form-control"
                                                                     value="#{field.metadata.value}"
                                                                     required="false"
+                                                                    validator="#{subfield.requiredValidator}"
                                                                     id="field_#{status.index}"
                                                                     readonly="#{field.configField.readonly  or field.configField.fieldType == 'generated'}">
                                                                     <f:ajax
@@ -781,18 +782,29 @@
                                                                         value="#{msgs[subfield.configField.label]}"
                                                                         rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
 
-                                                                    <x:inputText
-                                                                        styleClass="form-control"
-                                                                        value="#{subfield.metadata.value}"
-                                                                        required="false"
+                                                                    <h:panelGroup
                                                                         rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
-                                                                        readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}">
-                                                                        <f:ajax
-                                                                            execute="@this"
-                                                                            render="badge-area :header"
-                                                                            event="blur"
-                                                                            listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                    </x:inputText>
+                                                                        id="inputGroup">
+                                                                        <x:inputText
+                                                                            styleClass="form-control"
+                                                                            value="#{subfield.metadata.value}"
+                                                                            required="false"
+                                                                            validator="#{subfield.requiredValidator}"
+                                                                            readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}"
+                                                                            id="inputField">
+                                                                            <f:ajax
+                                                                                execute="@this"
+                                                                                render="badge-area :header"
+                                                                                event="blur"
+                                                                                listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                        </x:inputText>
+                                                                        <h:panelGroup
+                                                                            layout="block"
+                                                                            rendered="#{!subfield.valid}"
+                                                                            styleClass="font-danger validation-message">
+                                                                            <h:outputText value="#{subfield.validationErrorMessage}" />
+                                                                        </h:panelGroup>
+                                                                    </h:panelGroup>
 
                                                                     <x:inputTextarea
                                                                         styleClass="form-control"
