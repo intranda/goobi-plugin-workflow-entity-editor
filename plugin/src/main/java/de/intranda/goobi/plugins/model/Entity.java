@@ -100,7 +100,7 @@ public class Entity {
             prefs = currentProcess.getRegelsatz().getPreferences();
             currentFileformat = new MetsMods(prefs);
             currentFileformat.read(currentProcess.getMetadataFilePath());
-        } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
+        } catch (UGHException | IOException | SwapException e) {
             log.error(e);
         }
         readMetadata();
@@ -485,7 +485,6 @@ public class Entity {
                 }
             }
 
-
             catch (UGHException e) {
                 log.error(e);
             }
@@ -641,7 +640,7 @@ public class Entity {
                 }
             }
 
-        } catch (UGHException | IOException | InterruptedException | SwapException | DAOException e) {
+        } catch (UGHException | IOException | SwapException | DAOException e) {
             log.error(e);
         }
     }

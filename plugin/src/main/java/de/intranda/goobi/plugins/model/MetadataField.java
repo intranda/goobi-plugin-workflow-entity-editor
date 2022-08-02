@@ -175,7 +175,7 @@ public class MetadataField {
         }
         return;
     }
-    
+
     private boolean isEmpty(Object value) {
         String fieldContents = (String) value;
         if (value == null || StringUtils.isBlank(fieldContents)) {
@@ -184,7 +184,7 @@ public class MetadataField {
             return false;
         }
     }
-    
+
     @Getter
     @Setter
     private Part uploadedFile = null;
@@ -250,7 +250,7 @@ public class MetadataField {
                 log.error(e);
             }
 
-        } catch (IOException | InterruptedException | SwapException | DAOException e) {
+        } catch (IOException | SwapException | DAOException e) {
             log.error(e.getMessage(), e);
             Helper.setFehlerMeldung("uploadFailed");
         } finally {
