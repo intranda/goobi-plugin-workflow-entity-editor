@@ -79,6 +79,11 @@
         href="template/css/intranda.css?v=#{HelperForm.buildVersion}" />
     <!-- <link rel="stylesheet" href="template/css/dist/goobiWorkflow.min.css?v=#{HelperForm.buildVersion}" /> -->
 
+
+	<link
+        rel="stylesheet"
+        href="plugin-workflow-entity-editor.css?v=#{HelperForm.buildVersion}" />
+
     <script src="template/js/intranda.js?v=1.2"></script>
     <!-- jQuery -->
     <h:outputScript
@@ -181,14 +186,14 @@
         <!-- JAVASCRIPT -->
         <script src="template/js/dist/goobiWorkflowJS.min.js?v=#{HelperForm.buildVersion}"></script>
         <script>
-                                    
+
             // goobiWorkflowConfig = {};
 
             // goobiWorkflowJS.init(goobiWorkflowConfig);
-        
+
                                 </script>
         <script>
-                                    
+
      // <![CDATA[
             jsf.ajax.addOnEvent(function (data) {
                 var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
@@ -251,14 +256,14 @@
                     myButton.click();
                 }
             });
-            
+
             window.myfaces = window.myfaces || {};
             myfaces.config = myfaces.config || {};
             //set the config part
             myfaces.config.no_portlet_env = true;
 
          // ]]>
-        
+
                                 </script>
     </f:view>
 </h:body>
