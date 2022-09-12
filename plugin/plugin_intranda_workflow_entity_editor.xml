@@ -201,7 +201,7 @@
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
-			
+
 			<field label="Artistic movement" metadata="ArtisticMovementGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="Artistic movement" metadata="ArtisticMovement" type="vocabularyList" required="false" labelPosition="none">
@@ -366,7 +366,7 @@
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
-			
+
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
@@ -581,7 +581,10 @@
 			<relation id="36" name="R10 Relationship Collective agent - Award" reverse="true" destinationEntity="Agent" />
 			<relation id="37" name="R11 Relationship Work - Award" reverse="true" destinationEntity="Work"/>
 		</relations>
+		<!--
 		<color>#05b8cd</color>
+		-->
+		<color>#368ee0</color>
 		<icon>fa-trophy</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 
