@@ -30,8 +30,23 @@
 
                     </h3>
 
+                    <div class="box-title__actions">
+
                     <button
-                        class="btn nobackground pull-right"
+                        class="btn nobackground"
+                        jsf:id="addRelationship"
+                        style="color:  #{type.key.color}; margin-right: 5px;"
+                        jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
+                        jsf:onclick="$('#entitySearchBox').modal('show');">
+                        <!--                         <i class="fa fa-chain big-icon" /> -->
+                        <i class="fa fa-plus big-icon" />
+                        <f:ajax
+                            execute="@this"
+                            render=":entityModalContent" />
+                    </button>
+
+                    <button
+                        class="btn nobackground"
                         jsf:id="showContent"
                         style="color:  #{type.key.color}; margin-right: 5px;">
 
@@ -44,20 +59,7 @@
                             render="@form" />
                     </button>
 
-
-                    <button
-                        class="btn nobackground pull-right"
-                        jsf:id="addRelationship"
-                        style="color:  #{type.key.color}; margin-right: 5px;"
-                        jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
-                        jsf:onclick="$('#entitySearchBox').modal('show');">
-                        <!--                         <i class="fa fa-chain big-icon" /> -->
-                        <i class="fa fa-plus big-icon" />
-                        <f:ajax
-                            execute="@this"
-                            render=":entityModalContent" />
-                    </button>
-
+                    </div>
 
                 </div>
                 <h:panelGroup
