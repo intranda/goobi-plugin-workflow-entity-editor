@@ -68,7 +68,6 @@
                                 data-toggle="dropdown"
                                 aria-haspopup="true"
                                 class="dropdown-toggle btn"
-                                title="#{msgs.spracheAendern}"
                                 jsf:rel="tooltip">
 
                                 <img
@@ -282,8 +281,6 @@
 
 
 
-
-
                                 <div
                                     class="box-title"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
@@ -300,7 +297,11 @@
                                         jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
                                         class="btn btn-link btn--generateBibliography"
                                         jsf:id="generateBibliography"
-                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
+                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
+                                        title="#{msgs.plugin_workflow_entity_createBibliography}"
+                                        data-toggle="tooltip"
+                                        data-placement="bottom"
+                                        >
                                         <i class="fa fa-plus-circle margin-right-5 big-icon" />
                                     </button>
 
@@ -368,7 +369,11 @@
                                                             <button
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="remove"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}">
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
+                                                                title="#{msgs.plugin_workflow_entity_delete}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="bottom"
+                                                                >
                                                                 <i class="fa fa-minus-circle" />
                                                                 <f:ajax
                                                                     execute="@this"
