@@ -202,9 +202,15 @@
                                             var="type"
                                             value="#{NavigationForm.workflowPlugin.allEntityTypes}">
 
+                                            <style>
+                                                .entity-search--#{type.plural} {
+                                                    background-color: #{type.color};
+                                                    color: #fff;
+                                                }
+                                            </style>
+
                                             <button
-                                                style="background-color: #{type.color}; color: #fff"
-                                                class="btn entity-search"
+                                                class="btn entity-search entity-search--#{type.plural}"
                                                 jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
                                                 jsf:onclick="$('#searchEntitySearchBox').modal('show');">
                                                 <i class="fa #{type.icon} big-icon" />
