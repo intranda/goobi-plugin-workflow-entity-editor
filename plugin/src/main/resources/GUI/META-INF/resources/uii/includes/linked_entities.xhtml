@@ -32,6 +32,7 @@
 
                     <div class="box-title__actions">
 
+
                     <button
                         class="btn nobackground"
                         jsf:id="addRelationship"
@@ -45,6 +46,7 @@
                             render=":entityModalContent" />
                     </button>
 
+                    <h:panelGroup rendered="#{ type.value.size() != 0 }">
                     <button
                         class="btn nobackground"
                         jsf:id="showContent"
@@ -58,15 +60,19 @@
                             execute="@this"
                             render="@form" />
                     </button>
+                    </h:panelGroup>
+
 
                     </div>
+
 
                 </div>
                 <h:panelGroup
                     layout="block"
                     styleClass="box-content nopadding #{type.key.name}"
                     style="border-color: #{type.key.color}; #{type.key.showLinkedContent ? '' : 'display:none'}"
-                    id="sources">
+                    id="sources"
+                    rendered="#{ type.value.size() != 0 }">
 
                     <h:panelGroup
                         styleClass="relation-row header"
@@ -93,6 +99,8 @@
                             <h:panelGroup
                                 styleClass="relation-row"
                                 id="entity">
+
+
                                 <button
                                     jsf:id="toggleSourceVisibility"
                                     class="btn btn--icon-light source-btn nobackground">
