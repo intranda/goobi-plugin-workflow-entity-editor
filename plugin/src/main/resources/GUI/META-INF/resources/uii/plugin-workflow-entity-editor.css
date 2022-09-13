@@ -310,7 +310,6 @@
 body,
 #main,
 #main .container-fluid,
-.breadcrumb-container button,
 .breadcrumb-container .breadcrumb-label
 {
   background-color: var(--bg-content) !important;
