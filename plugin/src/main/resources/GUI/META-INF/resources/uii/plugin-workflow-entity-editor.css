@@ -336,6 +336,10 @@ body,
   background-color: var(--bg-nav-bar) !important;
 }
 
+[id="menu:exit"] {
+  padding: 10px 15px !important;
+}
+
 /* Override styles.css */
 #navigation .dropdown-menu {
   border-color: var(--bg-nav-bar);
