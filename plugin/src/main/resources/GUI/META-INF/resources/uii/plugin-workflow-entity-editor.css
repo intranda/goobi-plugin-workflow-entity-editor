@@ -406,6 +406,10 @@ body,
   display: flex;
   justify-content: flex-end;
 }
+.box-title__actions button {
+  display: flex;
+  align-items: center;
+}
 
 
 
