@@ -25,6 +25,14 @@
                     id="brand"
                     jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}"> </a>
             </div>
+
+            <button
+                class="btn pull-left"
+                jsf:id="exit"
+                jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
+                <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
+            </button>
+
             <div class="user pull-right">
                 <ul class="icon-nav">
                     <!-- Icon to enable help texts -->
@@ -698,13 +706,8 @@
                         <i class="fa fa-floppy-o margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.save}" />
                     </button>
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exit"
-                        jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
-                        <i class="fa fa-sign-out margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
-                    </button>
+
+
                     <button
                         class="btn btn-lightgrey pull-right margin-right-10"
                         jsf:id="exportSingle"
