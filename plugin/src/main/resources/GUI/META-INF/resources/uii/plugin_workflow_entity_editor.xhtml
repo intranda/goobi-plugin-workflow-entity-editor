@@ -274,10 +274,16 @@
                     </h:form>
                 </div>
 
+
                 <div class="left">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
+
+
+
+
+
                                 <div
                                     class="box-title"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
@@ -289,6 +295,15 @@
                                         </h:outputFormat>
 
                                     </h3>
+
+                                    <button
+                                        jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
+                                        class="btn btn-link btn--generateBibliography"
+                                        jsf:id="generateBibliography"
+                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
+                                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
+                                    </button>
+
 
                                 </div>
                                 <div
@@ -697,13 +712,6 @@
                     styleClass="col-md-12"
                 >
 
-                    <button
-                        class="btn "
-                        jsf:id="generateBibliography"
-                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
-                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_createBibliography}" />
-                    </button>
 
                     <button
                         class="btn btn-green pull-right"
