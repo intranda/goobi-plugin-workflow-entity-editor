@@ -387,6 +387,16 @@ body,
   float: unset;
 }
 
+.btn--generateBibliography {
+  display: flex;
+  color: #fff;
+}
+.btn--generateBibliography:hover {
+  background-color: unset;
+  color: #333;
+  text-decoration: none;
+}
+
 .box .box-title::after {
   content: unset;
   clear: unset;
