@@ -11,33 +11,45 @@
 <h:body>
     <ui:composition>
 
+        <style>
+            .breadcrumb-button-group--#{entityType} {
+                color: #{entityColor};
+                transition: all .4s ease;
+            }
+
+            .breadcrumb-button-group--#{entityType} .breadcrumb-button:hover {
+                background-color: #{entityColor};
+                color: #fff !important;
+                transition: all .4s ease;
+            }
+
+        </style>
+
+
         <div
-            class="breadcrumb-button-group btn-group"
-            jsf:style="border: 1px solid #{entityColor}; color: #{entityColor}">
+            class="breadcrumb-button-group  breadcrumb-button-group--#{entityType} btn-group"
+            >
 
             <button
-                class="btn breadcrumb-button"
+                class="btn breadcrumb-button "
                 jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}">
                 <x:updateActionListener
                     value="#{breadcrumb}"
                     property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
                 <span class="skew-fix">
                     <i
-                        style="color: #{entityColor}"
                         class="fa #{entityIcon} big-icon"
                         jsf:rendered="#{entityName != null}" />
                     <h:outputText
                         value="#{entityName}"
-                        style="color: #{entityColor}" />
+                    />
                 </span>
             </button>
             <button
                 class="btn breadcrumb-button"
                 jsf:action="#{NavigationForm.workflowPlugin.removeBreadcrumb(breadcrumb)}">
                 <span class="skew-fix">
-                    <i
-                        class="fa fa-times"
-                        style="color: #{entityColor}" />
+                    <i class="fa fa-times" />
                 </span>
             </button>
         </div>
