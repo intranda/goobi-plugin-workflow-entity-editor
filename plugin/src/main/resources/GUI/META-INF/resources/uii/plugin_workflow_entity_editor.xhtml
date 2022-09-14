@@ -175,7 +175,7 @@
     <ui:define name="content">
 
         <main>
-            <div class="grid">
+            <div>
                 <div class="head">
                     <h:form
                         id="headform"
@@ -206,6 +206,11 @@
                                                     background-color: #{type.color};
                                                     color: #fff;
                                                 }
+                                                .entity-search--#{type.plural}:hover {
+                                                    background-color: #{type.color};
+                                                    background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+                                                    color: #fff;
+                                                }
                                             </style>
 
                                             <button
@@ -231,7 +236,7 @@
 
 
 
-                        <ul class="breadcrumb-container">
+                        <ul class="breadcrumb-container row">
                             <li>
                                 <div>
                                     <div class="breadcrumb-label">
@@ -274,9 +279,8 @@
                 </div>
 
 
-                <div class="left">
                     <div class="row">
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 col-md-6">
                             <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
 
 
@@ -289,6 +293,7 @@
 
                                         <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                             <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                            <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
                                         </h:outputFormat>
 
                                     </h3>
@@ -300,7 +305,7 @@
                                         jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
                                         title="#{msgs.plugin_workflow_entity_createBibliography}"
                                         data-toggle="tooltip"
-                                        data-placement="bottom"
+                                        data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
                                         >
                                         <i class="fa fa-plus-circle margin-right-5 big-icon" />
                                     </button>
@@ -309,7 +314,7 @@
                                 </div>
                                 <div
                                     class="box-content nopadding"
-                                    jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color}; min-height: 600px;">
+                                    jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
 
                                     <h:form
                                         styleClass="form-horizontal form-bordered"
@@ -352,18 +357,24 @@
                                                                 for="field_#{status.index}"
                                                                 value="#{msgs[configuredField.label]}" />
                                                             <!-- publish button -->
+                                                            <h:panelGroup id="pubBtn">
                                                             <button
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="toggle-export"
-                                                                jsf:rendered="#{field.displayPublishButton}">
+                                                                jsf:rendered="#{field.displayPublishButton}"
+                                                                title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
                                                                 <f:ajax
-                                                                    execute="@this"
-                                                                    render="@this" />
+                                                                    execute="pubBtn"
+                                                                    render="pubBtn" />
                                                                 <f:setPropertyActionListener
                                                                     value="#{not field.publishField.booleanValue}"
                                                                     target="#{field.publishField.booleanValue}" />
                                                             </button>
+                                                            </h:panelGroup>
 
                                                             <!-- delete button -->
                                                             <button
@@ -372,7 +383,7 @@
                                                                 jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
                                                                 title="#{msgs.plugin_workflow_entity_delete}"
                                                                 data-toggle="tooltip"
-                                                                data-placement="bottom"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
                                                                 >
                                                                 <i class="fa fa-minus-circle" />
                                                                 <f:ajax
@@ -386,7 +397,11 @@
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="duplicate"
                                                                 jsf:rendered="#{field.configField.repeatable}"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}">
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
+                                                                title="#{msgs.plugin_workflow_entity_duplicate}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa fa-plus-circle" />
                                                                 <f:ajax
                                                                     execute="@this"
@@ -398,7 +413,11 @@
                                                                 jsf:rendered="#{field.allowSources}"
                                                                 jsf:id="addSource"
                                                                 class="btn pull-right toggle "
-                                                                jsf:onclick="$('#sourceSearchBox').modal('show');">
+                                                                jsf:onclick="$('#sourceSearchBox').modal('show');"
+                                                                title="#{msgs.plugin_workflow_entity_addSource}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa fa-quote-left" />
                                                                 <f:ajax
                                                                     execute="@this"
@@ -682,12 +701,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
-                </div>
-                <div class="right">
-                    <div class="row flex">
+
+
+
+                    <div class="col-sm-12 col-md-6">
                         <h:form>
                             <ui:repeat
                                 var="type"
@@ -700,7 +719,7 @@
                         </h:form>
                     </div>
 
-                </div>
+                </div> <!-- end row -->
 
 
 
@@ -713,10 +732,7 @@
 
             </div>
             <div class="row editor-actions">
-                <h:form
-                    styleClass="col-md-12"
-                >
-
+                <h:form styleClass="col-sm-12">
 
                     <button
                         class="btn btn-green pull-right"
