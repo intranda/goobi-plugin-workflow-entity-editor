@@ -24,7 +24,6 @@
 
 .head ul {
     list-style-type: none;
-    float: left;
     margin: 0;
     padding: 2px 5px;
 }
@@ -75,6 +74,11 @@
 .breadcrumb-button {
     padding: 2px 0px;
     background: #fff;
+}
+
+.breadcrumb-button span {
+    display: flex;
+    align-items: center;
 }
 
 .breadcrumb-button i {
@@ -357,6 +361,7 @@ body,
   border-color: var(--bg-hv-nav-bar);
 }
 
+
 /* Actions buttons on the bottom */
 /* borders to make  `Generate Bibliography` btn clearly visible on new content bg color */
 .editor-actions {
@@ -380,7 +385,11 @@ body,
   display: flex;
   justify-content: space-between;
   background-color: #fff;
-  padding-right: 10px !important;
+  padding-right: 1rem !important;
+}
+
+.entity-box .box-title {
+  padding-right: unset;
 }
 
 .box .box-title h3 {
@@ -391,9 +400,10 @@ body,
   display: flex;
   color: #fff;
 }
+
 .btn--generateBibliography:hover {
   background-color: unset;
-  color: #333;
+  color: #ccc;
   text-decoration: none;
 }
 
@@ -411,9 +421,123 @@ body,
   align-items: center;
 }
 
+/* currentColor is defined in a style tag in
+ * tags/io/goobi/entity_breadcrumb.xhtml */
+.breadcrumb-button-group {
+  border: 1px solid currentColor !important;
+}
+
+.breadcrumb-button-group .breadcrumb-button {
+  color: currentColor !important;
+}
+
+.badge:hover {
+ background-image: linear-gradient(rgb(0 0 0/10%) 0 0);
+}
 
 
+/* Entity boxes */
+.entity-box {
+  --padding: 1rem;
+}
 
+.entity-box h3 {
+  display: flex;
+  align-items: center;
+}
+
+.entity-box .box-title {
+    padding-top: var(--padding) !important;
+}
+.entity-box .box-content {
+    padding-bottom: var(--padding) !important;
+}
+
+.entity-box .box-title i {
+  margin: 0 8px 0 0 !important;
+}
+
+
+.entity-box .grid-container {
+  display: grid;
+  grid-template-columns: 50px repeat(2, minmax(0, 1fr)) 50px;
+}
+
+.entity-box .flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sources-head.grid-container {
+  padding: 0 var(--padding);
+}
+
+.sources-head__item {
+  margin-bottom: 4px;
+  font-weight: bold;
+  color: #333;
+}
+.sources-head__item:first-child {
+  margin-left: calc(var(--padding) * -1);
+}
+.sources-head__item:nth-child(4) {
+  margin-right: calc(var(--padding) * -1);
+}
+
+
+.grid-container .badge-bordered {
+  margin: 0;
+  padding: 2px 6px;
+}
+
+.sources-head__item {
+  background: #eee;
+}
+
+[id$="entity"] {
+  grid-column-start: 2;
+  grid-column-end: -1;
+  margin-bottom: 8px;
+}
+
+.sources {
+  margin: 0 2px;
+  max-width: 90%;
+}
+
+.sources__btn {
+  padding: 0;
+  margin: 0;
+  text-align: start;
+}
+.sources__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) 50px;
+  color: #333;
+}
+
+.sources__key {
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+.sources__val {
+  grid-column-start: 2;
+}
+
+.p-0 {
+    padding: 0;
+}
+
+.pe-8 {
+    padding-right: 8px;
+}
+
+@media (max-width: 991px) {
+    .entity-box.col-sm-6 {
+        padding: 0;
+    }
+}
 
 @media only screen and (max-width: 1440px) {
     .grid {
