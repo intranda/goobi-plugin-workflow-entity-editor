@@ -60,7 +60,7 @@
 .breadcrumb-label {
     display: block;
     padding: 4px 6px;
-    transform: skew(45deg);
+    /*transform: skew(45deg);*/
     margin-top: 3px;
     /*     margin-left: -10px; */
     /*     border: 1px solid #000; */
@@ -73,7 +73,7 @@
     /*     padding: 2px 6px; */
     float: left;
     background: #fff;
-    transform: skew(45deg);
+    /*transform: skew(45deg);*/
     margin-top: 3px;
 }
 
@@ -98,7 +98,7 @@
 
 .skew-fix {
     display: inline-block;
-    transform: skew(-45deg);
+    /*transform: skew(-45deg);*/
     margin-left: 10px;
     margin-right: 10px;
     height: 23px;
