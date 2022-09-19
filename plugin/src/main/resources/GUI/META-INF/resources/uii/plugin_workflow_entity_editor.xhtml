@@ -756,21 +756,39 @@
                     </button>
 
 
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exportSingle"
-                        jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
-                        <i class="fa fa-globe margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
-                    </button>
+                    <div class="dropup dropdown--exportBtn">
 
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exportAll"
-                        jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
-                        <i class="fa fa-globe margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
-                    </button>
+                        <button
+                            jsf:id="exportBtnDropdownToggle"
+                            class="btn"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            onclick="switchExpanded(this.id)"
+                            data-toggle="dropdown">
+                            <i class="fa fa-globe big-icon" />
+                            #{msgs.plugin_workflow_entity_export}
+                            <span class="caret"></span>
+                        </button>
+
+                        <div class="dropdown-menu">
+
+                            <button
+                                class="btn btn-link"
+                                jsf:id="exportSingle"
+                                jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
+                            </button>
+
+                            <button
+                                class="btn btn-link"
+                                jsf:id="exportAll"
+                                jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
+                            </button>
+
+                        </div>
+
+                    </div>
 
                 </h:form>
             </div>
