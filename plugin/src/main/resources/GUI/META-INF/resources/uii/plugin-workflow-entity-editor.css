@@ -423,7 +423,8 @@ body,
 }
 .box-title__actions button {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  margin: 0;
 }
 
 /* currentColor is defined in a style tag in
@@ -448,18 +449,34 @@ body,
 
 .entity-box h3 {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  gap: var(--gap);
+  margin: 0;
 }
 
 .entity-box .box-title {
     padding-top: var(--padding) !important;
+    gap: var(--gap);
 }
-.entity-box .box-content {
-    padding-bottom: var(--padding) !important;
+
+.entity-box .box-title__actions {
+  gap: var(--gap);
+}
+
+.entity-box .box-title__actions button {
+
+  background-color: transparent;
+  padding: 0;
+  padding-top: 4px;
+
 }
 
 .entity-box .box-title i {
-  margin: 0 8px 0 0 !important;
+  margin: 0 !important;
+}
+
+.entity-box .box-content {
+    padding-bottom: var(--padding) !important;
 }
 
 
