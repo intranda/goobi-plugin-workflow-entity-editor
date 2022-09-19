@@ -212,10 +212,6 @@
     opacity: .5;
 }
 
-.modal-dialog {
-    width: 75%;
-}
-
 .noborder {
     border: 0 !important;
 }
@@ -368,23 +364,6 @@ body,
 }
 
 
-/* Actions buttons on the bottom */
-/* borders to make  `Generate Bibliography` btn clearly visible on new content bg color */
-.editor-actions {
-  margin-top: 1.6rem;
-}
-
-.editor-actions button {
-  margin-bottom: .8rem;
-  border: 1px solid var(--clr-neutral-800);
-}
-
-[id$="save"] {
-    border-color: var(--clr-success-400) !important;
-}
-[id$="save"]:hover {
-    border-color: var(--clr-success-600) !important;
-}
 
 /* `linked entities` boxes */
 .box-title {
@@ -596,6 +575,160 @@ body,
   border-bottom: 1px solid var(--clr-neutral-600);
   padding-bottom: 8px;
 }
+
+/* Actions buttons on the bottom */
+.editor-actions {
+  margin-top: 1.6rem;
+}
+
+.editor-actions form {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--gap);
+}
+
+.editor-actions button {
+  margin-bottom: .8rem;
+  border: 1px solid var(--clr-neutral-800);
+}
+
+[id$="save"] {
+    margin-bottom: 0 !important;
+    border-color: var(--clr-success-400) !important;
+    color: var(--bg-content);
+    order: 1;
+}
+
+[id$="save"]:hover {
+    border-color: var(--clr-success-600) !important;
+    color: var(--bg-content);
+}
+
+.dropdown--exportBtn [id$="exportBtnDropdownToggle"] {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+  height: 100%;
+  background-color: #666;
+  margin-bottom: 0;
+  color: var(--bg-content);
+}
+
+.dropdown--exportBtn [id$="exportBtnDropdownToggle"]:hover {
+  background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+  background-color: #666;
+  color: var(--bg-content);
+}
+
+.dropdown--exportBtn .dropdown-menu {
+  left: unset;
+  right: 0;
+
+}
+
+.dropdown--exportBtn button:not([id$="exportBtnDropdownToggle"]) {
+  border: 0;
+  width: 100%;
+  text-align: left;
+  margin: 0;
+  padding: .8rem 1.6rem;
+  background-color: transparent;
+}
+
+.dropdown--exportBtn button:hover {
+  background-color: var(--bg-content);
+  text-decoration: none;
+  color: var(--clr-fg);
+}
+
+/* Modals */
+
+#searchEntityModalContent {
+  background-color: var(--bg-content) !important;
+  background: var(--bg-content) !important;
+}
+
+.modal__gnd-list {
+  display: grid;
+  gap: var(--gap);
+}
+
+.modal__gnd-list .row {
+	border: 1px solid var(--clr-neutral-600);
+	padding: 2.4rem 1.6rem !important;
+}
+
+.modal__gnd-list .control-label {
+  background-color: transparent;
+}
+.modal__gnd-list .col-sm-11 {
+  padding: 0 !important;
+}
+
+.entity-modal .modal-dialog {
+    width: 80vw;
+    max-width: 84rem;
+    margin: auto;
+}
+
+.entity-modal__search-container {
+    padding-bottom: 2.4rem;
+}
+
+.entity-modal__search-bar {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--gap) * 2);
+}
+
+.entity-modal__search-bar label {
+    flex: 1 0 auto;
+}
+.entity-modal__search-bar input {
+    height: 3rem;
+}
+
+.entity-modal__search-results {
+    display: block;
+    max-height: 64vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.entity-modal__card {
+    background-color: #fff;
+    margin: .8rem;
+
+}
+
+
+[id$="createNewEntity"] {
+  display: flex;
+  gap: calc(var(--gap) * 2);
+  justify-content: space-between;
+}
+
+.create-new-entity__actions {
+    margin-left: auto;
+}
+
+.entity-modal .vocabulary-searchfield .col-sm-3 {
+  margin-left: 0;
+  padding-left: 0;
+
+}
+
+.entity-modal .vocabulary-searchfield .col-sm-3 label  {
+  font-weight: bold;
+}
+
+.modal-footer [title="Cancel"] {
+    border: 1px solid var(--clr-neutral-600);
+}
+
+
+
+/* Utilities */
 
 .p-0 {
     padding: 0;
