@@ -35,9 +35,9 @@
 
 
                     <button
-                        class="btn nobackground"
+                        class="btn"
                         jsf:id="addRelationship"
-                        style="color:  #{type.key.color}; margin-right: 5px;"
+                        style="color:  #{type.key.color};"
                         jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
                         jsf:onclick="$('#entitySearchBox').modal('show');"
                         title="#{msgs.plugin_workflow_entity_addRelationship}"
@@ -53,9 +53,9 @@
 
                     <h:panelGroup rendered="#{ type.value.size() != 0 }">
                     <button
-                        class="btn nobackground"
+                        class="btn"
                         jsf:id="showContent"
-                        style="color:  #{type.key.color}; margin-right: 5px;"
+                        style="color:  #{type.key.color};"
                         title="#{ type.key.showLinkedContent == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
                         data-toggle="tooltip"
                         data-placement="top">
@@ -96,10 +96,9 @@
                             value="#{type.value}">
 
 
-
                                 <button
                                     jsf:id="toggleSourceVisibility"
-                                    class="btn btn--icon-light source-btn sources__btn nobackground"
+                                    class="btn btn--icon-light source-btn sources-row__item sources__btn nobackground"
                                     title="#{ relationship.showDetails == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
                                     data-toggle="tooltip"
                                     data-placement="top"
@@ -116,17 +115,15 @@
                                         target="#{relationship.showDetails}" />
                                 </button>
 
-                                <div>
-                                    <h:outputText
-                                        value="#{relationship.displayName}"
-                                        style="color: #333" />
+                                <div class="sources-row__item">
+                                    #{relationship.displayName}
                                 </div>
-                                <div>
-                                    <h:outputText
-                                        value="#{relationship.processStatus}"
-                                        styleClass="badge-bordered" />
+                                <div class="sources-row__item sources-row__item--status">
+                                    <span>
+                                        #{relationship.processStatus}
+                                    </span>
                                 </div>
-                                <div>
+                                <div class="sources-row__item sources-row__item--actions">
                                     <button
                                         class="btn nobackground"
                                         jsf:id="removeRelationship"
@@ -146,7 +143,7 @@
                                     <button
                                         class="btn btn-mini"
                                         jsf:id="editRelationship"
-                                        style="background-color: #{type.key.color}; color: #fff; margin-left: 5px;"
+                                        style="background-color: #{type.key.color}; color: #fff;"
                                         jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
                                         title="#{msgs.plugin_workflow_entity_editRelationship}"
                                         data-toggle="tooltip"
@@ -170,7 +167,9 @@
                                                 #{msgs.plugin_workflow_entity_editor_type}:
                                             </div>
                                             <div class="sources__val">
-                                                #{relationship.type}
+                                                <span>
+                                                    #{relationship.type}
+                                                </span>
                                             </div>
                                         </h:panelGroup>
 
