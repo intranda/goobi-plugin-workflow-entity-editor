@@ -604,6 +604,10 @@ body,
     color: var(--bg-content);
 }
 
+.dropup {
+    position: relative;
+}
+
 .dropdown--exportBtn [id$="exportBtnDropdownToggle"] {
   display: flex;
   gap: var(--gap);
