@@ -1,10 +1,15 @@
 :root {
   --bg-content: #f2f3f4;
+  --clr-neutral-600: #BCBCBC;
   --clr-neutral-800: #666;
+  --clr-neutral-900: #555;
+  --fg-400: #333;
 
   --bg-nav-bar: #1B2330;
   --bg-hv-nav-bar: #324158;
   --fg-hv-nav-bar: #fff; --clr-success-400: #339933;
+
+  --gap: .8rem;
 }
 
 
