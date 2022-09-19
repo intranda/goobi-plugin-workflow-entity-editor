@@ -744,6 +744,14 @@ body,
     }
 }
 
+
+@media only screen and (min-width: 1440px) {
+
+    .entity-box {
+        padding-right: var(--gap);
+    }
+}
+
 @media only screen and (max-width: 1440px) {
     .grid {
         display: grid;
