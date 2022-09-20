@@ -162,7 +162,9 @@
                                                             value="#{configuredField.metadataList}"
                                                             rendered="#{configuredField.showInSearch}">
 
-                                                            <h:panelGroup styleClass="form-group">
+                                                            <h:panelGroup
+                                                                styleClass="form-group"
+                                                                rendered="#{not empty field.metadata.value}">
                                                                 <h:panelGroup
                                                                     styleClass="col-sm-3 control-label"
                                                                     rendered="#{field.configField.group or field.metadata.value != null}">
