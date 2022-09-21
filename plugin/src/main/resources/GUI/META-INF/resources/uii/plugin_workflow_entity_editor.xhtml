@@ -748,10 +748,9 @@
                 <h:form styleClass="col-sm-12">
 
                     <button
-                        class="btn btn-green pull-right"
+                        class="btn"
                         jsf:id="save"
                         jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
-                        <i class="fa fa-floppy-o margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.save}" />
                     </button>
 
@@ -765,7 +764,6 @@
                             aria-expanded="false"
                             onclick="switchExpanded(this.id)"
                             data-toggle="dropdown">
-                            <i class="fa fa-globe big-icon" />
                             #{msgs.plugin_workflow_entity_export}
                             <span class="caret"></span>
                         </button>
