@@ -316,6 +316,30 @@
 }
 
 
+/* Layout */
+
+/* Reset inline styles `template.html` */
+.container-fluid {
+  padding-bottom: 0 !important;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 4rem);
+}
+
+.main-wrapper {
+  flex: 1;
+}
+
+.editor-actions {
+  margin-bottom: 2.4rem;
+
+}
+
+
+
 
 /* content background color */
 body,
