@@ -108,6 +108,11 @@
     color: inherit;
 }
 
+.box .box-title h3 i {
+  min-width: 24px;
+  max-width: 24px;
+}
+
 .toggle {
     background: #f6f6f6;
     padding: 0px 2px;
