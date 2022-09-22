@@ -166,7 +166,7 @@
                                                                 styleClass="form-group">
                                                                 <h:panelGroup
                                                                     styleClass="col-sm-3 control-label"
-                                                                    rendered="#{field.configField.group or field.metadata.value != null}">
+                                                                    rendered="#{field.filled}">
                                                                     <h:outputLabel
                                                                         for="field_#{status.index}"
                                                                         value="#{msgs[configuredField.label]}" />
