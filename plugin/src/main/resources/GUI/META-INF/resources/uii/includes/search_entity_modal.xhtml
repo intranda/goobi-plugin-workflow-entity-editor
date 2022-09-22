@@ -163,10 +163,9 @@
                                                             rendered="#{configuredField.showInSearch}">
 
                                                             <h:panelGroup
-                                                                styleClass="form-group">
+                                                                styleClass="form-group" rendered="#{field.showFieldInSearchResult}">
                                                                 <h:panelGroup
-                                                                    styleClass="col-sm-3 control-label"
-                                                                    rendered="#{field.filled}">
+                                                                    styleClass="col-sm-3 control-label">
                                                                     <h:outputLabel
                                                                         for="field_#{status.index}"
                                                                         value="#{msgs[configuredField.label]}" />

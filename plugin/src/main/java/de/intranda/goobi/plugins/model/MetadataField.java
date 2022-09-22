@@ -282,6 +282,20 @@ public class MetadataField {
         return null;
     }
 
+    public boolean showFieldInSearchResult() {
+        if (group != null) {
+            for (MetadataField val : subfields) {
+                if (!"publish".equals(val.getConfigField().getFieldType()) && val.getConfigField().isShowInSearch() && !val.getConfigField().isGroup()
+                        && StringUtils.isNotBlank(val.getMetadata().getValue())) {
+                    return true;
+                }
+            }
+        } else if (StringUtils.isNotBlank(metadata.getValue())) {
+            return true;
+        }
+        return false;
+    }
+
     @Data
     @RequiredArgsConstructor
     public class SourceField {
