@@ -282,7 +282,7 @@ public class MetadataField {
         return null;
     }
 
-    public boolean showFieldInSearchResult() {
+    public boolean isShowFieldInSearchResult() {
         if (group != null) {
             for (MetadataField val : subfields) {
                 if (!"publish".equals(val.getConfigField().getFieldType()) && val.getConfigField().isShowInSearch() && !val.getConfigField().isGroup()
