@@ -52,35 +52,31 @@
                                 escape="false" />
                         </p>
 
-                        <div class="row form-group vocabulary-searcharea nobackground">
-                            <div class="col-sm-11 vocabulary-searchfield">
+                        <div class="vocab-search-modal__search-bar">
 
-                                <x:inputText
-                                    id="vocabularySearchInput"
-                                    styleClass="form-control"
-                                    value="#{NavigationForm.workflowPlugin.sourceSearchValue}" />
-                            </div>
-                            <div class="col-sm-1 noborder">
-                                <button
-                                    jsf:id="vocabularySearchAction"
-                                    class="btn btn-primary btn--loader"
-                                    jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
-                                    <i
-                                        class="fa fa-search"
-                                        aria-hidden="true"></i>
-                                    #{msgs.search}
+                            <x:inputText
+                                id="vocabularySearchInput"
+                                styleClass="form-control"
+                                value="#{NavigationForm.workflowPlugin.sourceSearchValue}" />
+                            <button
+                                jsf:id="vocabularySearchAction"
+                                class="btn btn-primary btn--loader"
+                                jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
+                                <i
+                                    class="fa fa-search"
+                                    aria-hidden="true"></i>
+                                #{msgs.search}
 
-                                    <f:passThroughAttribute
-                                        name="data-toggle"
-                                        value="tooltip" />
-                                    <f:ajax
-                                        execute="@form"
-                                        render="vocabularySearchlist" />
-                                </button>
-                            </div>
-
-
+                                <f:passThroughAttribute
+                                    name="data-toggle"
+                                    value="tooltip" />
+                                <f:ajax
+                                    execute="@form"
+                                    render="vocabularySearchlist" />
+                            </button>
                         </div>
+
+                    </div>
 
 
                         <h:panelGroup id="vocabularySearchlist">
@@ -89,7 +85,7 @@
                                     <x:dataList
                                         value="#{NavigationForm.workflowPlugin.records}"
                                         var="record">
-                                        <div class="row form-group nobackground">
+                                        <div class="row vocab-search-modal__card">
                                             <div class="col-sm-11 vocabulary-searchfield">
                                                 <x:dataList
                                                     value="#{record.fields}"
@@ -105,8 +101,8 @@
                                                         </div>
                                                     </div>
                                                 </x:dataList>
-                                            </div>
 
+                                            </div>
                                             <div class="col-sm-1 vocabulary-searchfield">
                                                 <button
                                                     jsf:id="check"
@@ -119,12 +115,11 @@
                                                     <i class="fa fa-check" />
                                                 </button>
                                             </div>
-                                        </div>
 
-                                        <hr />
+                                    </div>
                                     </x:dataList>
 
-                                </div>
+                            </div>
                             </ui:fragment>
 
                             <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
@@ -132,7 +127,6 @@
                             </ui:fragment>
 
                         </h:panelGroup>
-                    </div>
                 </h:panelGroup>
             </div>
         </h:panelGroup>

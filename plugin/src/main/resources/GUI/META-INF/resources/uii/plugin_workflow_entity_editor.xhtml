@@ -249,17 +249,14 @@
 
 
 
+                        <div class="breadcrumbs">
+                        <div class="breadcrumb-label">
+                            <h:outputText
+                                styleClass="skew-fix"
+                                style="padding-left: 5px"
+                                value="My Tabs:" />
+                        </div>
                         <ul class="breadcrumb-container row">
-                            <li>
-                                <div>
-                                    <div class="breadcrumb-label">
-                                        <h:outputText
-                                            styleClass="skew-fix"
-                                            style="padding-left: 5px"
-                                            value="My Tabs:" />
-                                    </div>
-                                </div>
-                            </li>
                             <ui:repeat
                                 var="breadcrumb"
                                 value="#{NavigationForm.workflowPlugin.breadcrumbList}">
@@ -288,6 +285,7 @@
                             </li>
                             -->
                         </ul>
+                    </div>
                     </h:form>
                 </div>
 
@@ -636,7 +634,7 @@
                                                                                         class="toggle"
                                                                                         style="width: 16px;"
                                                                                         alt="Vocabulary"
-                                                                                        src="template/img/Icons_Vocabulary_grey.png" />
+                                                                                        src="template/img/Icons_Vocabulary_color.png" />
                                                                                     <img
                                                                                         class="toggle"
                                                                                         style="width: 16px;"

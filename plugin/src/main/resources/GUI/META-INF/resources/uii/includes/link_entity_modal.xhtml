@@ -28,7 +28,7 @@
                     styleClass="modal-content"
                     layout="block"
                     id="entityModalContent">
-                    <h:form styleClass="form-horizontal form-bordered">
+                    <h:form>
 
                         <div class="modal-header">
                             <button
@@ -52,21 +52,17 @@
 
                             <h:panelGroup
                                 layout="block"
-                                styleClass="row form-group vocabulary-searcharea nobackground"
+                                styleClass="form-group vocabulary-searcharea link-entity-modal__search-container"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
-                                <div class="col-sm-2 noborder">
+                                <div class="link-entity-modal__search-bar">
                                     <h:outputLabel
                                         value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                         for="entitySearchInput" />
-                                </div>
-                                <div class="col-sm-8 vocabulary-searchfield">
                                     <x:inputText
                                         id="entitySearchInput"
                                         styleClass="form-control"
                                         value="#{NavigationForm.workflowPlugin.entitySearch}" />
-                                </div>
 
-                                <div class="col-sm-2 noborder">
                                     <button
                                         class="btn btn-primary"
                                         jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
@@ -88,13 +84,12 @@
                             <h:panelGroup
                                 layout="block"
                                 id="createEntity"
-                                styleClass="row form-group vocabulary-searcharea nobackground">
+                                styleClass="row form-group vocabulary-searcharea">
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
-                                    <div class="col-sm-2 noborder"></div>
-                                    <div class="col-sm-8 noborder">
-                                        <h:outputText value="#{msgs.NORM_noHits}" />
+                                    <div class="create-new-entity__hits">
+                                        #{msgs.NORM_noHits}
                                     </div>
-                                    <div class="col-sm-2 noborder">
+                                    <div class="create-new-entity__actions">
                                         <button
                                             class="btn btn-primary"
                                             jsf:id="createEntityButton"
@@ -102,10 +97,9 @@
                                             <i
                                                 class="fa fa-plus"
                                                 style="margin-right: 5px;" />
-                                            <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
+                                                <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
 
                                         </button>
-
                                     </div>
                                 </ui:fragment>
                             </h:panelGroup>
@@ -114,16 +108,15 @@
                                 id="entityList"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
-                                    <hr style="border-color: #1e74c5" />
 
-                                    <div class="modal__gnd-list scrollable">
+                                    <div class="modal__gnd-list link-entity-modal__search-results">
                                         <x:dataList
                                             value="#{NavigationForm.workflowPlugin.entities}"
                                             var="record">
+                                            <div class="row link-entity-modal__card">
                                             <h3>
-                                                <h:outputText value="#{record.entityName}" />
+                                                #{record.entityName}
                                             </h3>
-                                            <div class="row form-group nobackground">
                                                 <div class="col-sm-11 vocabulary-searchfield">
                                                     <x:dataList
                                                         value="#{record.metadataFieldList}"
@@ -200,7 +193,6 @@
                                                 </div>
                                             </div>
 
-                                            <hr style="border-color: #1e74c5;" />
                                         </x:dataList>
 
                                     </div>
@@ -222,7 +214,7 @@
                                 </h3>
 
                                 <div
-                                    class="row form-group nobackground"
+                                    class="row form-group"
                                     style="border-color: #368ee0;">
                                     <div class="col-sm-11 vocabulary-searchfield">
 
@@ -285,12 +277,9 @@
                                     <div class="col-sm-1 vocabulary-searchfield"></div>
                                 </div>
 
-
-
-
                                 <h:panelGroup
                                     layout="block"
-                                    styleClass="row form-group nobackground"
+                                    styleClass="row form-group"
                                     id="relationship">
 
                                     <!-- select relationship type -->
