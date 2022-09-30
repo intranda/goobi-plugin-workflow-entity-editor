@@ -16,7 +16,22 @@
     <composite:interface>
     </composite:interface>
 
+
     <ui:define name="navigation">
+
+	    <script type="text/javascript">
+        	function switchExpanded(id){
+            var x = document.getElementById(id).getAttribute("aria-expanded");
+            if (x == "true"){
+              x = "false"
+            } else {
+              x = "true"
+            }
+            document.getElementById(id).setAttribute("aria-expanded", x);
+          }
+        </script>
+
+
         <h:form id="menu">
             <div>
                 <a
@@ -24,6 +39,14 @@
                     id="brand"
                     jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}"> </a>
             </div>
+
+            <button
+                class="btn pull-left"
+                jsf:id="exit"
+                jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
+                <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
+            </button>
+
             <div class="user pull-right">
                 <ul class="icon-nav">
                     <!-- Icon to enable help texts -->
@@ -59,7 +82,6 @@
                                 data-toggle="dropdown"
                                 aria-haspopup="true"
                                 class="dropdown-toggle btn"
-                                title="#{msgs.spracheAendern}"
                                 jsf:rel="tooltip">
 
                                 <img
@@ -166,322 +188,8 @@
 
     <ui:define name="content">
 
-        <style>
-.grid {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: auto auto;
-    grid-row-gap: 1px;
-    grid-column-gap: 9px;
-}
-
-.grid .head {
-    grid-column-start: span 2;
-}
-
-.head ul {
-    list-style-type: none;
-    float: left;
-    margin: 0;
-    padding: 2px 5px;
-}
-
-.head ul li {
-    float: left;
-    margin-right: 10px;
-}
-
-.grid .left, .grid .right {
-    min-height: 300px;
-}
-
-.grid .right {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    align-items: stretch;
-    align-content: stretch;
-}
-
-.flex {
-    flex-grow: 1;
-}
-
-/* #f6f6f6 */
-.breadcrumb-label {
-    display: block;
-    padding: 4px 6px;
-    transform: skew(45deg);
-    margin-top: 3px;
-    /*     margin-left: -10px; */
-    /*     border: 1px solid #000; */
-    background-color: #f6f6f6;
-    margin-left: -15px;
-}
-
-.breadcrumb-button-group {
-    display: block;
-    /*     padding: 2px 6px; */
-    float: left;
-    background: #fff;
-    transform: skew(45deg);
-    margin-top: 3px;
-}
-
-.breadcrumb-button {
-    padding: 2px 0px;
-    background: #fff;
-}
-
-.breadcrumb-button i {
-    margin-right: 5px;
-}
-
-.box-content {
-    /*     min-height: 200px; */
-    
-}
-
-.skew-fix {
-    display: inline-block;
-    transform: skew(-45deg);
-    margin-left: 10px;
-    margin-right: 10px;
-    height: 23px;
-}
-
-.box .box-title h3 {
-    color: inherit;
-}
-
-.toggle {
-    background: #f6f6f6;
-    padding: 0px 2px;
-}
-
-.nobackground {
-    background: #fff;
-    padding: 0px 2px;
-}
-
-.toggle-on {
-    color: green;
-}
-
-.badge-empty {
-    background-color: #fff;
-    border: 1px solid #777;
-}
-
-.badge-filled {
-    
-}
-
-.badge {
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    margin-top: 5px;
-    font-weight: normal;
-}
-
-.badge a {
-    color: #fff;
-    /*     font-size: larger; */
-}
-
-.badge-empty a {
-    color: #777;
-}
-
-.badge-area {
-    display: flex;
-    /*     justify-content: flex-end; */
-    flex-wrap: wrap;
-    border-bottom: 1px solid #ddd;
-    background: #f6f6f6;
-}
-
-.badge-bordered {
-    color: #666;
-    border-radius: 10px;
-    text-align: center;
-    white-space: nowrap;
-    display: inline-block;
-    min-width: 10px;
-    padding: 3px 7px;
-    font-size: 12px;
-    line-height: 1;
-    margin-left: 5px;
-    margin-right: 5px;
-    border: 1px solid;
-}
-
-.field-label {
-    color: #666;
-    padding-bottom: 5px;
-    display: block;
-}
-
-.field-label-language {
-    margin-top: 5px;
-}
-
-.language-field {
-    display: grid;
-    grid-template-columns: 20% 80%;
-    grid-template-rows: auto;
-}
-
-.group-metadata:not(:last-child) {
-    margin-bottom: 10px;
-}
-
-.vocabulary-search {
-    display: grid;
-    grid-template-columns: 90% 10%;
-    grid-template-rows: auto;
-}
-
-.viaf-btn {
-    padding: 2px 5px;
-    border: 1px solid #ccc;
-    background: #fff;
-    height: 26px;
-}
-
-.toggle-btn, .toggle-btn:hover {
-    background: #fff;
-}
-
-.source-btn, source-btn:hover {
-    background: #fff;
-    padding: 0px 5px;
-}
-
-.viaf-btn img {
-    width: 12px;
-    height: 12px;
-}
-
-.viaf-btn:hover {
-    background: #fff;
-}
-
-.form-group .vocabulary-searchfield {
-    border-left: 0 !important;
-}
-
-.vocabulary-searcharea {
-    border-bottom: 0 !important;
-}
-
-.source {
-    display: grid;
-    grid-template-columns: 90% 10%;
-    grid-template-rows: auto;
-}
-
-.source:not(:last-child) {
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-}
-
-.close {
-    color: #fff;
-    float: right;
-    opacity: .5;
-}
-
-.modal-dialog {
-    width: 75%;
-}
-
-.noborder {
-    border: 0 !important;
-}
-
-.nobackground {
-    background: #fff !important;
-}
-
-.main-area {
-    max-height: calc(100vh - 322px);
-    overflow-y: auto;
-}
-
-.relation-row {
-    display: grid;
-    grid-template-columns: 50px auto 80px 50px;
-    grid-template-rows: auto auto;
-    margin-bottom: 10px;
-}
-
-.sources {
-    padding-left: 0px;
-    padding-right: 0px;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: -10px;
-}
-
-.noborder {
-    border: 0;
-    background: #fff !important;
-}
-
-.breadcrumb-container {
-    overflow: hidden;
-}
-
-.btn-text {
-    font-size: 20px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-left: 5px;
-}
-
-.entity-search {
-    margin-left: 10px;
-    margin-top: 10px;
-}
-
-.big-icon {
-    font-size: 20px !important;
-}
-
-.header {
-    font-weight: bold;
-    background: #f6f6f6;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    color: #555;
-}
-
-@media only screen and (max-width: 1440px) {
-    .grid {
-        display: grid;
-        grid-template-columns: 70% 30%;
-        grid-template-rows: auto auto;
-        grid-row-gap: 1px;
-        grid-column-gap: 9px;
-    }
-    .entity-box {
-        width: 100%;
-    }
-}
-</style>
-
         <main>
-
-
-
-
-
-
-            <div class="grid">
+            <div class="main-wrapper">
                 <div class="head">
                     <h:form
                         id="headform"
@@ -507,16 +215,26 @@
                                             var="type"
                                             value="#{NavigationForm.workflowPlugin.allEntityTypes}">
 
+                                            <style>
+                                                .entity-search--#{type.plural} {
+                                                    background-color: #{type.color};
+                                                    color: #fff;
+                                                }
+                                                .entity-search--#{type.plural}:hover {
+                                                    background-color: #{type.color};
+                                                    background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+                                                    color: #fff;
+                                                }
+                                            </style>
+
                                             <button
-                                                style="background-color: #{type.color}; color: #fff"
-                                                class="btn entity-search"
+                                                class="btn entity-search entity-search--#{type.plural}"
                                                 jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
                                                 jsf:onclick="$('#searchEntitySearchBox').modal('show');">
                                                 <i class="fa #{type.icon} big-icon" />
                                                 <h:outputText
                                                     value="#{type.plural}"
                                                     styleClass="btn-text" />
-                                                <i class="fa fa-search big-icon" />
                                                 <f:ajax
                                                     execute="@this"
                                                     render=":searchEntityModalContent" />
@@ -531,17 +249,14 @@
 
 
 
-                        <ul class="breadcrumb-container">
-                            <li>
-                                <div>
-                                    <div class="breadcrumb-label">
-                                        <h:outputText
-                                            styleClass="skew-fix"
-                                            style="padding-left: 5px"
-                                            value="My Tabs:" />
-                                    </div>
-                                </div>
-                            </li>
+                        <div class="breadcrumbs">
+                        <div class="breadcrumb-label">
+                            <h:outputText
+                                styleClass="skew-fix"
+                                style="padding-left: 5px"
+                                value="My Tabs:" />
+                        </div>
+                        <ul class="breadcrumb-container row">
                             <ui:repeat
                                 var="breadcrumb"
                                 value="#{NavigationForm.workflowPlugin.breadcrumbList}">
@@ -555,6 +270,7 @@
 
                             </ui:repeat>
                             <!-- button to add new breadcrumbs -->
+                            <!--
                             <li>
                                 <button
                                     class="btn"
@@ -567,14 +283,19 @@
                                     <i class="fa fa-plus  big-icon" />
                                 </button>
                             </li>
+                            -->
                         </ul>
+                    </div>
                     </h:form>
                 </div>
 
-                <div class="left">
+
                     <div class="row">
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 col-md-6">
                             <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
+
+
+
                                 <div
                                     class="box-title"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
@@ -583,14 +304,28 @@
 
                                         <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                             <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                            <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
                                         </h:outputFormat>
 
                                     </h3>
 
+                                    <button
+                                        jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
+                                        class="btn btn-link btn--generateBibliography"
+                                        jsf:id="generateBibliography"
+                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
+                                        title="#{msgs.plugin_workflow_entity_createBibliography}"
+                                        data-toggle="tooltip"
+                                        data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                        >
+                                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
+                                    </button>
+
+
                                 </div>
                                 <div
                                     class="box-content nopadding"
-                                    jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color}; min-height: 600px;">
+                                    jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
 
                                     <h:form
                                         styleClass="form-horizontal form-bordered"
@@ -633,24 +368,34 @@
                                                                 for="field_#{status.index}"
                                                                 value="#{msgs[configuredField.label]}" />
                                                             <!-- publish button -->
+                                                            <h:panelGroup id="pubBtn">
                                                             <button
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="toggle-export"
-                                                                jsf:rendered="#{field.displayPublishButton}">
+                                                                jsf:rendered="#{field.displayPublishButton}"
+                                                                title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
                                                                 <f:ajax
-                                                                    execute="@this"
-                                                                    render="@this" />
+                                                                    execute="pubBtn"
+                                                                    render="pubBtn" />
                                                                 <f:setPropertyActionListener
                                                                     value="#{not field.publishField.booleanValue}"
                                                                     target="#{field.publishField.booleanValue}" />
                                                             </button>
+                                                            </h:panelGroup>
 
                                                             <!-- delete button -->
                                                             <button
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="remove"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}">
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
+                                                                title="#{msgs.plugin_workflow_entity_delete}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa fa-minus-circle" />
                                                                 <f:ajax
                                                                     execute="@this"
@@ -663,7 +408,11 @@
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="duplicate"
                                                                 jsf:rendered="#{field.configField.repeatable}"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}">
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
+                                                                title="#{msgs.plugin_workflow_entity_duplicate}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa fa-plus-circle" />
                                                                 <f:ajax
                                                                     execute="@this"
@@ -675,7 +424,11 @@
                                                                 jsf:rendered="#{field.allowSources}"
                                                                 jsf:id="addSource"
                                                                 class="btn pull-right toggle "
-                                                                jsf:onclick="$('#sourceSearchBox').modal('show');">
+                                                                jsf:onclick="$('#sourceSearchBox').modal('show');"
+                                                                title="#{msgs.plugin_workflow_entity_addSource}"
+                                                                data-toggle="tooltip"
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
+                                                                >
                                                                 <i class="fa fa-quote-left" />
                                                                 <f:ajax
                                                                     execute="@this"
@@ -881,7 +634,7 @@
                                                                                         class="toggle"
                                                                                         style="width: 16px;"
                                                                                         alt="Vocabulary"
-                                                                                        src="template/img/Icons_Vocabulary_grey.png" />
+                                                                                        src="template/img/Icons_Vocabulary_color.png" />
                                                                                     <img
                                                                                         class="toggle"
                                                                                         style="width: 16px;"
@@ -959,12 +712,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
-                </div>
-                <div class="right">
-                    <div class="row flex">
+
+
+
+                    <div class="col-sm-12 col-md-6">
                         <h:form>
                             <ui:repeat
                                 var="type"
@@ -977,7 +730,7 @@
                         </h:form>
                     </div>
 
-                </div>
+                </div> <!-- end row -->
 
 
 
@@ -989,46 +742,49 @@
                     id="scrollpos" />
 
             </div>
-            <div>
-                <h:form>
+            <div class="row editor-actions">
+                <h:form styleClass="col-sm-12">
 
                     <button
-                        class="btn "
-                        jsf:id="generateBibliography"
-                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}">
-                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_createBibliography}" />
-                    </button>
-
-                    <button
-                        class="btn btn-green pull-right"
+                        class="btn"
                         jsf:id="save"
                         jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
-                        <i class="fa fa-floppy-o margin-right-5 big-icon" />
                         <h:outputText value="#{msgs.save}" />
                     </button>
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exit"
-                        jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
-                        <i class="fa fa-sign-out margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
-                    </button>
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exportSingle"
-                        jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
-                        <i class="fa fa-globe margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
-                    </button>
 
-                    <button
-                        class="btn btn-lightgrey pull-right margin-right-10"
-                        jsf:id="exportAll"
-                        jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
-                        <i class="fa fa-globe margin-right-5 big-icon" />
-                        <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
-                    </button>
+
+                    <div class="dropup dropdown--exportBtn">
+
+                        <button
+                            jsf:id="exportBtnDropdownToggle"
+                            class="btn"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            onclick="switchExpanded(this.id)"
+                            data-toggle="dropdown">
+                            #{msgs.plugin_workflow_entity_export}
+                            <span class="caret"></span>
+                        </button>
+
+                        <div class="dropdown-menu">
+
+                            <button
+                                class="btn btn-link"
+                                jsf:id="exportSingle"
+                                jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
+                            </button>
+
+                            <button
+                                class="btn btn-link"
+                                jsf:id="exportAll"
+                                jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
+                            </button>
+
+                        </div>
+
+                    </div>
 
                 </h:form>
             </div>

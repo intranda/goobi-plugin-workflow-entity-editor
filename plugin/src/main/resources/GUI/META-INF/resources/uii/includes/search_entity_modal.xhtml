@@ -14,7 +14,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            styleClass="modal fade"
+            styleClass="modal fade entity-modal"
             layout="block"
             id="searchEntitySearchBox"
             tabindex="-1"
@@ -28,7 +28,7 @@
                     styleClass="modal-content"
                     layout="block"
                     id="searchEntityModalContent">
-                    <h:form styleClass="form-horizontal form-bordered">
+                    <h:form styleClass="form-horizontal">
 
                         <div class="modal-header">
                             <button
@@ -61,18 +61,14 @@
 
                             <h:panelGroup
                                 layout="block"
-                                styleClass="row form-group vocabulary-searcharea nobackground"
+                                styleClass="vocabulary-searcharea entity-modal__search-container"
                                 rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
 
                                 <!-- dropdown if type is not set -->
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.entityType == null}">
-                                    <div class="row">
-                                        <div class="col-sm-2 noborder">
                                             <h:outputLabel
                                                 value="#{msgs.plugin_workflow_entity_editor_entityType}"
                                                 for="entityTypeSelection" />
-                                        </div>
-                                        <div class="col-sm-8 vocabulary-searchfield">
                                             <h:selectOneMenu
                                                 id="entityTypeSelection"
                                                 styleClass="form-control"
@@ -83,26 +79,17 @@
                                                     itemLabel="#{t.name}"
                                                     itemValue="#{t.name}" />
                                             </h:selectOneMenu>
-                                        </div>
-
-                                    </div>
                                 </ui:fragment>
 
 
-                                <div class="row">
-                                    <div class="col-sm-2 noborder">
+                                <div class="entity-modal__search-bar">
                                         <h:outputLabel
                                             value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                             for="entitySearchInput" />
-                                    </div>
-                                    <div class="col-sm-8 vocabulary-searchfield">
                                         <x:inputText
                                             id="entitySearchInput"
                                             styleClass="form-control"
                                             value="#{NavigationForm.workflowPlugin.entitySearch}" />
-                                    </div>
-
-                                    <div class="col-sm-2 noborder">
                                         <button
                                             class="btn btn-primary"
                                             jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
@@ -118,7 +105,6 @@
                                                 render="searchEntityList" />
                                         </button>
 
-                                    </div>
                                 </div>
                             </h:panelGroup>
 
@@ -131,15 +117,14 @@
                                 <h:panelGroup
                                     layout="block"
                                     id="createNewEntity"
-                                    styleClass="row form-group vocabulary-searcharea nobackground">
+                                    styleClass="row form-group vocabulary-searcharea">
                                     <ui:fragment rendered="#{NavigationForm.workflowPlugin.entitySearch != ''}">
-                                        <div class="col-sm-2 noborder"></div>
-                                        <div class="col-sm-8 noborder">
+                                        <div class="create-new-entity__hits">
                                         	<ui:fragment rendered="#{(NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
                                             	<h:outputText value="#{msgs.NORM_noHits}" />
                                             </ui:fragment>
                                         </div>
-                                        <div class="col-sm-2 noborder">
+                                        <div class="create-new-entity__actions">
                                             <button
                                                 class="btn btn-primary"
                                                 jsf:id="createNewEntityButton"
@@ -158,16 +143,15 @@
 
 
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
-                                    <hr style="border-color: #1e74c5" />
 
-                                    <div class="modal__gnd-list scrollable">
+                                    <div class="modal__gnd-list entity-modal__search-results">
                                         <x:dataList
                                             value="#{NavigationForm.workflowPlugin.entities}"
                                             var="record">
+                                            <div class="row entity-modal__card">
                                             <h3>
-                                                <h:outputText value="#{record.entityName}" />
+                                                #{record.entityName}
                                             </h3>
-                                            <div class="row form-group nobackground">
                                                 <div class="col-sm-11 vocabulary-searchfield">
                                                     <x:dataList
                                                         value="#{record.metadataFieldList}"
@@ -178,10 +162,10 @@
                                                             value="#{configuredField.metadataList}"
                                                             rendered="#{configuredField.showInSearch}">
 
-                                                            <h:panelGroup styleClass="form-group noborder">
+                                                            <h:panelGroup
+                                                                styleClass="form-group" rendered="#{field.showFieldInSearchResult}">
                                                                 <h:panelGroup
-                                                                    styleClass="col-sm-3 control-label"
-                                                                    rendered="#{field.configField.group or field.metadata.value != null}">
+                                                                    styleClass="col-sm-3 control-label">
                                                                     <h:outputLabel
                                                                         for="field_#{status.index}"
                                                                         value="#{msgs[configuredField.label]}" />
@@ -244,7 +228,6 @@
                                                 </div>
                                             </div>
 
-                                            <hr style="border-color: #1e74c5;" />
                                         </x:dataList>
 
                                     </div>
@@ -272,8 +255,7 @@
                             <button
                                 jsf:action="#{NavigationForm.workflowPlugin.addBreadcrumbs}"
                                 title="#{msgs.plugin_workflow_entity_addTabs}"
-                                class="btn btn-green pull-right">
-                                <i class="fa fa-floppy-o margin-right-10"></i>
+                                class="btn btn-primary pull-right">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_addTabs}" />
                             </button>
                         </div>

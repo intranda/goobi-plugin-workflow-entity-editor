@@ -31,7 +31,7 @@
 			<relation id="35" name="R09 Relationship Person - Award" reverse="false" destinationEntity="Award"/>
 		</relations>
 
-		<color>#df07b9</color>
+		<color>#B13B29</color>
 		<icon>fa-user</icon>
 		<identifyingMetadata languageOrder="ORIG, FR, DE, EN">PersonMainName/Firstname PersonMainName/Lastname</identifyingMetadata>
 
@@ -201,7 +201,7 @@
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
-			
+
 			<field label="Artistic movement" metadata="ArtisticMovementGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="Artistic movement" metadata="ArtisticMovement" type="vocabularyList" required="false" labelPosition="none">
@@ -272,7 +272,7 @@
 		</relations>
 
 
-		<color>#e81c0c</color>
+		<color>#568FB2</color>
 		<icon>fa-university</icon>
 		<!--always english -->
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
@@ -366,7 +366,7 @@
 				</field>
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
-			
+
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
@@ -412,7 +412,7 @@
 
 		</relations>
 
-		<color>#19b609</color>
+		<color>#8966CA</color>
 		<icon>fa-calendar</icon>
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
 
@@ -506,7 +506,7 @@
 
 
 		</relations>
-		<color>#900688</color>
+		<color>#DC7E2E</color>
 		<icon>fa-picture-o</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 
@@ -581,7 +581,8 @@
 			<relation id="36" name="R10 Relationship Collective agent - Award" reverse="true" destinationEntity="Agent" />
 			<relation id="37" name="R11 Relationship Work - Award" reverse="true" destinationEntity="Work"/>
 		</relations>
-		<color>#05b8cd</color>
+
+		<color>#2E8D38</color>
 		<icon>fa-trophy</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 

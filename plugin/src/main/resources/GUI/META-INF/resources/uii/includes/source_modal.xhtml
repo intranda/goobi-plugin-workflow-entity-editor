@@ -50,21 +50,17 @@
 
                         <h:panelGroup
                             layout="block"
-                            styleClass="row form-group vocabulary-searcharea nobackground"
+                            styleClass="row form-group vocabulary-searcharea"
                             rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
-                            <div class="col-sm-2 noborder">
+                            <div class="source-modal__search-bar">
                                 <h:outputLabel
                                     value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                     for="sourceSearchInput" />
-                            </div>
-                            <div class="col-sm-8 vocabulary-searchfield">
                                 <x:inputText
                                     id="sourceSearchInput"
                                     styleClass="form-control"
                                     value="#{NavigationForm.workflowPlugin.searchValue}" />
-                            </div>
 
-                            <div class="col-sm-2 noborder">
                                 <button
                                     class="btn btn-primary"
                                     jsf:action="#{NavigationForm.workflowPlugin.searchSource}">
@@ -109,7 +105,7 @@
                                 <x:dataList
                                     value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
                                     var="field">
-                                    
+
                                     <!-- regular input field -->
                                 <intranda:formInputText
                                     name="field"
@@ -162,7 +158,7 @@
                                     styleClass="help-inline font-danger"
                                     rendered="#{field.validationMessage!= null}"
                                     value="#{msgs[field.validationMessage]}" />
-                                    <!-- 
+                                    <!--
                                     <div
                                         class="row form-group nobackground"
                                         style="margin: 0px;">
@@ -179,16 +175,15 @@
                                     </div>
                                     -->
                                 </x:dataList>
-                                <hr style="border-color: #1e74c5;" />
 
-                                <div class="row form-group nobackground">
-                                    <div class="col-sm-3 noborder">
+                                <div class="form-group">
+                                    <div class="col-sm-3" style="background: var(--bg-content); border-left: 0">
                                         <h:outputLabel
                                             value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
                                             for="sourcePage" />
                                     </div>
                                     <div class="col-sm-9">
-                                    
+
                                         <x:inputText
                                             id="sourcePage"
                                             styleClass="form-control"
@@ -198,8 +193,9 @@
 
 
 
+                                <div class="source-modal__actions">
                                 <button
-                                    class="btn btn-lightgrey pull-right"
+                                    class="btn btn-lightgrey "
                                     jsf:action="#{NavigationForm.Reload}">
                                     <i
                                         class="fa fa-ban"
@@ -218,24 +214,24 @@
 
                                 <button
                                     jsf:id="check"
-                                    class="btn btn-primary pull-right"
+                                    class="btn btn-primary"
                                     jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
                                     <i class="fa fa-save" />
                                     #{msgs.save}
                                 </button>
+                                </div>
                             </ui:fragment>
                         </h:panelGroup>
 
 
                         <h:panelGroup id="sourcesList">
                             <ui:fragment rendered="#{NavigationForm.workflowPlugin.sources != null and NavigationForm.workflowPlugin.sources.size() != 0 and NavigationForm.workflowPlugin.sourceMode != 'edition'}">
-                                <hr style="border-color: #1e74c5" />
 
-                                <div class="modal__gnd-list scrollable">
+                                <div class="modal__gnd-list source-modal__search-results">
                                     <x:dataList
                                         value="#{NavigationForm.workflowPlugin.sources}"
                                         var="record">
-                                        <div class="row form-group nobackground">
+                                        <div class="row source-modal__card">
                                             <div class="col-sm-11 vocabulary-searchfield">
                                                 <x:dataList
                                                     value="#{record.fields}"
@@ -251,6 +247,21 @@
                                                         </div>
                                                     </div>
                                                 </x:dataList>
+
+                                                <div class="row" style="margin: 0px">
+                                                    <div class="col-sm-3 noborder">
+                                                        <h:outputLabel
+                                                            value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
+                                                            for="sourcePage" />
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <x:inputText
+                                                            id="sourcePage"
+                                                            styleClass="form-control"
+                                                            value="#{NavigationForm.workflowPlugin.pages}" />
+                                                    </div>
+                                                </div>
+
                                             </div>
 
                                             <div class="col-sm-1 vocabulary-searchfield">
@@ -265,22 +276,7 @@
                                                     <i class="fa fa-check" />
                                                 </button>
                                             </div>
-                                        </div>
 
-                                        <hr style="border-color: #1e74c5;" />
-
-                                        <div class="row form-group nobackground">
-                                            <div class="col-sm-2 noborder">
-                                                <h:outputLabel
-                                                    value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
-                                                    for="sourcePage" />
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <x:inputText
-                                                    id="sourcePage"
-                                                    styleClass="form-control"
-                                                    value="#{NavigationForm.workflowPlugin.pages}" />
-                                            </div>
                                         </div>
                                     </x:dataList>
 
