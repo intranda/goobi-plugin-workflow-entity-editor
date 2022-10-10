@@ -20,6 +20,8 @@
             role="dialog"
             aria-labelledby="vocabSearchBox"
             aria-hidden="true">
+
+        <div class="modal-content-wrapper">
             <div
                 class="modal-dialog"
                 role="document">
@@ -81,7 +83,7 @@
 
                         <h:panelGroup id="vocabularySearchlist">
                             <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
-                                <div class="modal__gnd-list scrollable">
+                                <div class="modal__gnd-list scrollable vocab-search-modal__search-results">
                                     <x:dataList
                                         value="#{NavigationForm.workflowPlugin.records}"
                                         var="record">
@@ -129,6 +131,7 @@
                         </h:panelGroup>
                 </h:panelGroup>
             </div>
+        </div>
         </h:panelGroup>
 
     </composite:implementation>
