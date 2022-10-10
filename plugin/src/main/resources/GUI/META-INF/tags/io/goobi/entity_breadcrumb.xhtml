@@ -17,9 +17,22 @@
                 transition: all .4s ease;
             }
 
+            .breadcrumb-button-group--#{entityType}.active .breadcrumb-button {
+                background-color: #{entityColor};
+                background: #{entityColor};
+                color: #fff !important;
+                transition: all .4s ease;
+            }
+
             .breadcrumb-button-group--#{entityType} .breadcrumb-button:hover {
                 background-color: #{entityColor};
                 color: #fff !important;
+                transition: all .4s ease;
+            }
+
+            .breadcrumb-button-group--#{entityType}.active .breadcrumb-button:hover {
+                color: #{entityColor} !important;
+                background-color: #fff !important;
                 transition: all .4s ease;
             }
 
