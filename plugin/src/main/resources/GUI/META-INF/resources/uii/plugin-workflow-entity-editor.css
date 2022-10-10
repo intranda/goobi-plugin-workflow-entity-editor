@@ -725,6 +725,12 @@ body,
 
 /* Modals */
 
+.modal-content-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+
 #searchEntityModalContent,
 #sourceModalContent,
 #entityModalContent,
@@ -798,7 +804,7 @@ body,
 .source-modal__search-results,
 .link-entity-modal__search-results {
     display: block;
-    max-height: 64vh;
+    max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
