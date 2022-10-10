@@ -783,6 +783,11 @@ body,
     align-items: center;
     gap: calc(var(--gap) * 2);
 }
+
+.entity-modal__search-bar {
+    margin-bottom: 15px;
+}
+
 .source-modal__search-bar {
     margin-bottom: 3rem;
 }
