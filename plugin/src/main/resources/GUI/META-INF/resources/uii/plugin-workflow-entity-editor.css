@@ -195,9 +195,25 @@
     margin-top: 5px;
 }
 
+.viaf-btn {
+  border: 0;
+  width: 21px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
 
-.viaf-btn:hover {
-    background: #fff;
+.viaf-btn img {
+    width: 11px;
+    height: 11px;
+    background-color: #fff;
+}
+
+.viaf-btn:hover,
+.viaf-btn:hover img {
+    background: #ccc;
 }
 
 .form-group .vocabulary-searchfield {
@@ -250,13 +266,6 @@
     grid-template-rows: auto;
 }
 
-.viaf-btn {
-    padding: 2px 5px;
-    border: 1px solid #ccc;
-    background: #fff;
-    height: 26px;
-}
-
 .toggle-btn, .toggle-btn:hover {
     background: #fff;
 }
@@ -266,10 +275,6 @@
     padding: 0px 5px;
 }
 
-.viaf-btn img {
-    width: 12px;
-    height: 12px;
-}
 
 .main-area {
     max-height: calc(100vh - 322px);
