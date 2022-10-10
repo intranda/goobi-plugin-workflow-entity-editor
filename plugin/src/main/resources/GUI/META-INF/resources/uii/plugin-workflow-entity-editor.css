@@ -854,6 +854,19 @@ body,
     color: #333;
 }
 
+/* Source modal */
+
+#addSource .form-group:first-child {
+  border-top: 1px solid rgb(204, 204, 204);
+}
+
+#addSource .form-group {
+  border-left: 1px solid;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  border-color: rgb(204, 204, 204);
+}
+
 .source-modal__actions {
     margin-top: 3.2rem;
     display: flex;
