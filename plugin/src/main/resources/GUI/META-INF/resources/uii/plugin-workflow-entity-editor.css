@@ -444,7 +444,10 @@ body,
 .box-title__actions {
   display: flex;
   justify-content: flex-end;
+  align-self: baseline;
+  margin-top: 2px;
 }
+
 .box-title__actions button {
   display: flex;
   align-items: baseline;
@@ -476,6 +479,8 @@ body,
   align-items: baseline;
   gap: var(--gap);
   margin: 0;
+  hyphens: auto;
+  overflow: hidden;
 }
 
 .entity-box .box-title {
