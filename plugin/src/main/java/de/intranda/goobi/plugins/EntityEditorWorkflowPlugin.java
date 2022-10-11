@@ -63,14 +63,11 @@ import ugh.fileformats.mets.MetsMods;
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
-    // TODO display relation names in browser language?
-    // TODO order of elements
+
     // TODO save uploaded files in correct folder, add it to phys sequence, prevent second upload with same filename
     // TODO generate bibliography on export
 
-    // TODO update date on status property while saving
-
-    // TODO save/update display title as a property
+    private static final long serialVersionUID = 8882911907364782646L;
 
     @Getter
     private String title = "intranda_workflow_entity_editor";
@@ -350,11 +347,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         //  pages;
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
 
-
         MetadataGroup mg = null;
 
         try {
-            mg =new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
+            mg = new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
             Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
             sourceIdMetadata.setValue(sourceId);
             sourceIdMetadata.setAutorityFile(sourceName, sourceUri, sourceLink);
@@ -376,9 +372,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         } catch (MetadataTypeNotAllowedException e) {
             log.error(e);
         }
-
-
-
 
         currentField.addSource(source, mg);
         pages = "";
@@ -717,4 +710,61 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         return "";
     }
+
+    /*
+     * SQL statements to generate display name for each type
+
+    delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
+
+
+    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
+    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
+    from (select ProzesseID, concat(m1.value, " ", m2.value) as title from (
+    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
+    and prozesseeigenschaften.titel = 'DisplayName') t
+    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'FirstnameEn'
+    left join metadata m2 on t.ProzesseID = m2.processid and m2.name = 'LastnameEn'
+    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
+     where t.WERT is null  and m3.value = 'Person') x;
+
+    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
+    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
+    from (select ProzesseID, m1.value as title from (
+    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
+    and prozesseeigenschaften.titel = 'DisplayName') t
+    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
+    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
+     where t.WERT is null  and m3.value = 'Event') x;
+
+
+    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
+    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
+    from (select ProzesseID, m1.value as title from (
+    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
+    and prozesseeigenschaften.titel = 'DisplayName') t
+    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
+    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
+     where t.WERT is null  and m3.value = 'Work') x;
+
+
+    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
+    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
+    from (select ProzesseID, m1.value as title from (
+    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
+    and prozesseeigenschaften.titel = 'DisplayName') t
+    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
+    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
+     where t.WERT is null  and m3.value = 'Agent') x;
+
+    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
+    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
+    from (select ProzesseID, m1.value as title from (
+    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
+    and prozesseeigenschaften.titel = 'DisplayName') t
+    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
+    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
+     where t.WERT is null  and m3.value = 'Award') x;
+
+     */
+
 }
