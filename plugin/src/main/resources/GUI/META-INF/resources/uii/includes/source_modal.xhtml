@@ -7,7 +7,7 @@
     xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-        xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
 
     <composite:interface>
     </composite:interface>
@@ -22,270 +22,275 @@
             aria-labelledby="sourceSearchBox"
             aria-hidden="true">
 
-        <div class="modal-content-wrapper">
-            <div
-                class="modal-dialog"
-                role="document">
-                <h:panelGroup
-                    styleClass="modal-content"
-                    layout="block"
-                    id="sourceModalContent">
-                    <div class="modal-header">
-                        <button
-                            type="button"
-                            class="close"
-                            data-dismiss="modal"
-                            aria-label="Close">
-                            <span aria-hidden="true">
-                                <h:outputText
-                                    value="&amp;times;"
-                                    escape="false" />
-                            </span>
-                        </button>
-                        <h4
-                            class="modal-title"
-                            style="width: 90%">#{msgs.NORM_vocabularySearch}: #{msgs.sources}</h4>
-                    </div>
-                    <div
-                        jsf:id="modal-body"
-                        class="modal-body">
+            <div class="modal-content-wrapper">
+                <div
+                    class="modal-dialog"
+                    role="document">
+                    <h:panelGroup
+                        styleClass="modal-content"
+                        layout="block"
+                        id="sourceModalContent">
+                        <div class="modal-header">
+                            <button
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">
+                                    <h:outputText
+                                        value="&amp;times;"
+                                        escape="false" />
+                                </span>
+                            </button>
+                            <h4
+                                class="modal-title"
+                                style="width: 90%">#{msgs.NORM_vocabularySearch}: #{msgs.sources}</h4>
+                        </div>
+                        <div
+                            jsf:id="modal-body"
+                            class="modal-body">
 
-                        <h:panelGroup
-                            layout="block"
-                            styleClass="row form-group vocabulary-searcharea"
-                            rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
-                            <div class="source-modal__search-bar">
-                                <h:outputLabel
-                                    value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
-                                    for="sourceSearchInput" />
-                                <x:inputText
-                                    id="sourceSearchInput"
-                                    styleClass="form-control"
-                                    value="#{NavigationForm.workflowPlugin.searchValue}" 
-                                    onkeyup="fireOnEnter(this.id, 'searchSource')"
-                                    />
+                            <h:panelGroup
+                                layout="block"
+                                styleClass="row form-group vocabulary-searcharea"
+                                rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
+                                <div class="source-modal__search-bar">
+                                    <h:outputLabel
+                                        value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
+                                        for="sourceSearchInput" />
+                                    <x:inputText
+                                        id="sourceSearchInput"
+                                        styleClass="form-control"
+                                        value="#{NavigationForm.workflowPlugin.searchValue}"
+                                        onkeyup="fireOnEnter(this.id, 'searchSource')" />
 
-                                <button
-                                    class="btn btn-primary"
-                                    jsf:action="#{NavigationForm.workflowPlugin.searchSource}"
-                                    jsf:id="searchSource"
-                                    type="button">
-                                    <i
-                                        class="fa fa-search"
-                                        aria-hidden="true"></i>
-                                    #{msgs.search}
-                                    <f:passThroughAttribute
-                                        name="data-toggle"
-                                        value="tooltip" />
-                                    <f:ajax
-                                        execute="@form"
-                                        render="sourcesList" />
-                                </button>
+                                    <button
+                                        class="btn btn-primary"
+                                        jsf:action="#{NavigationForm.workflowPlugin.searchSource}"
+                                        jsf:id="searchSource"
+                                        type="button">
+                                        <i
+                                            class="fa fa-search"
+                                            aria-hidden="true"></i>
+                                        #{msgs.search}
+                                        <f:passThroughAttribute
+                                            name="data-toggle"
+                                            value="tooltip" />
+                                        <f:ajax
+                                            execute="@form"
+                                            render="sourcesList" />
+                                    </button>
 
 
-                                <!-- ADD new source-->
-                                <button
-                                    class="btn btn-lightgrey margin-left-10"
-                                    jsf:action="#{NavigationForm.workflowPlugin.createNewSource}"
-                                    type="button">
-                                    <i
-                                        class="fa fa-plus"
-                                        aria-hidden="true"></i>
-                                    #{msgs.add}
-                                    <f:passThroughAttribute
-                                        name="data-toggle"
-                                        value="tooltip" />
+                                    <!-- ADD new source-->
+                                    <button
+                                        class="btn btn-lightgrey margin-left-10"
+                                        jsf:action="#{NavigationForm.workflowPlugin.createNewSource}"
+                                        type="button">
+                                        <i
+                                            class="fa fa-plus"
+                                            aria-hidden="true"></i>
+                                        #{msgs.add}
+                                        <f:passThroughAttribute
+                                            name="data-toggle"
+                                            value="tooltip" />
 
-                                    <f:setPropertyActionListener
-                                        value="edition"
-                                        target="#{NavigationForm.workflowPlugin.sourceMode}" />
-                                    <f:ajax
-                                        execute="@form"
-                                        render="modal-body" />
-                                </button>
-                            </div>
-                        </h:panelGroup>
-
-                        <h:panelGroup id="addSource">
-                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedSource != null and NavigationForm.workflowPlugin.sourceMode == 'edition'}">
-
-                                <x:dataList
-                                    value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
-                                    var="field">
-
-                                    <!-- regular input field -->
-                                <intranda:formInputText
-                                    name="field"
-                                    label="#{field.label} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}"
-                                    field="#{field.value}"
-                                    fieldStyle="form-control"
-                                    required="false"
-                                    displayAsRequired="#{field.definition.required}"
-                                    rendered="#{field.definition.type eq 'input'}" />
-                                <!-- text area field -->
-                                <intranda:formInputTextArea
-                                    name="field2"
-                                    label="#{field.label} #{msgs[field.definition.language]}"
-                                    field="#{field.value}"
-                                    fieldStyle="form-control"
-                                    required="false"
-                                    displayAsRequired="#{field.definition.required}"
-                                    rendered="#{field.definition.type eq 'textarea'}" />
-                                <!-- select1 field -->
-                                <intranda:formInputDropDown
-                                    name="field3"
-                                    label="#{field.label} #{msgs[field.definition.language]}"
-                                    field="#{field.value}"
-                                    rendered="#{field.definition.type eq 'select1'}"
-                                    selectItems="#{field.definition.selecteableValues}"
-                                    required="false"
-                                    displayAsRequired="#{field.definition.required}"
-                                    fieldStyle="form-control"/>
-                                <!-- select field -->
-                                <intranda:formInputSelectMany
-                                    name="field4"
-                                    label="#{field.label} #{msgs[field.definition.language]}"
-                                    field="#{field.valueMultiSelect}"
-                                    rendered="#{field.definition.type eq 'select'}"
-                                    selectItems="#{field.definition.selectList}"
-                                    required="false"
-                                    displayAsRequired="#{field.definition.required}"
-                                    fieldStyle="form-control" />
-                                <!-- html field -->
-                                <intranda:formInputTextArea
-                                    name="field2"
-                                    label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"
-                                    field="#{field.value}"
-                                    fieldStyle="editor form-control"
-                                    required="false"
-                                    displayAsRequired="#{field.definition.required}"
-                                    rendered="#{field.definition.type eq 'html'}" />
-
-                                <h:outputText
-                                    styleClass="help-inline font-danger"
-                                    rendered="#{field.validationMessage!= null}"
-                                    value="#{msgs[field.validationMessage]}" />
-                                </x:dataList>
-
-                                <div class="form-group">
-                                    <div class="col-sm-3" style="background: var(--bg-content); border-left: 0">
-                                        <h:outputLabel
-                                            value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
-                                            for="sourcePage" />
-                                    </div>
-                                    <div class="col-sm-9">
-
-                                        <x:inputText
-                                            id="sourcePage"
-                                            styleClass="form-control"
-                                            value="#{NavigationForm.workflowPlugin.pages}" />
-                                    </div>
+                                        <f:setPropertyActionListener
+                                            value="edition"
+                                            target="#{NavigationForm.workflowPlugin.sourceMode}" />
+                                        <f:ajax
+                                            execute="@form"
+                                            render="modal-body" />
+                                    </button>
                                 </div>
+                            </h:panelGroup>
 
+                            <h:panelGroup id="addSource">
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedSource != null and NavigationForm.workflowPlugin.sourceMode == 'edition'}">
 
-
-                                <div class="source-modal__actions">
-                                <button
-                                    class="btn btn-lightgrey "
-                                    jsf:action="#{NavigationForm.Reload}"
-                                    type="button">
-                                    <i
-                                        class="fa fa-ban"
-                                        aria-hidden="true"></i>
-                                    #{msgs.cancel}
-                                    <f:passThroughAttribute
-                                        name="data-toggle"
-                                        value="tooltip" />
-                                    <f:setPropertyActionListener
-                                        value=""
-                                        target="#{NavigationForm.workflowPlugin.sourceMode}" />
-                                    <f:ajax
-                                        execute="@form"
-                                        render="modal-body" />
-                                </button>
-
-                                <button
-                                    jsf:id="check"
-                                    class="btn btn-primary"
-                                    jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
-                                    <i class="fa fa-save" />
-                                    #{msgs.save}
-                                </button>
-                                </div>
-                            </ui:fragment>
-                        </h:panelGroup>
-
-
-                        <h:panelGroup id="sourcesList">
-                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.sources != null and NavigationForm.workflowPlugin.sources.size() != 0 and NavigationForm.workflowPlugin.sourceMode != 'edition'}">
-
-                                <div class="modal__gnd-list source-modal__search-results">
                                     <x:dataList
-                                        value="#{NavigationForm.workflowPlugin.sources}"
-                                        var="record">
-                                        <div class="row source-modal__card">
-                                            <div class="col-sm-11 vocabulary-searchfield">
-                                                <x:dataList
-                                                    value="#{record.fields}"
-                                                    var="field">
+                                        value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
+                                        var="field">
+
+                                        <!-- regular input field -->
+                                        <intranda:formInputText
+                                            name="field"
+                                            label="#{field.label} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}"
+                                            field="#{field.value}"
+                                            fieldStyle="form-control"
+                                            required="false"
+                                            displayAsRequired="#{field.definition.required}"
+                                            rendered="#{field.definition.type eq 'input'}" />
+                                        <!-- text area field -->
+                                        <intranda:formInputTextArea
+                                            name="field2"
+                                            label="#{field.label} #{msgs[field.definition.language]}"
+                                            field="#{field.value}"
+                                            fieldStyle="form-control"
+                                            required="false"
+                                            displayAsRequired="#{field.definition.required}"
+                                            rendered="#{field.definition.type eq 'textarea'}" />
+                                        <!-- select1 field -->
+                                        <intranda:formInputDropDown
+                                            name="field3"
+                                            label="#{field.label} #{msgs[field.definition.language]}"
+                                            field="#{field.value}"
+                                            rendered="#{field.definition.type eq 'select1'}"
+                                            selectItems="#{field.definition.selecteableValues}"
+                                            required="false"
+                                            displayAsRequired="#{field.definition.required}"
+                                            fieldStyle="form-control" />
+                                        <!-- select field -->
+                                        <intranda:formInputSelectMany
+                                            name="field4"
+                                            label="#{field.label} #{msgs[field.definition.language]}"
+                                            field="#{field.valueMultiSelect}"
+                                            rendered="#{field.definition.type eq 'select'}"
+                                            selectItems="#{field.definition.selectList}"
+                                            required="false"
+                                            displayAsRequired="#{field.definition.required}"
+                                            fieldStyle="form-control" />
+                                        <!-- html field -->
+                                        <intranda:formInputTextArea
+                                            name="field2"
+                                            label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"
+                                            field="#{field.value}"
+                                            fieldStyle="editor form-control"
+                                            required="false"
+                                            displayAsRequired="#{field.definition.required}"
+                                            rendered="#{field.definition.type eq 'html'}" />
+
+                                        <h:outputText
+                                            styleClass="help-inline font-danger"
+                                            rendered="#{field.validationMessage!= null}"
+                                            value="#{msgs[field.validationMessage]}" />
+                                    </x:dataList>
+
+                                    <div class="form-group">
+                                        <div
+                                            class="col-sm-3"
+                                            style="background: var(- -bg-content); border-left: 0">
+                                            <h:outputLabel
+                                                value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
+                                                for="sourcePage" />
+                                        </div>
+                                        <div class="col-sm-9">
+
+                                            <x:inputText
+                                                id="sourcePage"
+                                                styleClass="form-control"
+                                                value="#{NavigationForm.workflowPlugin.pages}" />
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="source-modal__actions">
+                                        <button
+                                            class="btn btn-lightgrey "
+                                            jsf:action="#{NavigationForm.Reload}"
+                                            type="button">
+                                            <i
+                                                class="fa fa-ban"
+                                                aria-hidden="true"></i>
+                                            #{msgs.cancel}
+                                            <f:passThroughAttribute
+                                                name="data-toggle"
+                                                value="tooltip" />
+                                            <f:setPropertyActionListener
+                                                value=""
+                                                target="#{NavigationForm.workflowPlugin.sourceMode}" />
+                                            <f:ajax
+                                                execute="@form"
+                                                render="modal-body" />
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            jsf:id="check"
+                                            class="btn btn-primary"
+                                            jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
+                                            <i class="fa fa-save" />
+                                            #{msgs.save}
+                                        </button>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
+
+
+                            <h:panelGroup id="sourcesList">
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.sources != null and NavigationForm.workflowPlugin.sources.size() != 0 and NavigationForm.workflowPlugin.sourceMode != 'edition'}">
+
+                                    <div class="modal__gnd-list source-modal__search-results">
+                                        <x:dataList
+                                            value="#{NavigationForm.workflowPlugin.sources}"
+                                            var="record">
+                                            <div class="row source-modal__card">
+                                                <div class="col-sm-11 vocabulary-searchfield">
+                                                    <x:dataList
+                                                        value="#{record.fields}"
+                                                        var="field">
+                                                        <div
+                                                            class="row"
+                                                            style="margin: 0px;">
+                                                            <div class="col-sm-3">
+                                                                <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
+                                                            </div>
+                                                            <div class="col-sm-9">
+                                                                <h:outputText value="#{field.value}" />
+                                                            </div>
+                                                        </div>
+                                                    </x:dataList>
+
                                                     <div
                                                         class="row"
-                                                        style="margin: 0px;">
-                                                        <div class="col-sm-3">
-                                                            <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
+                                                        style="margin: 0px">
+                                                        <div class="col-sm-3 noborder">
+                                                            <h:outputLabel
+                                                                value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
+                                                                for="sourcePage" />
                                                         </div>
                                                         <div class="col-sm-9">
-                                                            <h:outputText value="#{field.value}" />
+                                                            <x:inputText
+                                                                id="sourcePage"
+                                                                styleClass="form-control"
+                                                                value="#{NavigationForm.workflowPlugin.pages}" />
                                                         </div>
                                                     </div>
-                                                </x:dataList>
 
-                                                <div class="row" style="margin: 0px">
-                                                    <div class="col-sm-3 noborder">
-                                                        <h:outputLabel
-                                                            value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
-                                                            for="sourcePage" />
-                                                    </div>
-                                                    <div class="col-sm-9">
-                                                        <x:inputText
-                                                            id="sourcePage"
-                                                            styleClass="form-control"
-                                                            value="#{NavigationForm.workflowPlugin.pages}" />
-                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-1 vocabulary-searchfield">
+                                                    <button
+                                                        type="button"
+                                                        jsf:id="check"
+                                                        class="btn btn-lightgrey greenCheckButton"
+                                                        jsf:action="#{NavigationForm.workflowPlugin.addSource}">
+                                                        <f:setPropertyActionListener
+                                                            value="#{record}"
+                                                            target="#{NavigationForm.workflowPlugin.selectedSource}" />
+
+                                                        <i class="fa fa-check" />
+                                                    </button>
                                                 </div>
 
                                             </div>
+                                        </x:dataList>
 
-                                            <div class="col-sm-1 vocabulary-searchfield">
-                                                <button
-                                                    jsf:id="check"
-                                                    class="btn btn-lightgrey greenCheckButton"
-                                                    jsf:action="#{NavigationForm.workflowPlugin.addSource}">
-                                                    <f:setPropertyActionListener
-                                                        value="#{record}"
-                                                        target="#{NavigationForm.workflowPlugin.selectedSource}" />
+                                    </div>
+                                </ui:fragment>
 
-                                                    <i class="fa fa-check" />
-                                                </button>
-                                            </div>
+                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
+                                    <h:outputText value="#{msgs.NORM_noHits}" />
+                                </ui:fragment>
 
-                                        </div>
-                                    </x:dataList>
-
-                                </div>
-                            </ui:fragment>
-
-                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
-                                <h:outputText value="#{msgs.NORM_noHits}" />
-                            </ui:fragment>
-
-                        </h:panelGroup>
+                            </h:panelGroup>
 
 
-                    </div>
-                </h:panelGroup>
+                        </div>
+                    </h:panelGroup>
+                </div>
             </div>
-        </div>
         </h:panelGroup>
 
     </composite:implementation>

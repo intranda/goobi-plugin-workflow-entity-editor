@@ -31,13 +31,13 @@
                     <span>
                         <!--  button to remove source -->
                         <button
+                            type="button"
                             jsf:id="deleteSource"
                             class="btn pull-right btn--icon-light source-btn"
                             jsf:action="#{field.removeSource(source)}"
-							title="#{msgs.plugin_workflow_entity_delete}"
-							data-toggle="tooltip"
-                            data-placement="top"
-                            >
+                            title="#{msgs.plugin_workflow_entity_delete}"
+                            data-toggle="tooltip"
+                            data-placement="top">
                             <i class="fa fa-trash" />
                             <f:ajax
                                 execute="@this"

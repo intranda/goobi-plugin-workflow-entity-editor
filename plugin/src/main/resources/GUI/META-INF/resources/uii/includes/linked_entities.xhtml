@@ -34,41 +34,42 @@
                     <div class="box-title__actions">
 
 
-                    <button
-                        class="btn"
-                        jsf:id="addRelationship"
-                        style="color:  #{type.key.color};"
-                        jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
-                        jsf:onclick="$('#entitySearchBox').modal('show');"
-                        title="#{msgs.plugin_workflow_entity_addRelationship}"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        >
-                        <!--                         <i class="fa fa-chain big-icon" /> -->
-                        <i class="fa fa-plus big-icon" />
-                        <f:ajax
-                            execute="@this"
-                            render=":entityModalContent" />
-                    </button>
+                        <button
+                            type="button"
+                            class="btn"
+                            jsf:id="addRelationship"
+                            style="color:  #{type.key.color};"
+                            jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
+                            jsf:onclick="$('#entitySearchBox').modal('show');"
+                            title="#{msgs.plugin_workflow_entity_addRelationship}"
+                            data-toggle="tooltip"
+                            data-placement="top">
+                            <!--                         <i class="fa fa-chain big-icon" /> -->
+                            <i class="fa fa-plus big-icon" />
+                            <f:ajax
+                                execute="@this"
+                                render=":entityModalContent" />
+                        </button>
 
-                    <h:panelGroup rendered="#{ type.value.size() != 0 }">
-                    <button
-                        class="btn"
-                        jsf:id="showContent"
-                        style="color:  #{type.key.color};"
-                        title="#{ type.key.showLinkedContent == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
-                        data-toggle="tooltip"
-                        data-placement="top">
+                        <h:panelGroup rendered="#{ type.value.size() != 0 }">
+                            <button
+                                type="button"
+                                class="btn"
+                                jsf:id="showContent"
+                                style="color:  #{type.key.color};"
+                                title="#{ type.key.showLinkedContent == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
+                                data-toggle="tooltip"
+                                data-placement="top">
 
-                        <f:setPropertyActionListener
-                            value="#{not type.key.showLinkedContent}"
-                            target="#{type.key.showLinkedContent}" />
-                        <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'} big-icon" />
-                        <f:ajax
-                            execute="@this"
-                            render="@form" />
-                    </button>
-                    </h:panelGroup>
+                                <f:setPropertyActionListener
+                                    value="#{not type.key.showLinkedContent}"
+                                    target="#{type.key.showLinkedContent}" />
+                                <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'} big-icon" />
+                                <f:ajax
+                                    execute="@this"
+                                    render="@form" />
+                            </button>
+                        </h:panelGroup>
 
 
                     </div>
@@ -96,66 +97,59 @@
                             value="#{type.value}">
 
 
-                                <button
-                                    jsf:id="toggleSourceVisibility"
-                                    class="btn btn--icon-light source-btn sources-row__item sources__btn nobackground"
-                                    title="#{ relationship.showDetails == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
+                            <button
+                                type="button"
+                                jsf:id="toggleSourceVisibility"
+                                class="btn btn--icon-light source-btn sources-row__item sources__btn nobackground"
+                                title="#{ relationship.showDetails == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
+                                data-toggle="tooltip"
+                                data-placement="top">
+                                <i
+                                    class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
+                                    style="color: #{type.key.color};" />
+                                <f:ajax
+                                    execute="entity"
+                                    render="entity" />
+                                <f:setPropertyActionListener
+                                    value="#{not relationship.showDetails}"
+                                    target="#{relationship.showDetails}" />
+                            </button>
 
-                                    >
-                                    <i
-                                        class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
-                                        style="color: #{type.key.color};" />
+                            <div class="sources-row__item">#{relationship.displayName}</div>
+                            <div class="sources-row__item sources-row__item--status">
+                                <span> #{relationship.processStatus} </span>
+                            </div>
+                            <div class="sources-row__item sources-row__item--actions">
+                                <button
+                                    type="button"
+                                    class="btn nobackground"
+                                    jsf:id="removeRelationship"
+                                    style="color:  #{type.key.color};"
+                                    jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}"
+                                    title="#{msgs.plugin_workflow_entity_removeRelationship}"
+                                    data-toggle="tooltip"
+                                    data-placement="top">
+                                    <i class="fa fa-chain-broken" />
                                     <f:ajax
-                                        execute="entity"
-                                        render="entity" />
-                                    <f:setPropertyActionListener
-                                        value="#{not relationship.showDetails}"
-                                        target="#{relationship.showDetails}" />
+                                        execute="@form"
+                                        render="@form" />
                                 </button>
 
-                                <div class="sources-row__item">
-                                    #{relationship.displayName}
-                                </div>
-                                <div class="sources-row__item sources-row__item--status">
-                                    <span>
-                                        #{relationship.processStatus}
-                                    </span>
-                                </div>
-                                <div class="sources-row__item sources-row__item--actions">
-                                    <button
-                                        class="btn nobackground"
-                                        jsf:id="removeRelationship"
-                                        style="color:  #{type.key.color};"
-                                        jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}"
-                                        title="#{msgs.plugin_workflow_entity_removeRelationship}"
-                                        data-toggle="tooltip"
-                                        data-placement="top"
+                                <button
+                                    type="button"
+                                    class="btn btn-mini"
+                                    jsf:id="editRelationship"
+                                    style="background-color: #{type.key.color}; color: #fff;"
+                                    jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
+                                    title="#{msgs.plugin_workflow_entity_editRelationship}"
+                                    data-toggle="tooltip"
+                                    data-placement="top">
+                                    <i class="fa fa-pencil" />
+                                </button>
 
-                                        >
-                                        <i class="fa fa-chain-broken" />
-                                        <f:ajax
-                                            execute="@form"
-                                            render="@form" />
-                                    </button>
+                            </div>
 
-                                    <button
-                                        class="btn btn-mini"
-                                        jsf:id="editRelationship"
-                                        style="background-color: #{type.key.color}; color: #fff;"
-                                        jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
-                                        title="#{msgs.plugin_workflow_entity_editRelationship}"
-                                        data-toggle="tooltip"
-                                        data-placement="top"
-
-                                        >
-                                        <i class="fa fa-pencil" />
-                                    </button>
-
-                                </div>
-
-                                <h:panelGroup id="entity">
+                            <h:panelGroup id="entity">
 
                                 <ui:fragment rendered="#{relationship.showDetails}">
                                     <div class="flex-container">
@@ -163,13 +157,9 @@
                                             layout="block"
                                             styleClass="sources__pair"
                                             rendered="#{ not empty relationship.type }">
-                                            <div class="sources__key">
-                                                #{msgs.plugin_workflow_entity_editor_type}:
-                                            </div>
+                                            <div class="sources__key">#{msgs.plugin_workflow_entity_editor_type}:</div>
                                             <div class="sources__val">
-                                                <span>
-                                                    #{relationship.type}
-                                                </span>
+                                                <span> #{relationship.type} </span>
                                             </div>
                                         </h:panelGroup>
 
@@ -177,13 +167,9 @@
                                             layout="block"
                                             styleClass="sources__pair"
                                             rendered="#{ not empty relationship.beginningDate }">
-                                            <div class="sources__key">
-                                                #{msgs.plugin_workflow_entity_editor_beginnDate}:
-                                            </div>
+                                            <div class="sources__key">#{msgs.plugin_workflow_entity_editor_beginnDate}:</div>
 
-                                            <div class="sources__val">
-                                                #{relationship.beginningDate}
-                                            </div>
+                                            <div class="sources__val">#{relationship.beginningDate}</div>
 
                                         </h:panelGroup>
 
@@ -191,27 +177,19 @@
                                             layout="block"
                                             styleClass="sources__pair"
                                             rendered="#{ not empty relationship.endDate }">
-                                            <div class="sources__key">
-                                               #{msgs.plugin_workflow_entity_editor_endDate}:
-                                            </div>
-                                            <div class="sources__val">
-                                                #{relationship.endDate}
-                                            </div>
+                                            <div class="sources__key">#{msgs.plugin_workflow_entity_editor_endDate}:</div>
+                                            <div class="sources__val">#{relationship.endDate}</div>
                                         </h:panelGroup>
                                         <h:panelGroup
                                             layout="block"
                                             styleClass="sources__pair"
                                             rendered="#{ not empty relationship.additionalData }">
-                                            <div class="sources__key">
-                                                #{msgs.plugin_workflow_entity_editor_additionalData}:
-                                            </div>
-                                            <div class="sources__val">
-                                                #{relationship.additionalData}
-                                            </div>
+                                            <div class="sources__key">#{msgs.plugin_workflow_entity_editor_additionalData}:</div>
+                                            <div class="sources__val">#{relationship.additionalData}</div>
                                         </h:panelGroup>
                                     </div>
                                 </ui:fragment>
-                                </h:panelGroup>
+                            </h:panelGroup>
                         </ui:repeat>
                     </h:panelGroup>
 

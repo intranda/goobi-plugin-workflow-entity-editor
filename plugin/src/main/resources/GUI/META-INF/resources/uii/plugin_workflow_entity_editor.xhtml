@@ -61,6 +61,7 @@
                     <!-- Icon to enable help texts -->
                     <li>
                         <button
+                        type="button"
                             class="btn"
                             jsf:id="showHelp"
                             aria-label="#{msgs.showHelpMessages}"
@@ -105,6 +106,7 @@
                                     id="plugin4">
                                     <li>
                                         <button
+                                        type="button"
                                             jsf:id="locale"
                                             class="dropdown-item text_head"
                                             jsf:action="#{SpracheForm.SpracheUmschalten}"
@@ -237,6 +239,7 @@
                                             </style>
 
                                             <button
+                                            type="button"
                                                 class="btn entity-search entity-search--#{type.plural}"
                                                 jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
                                                 jsf:onclick="$('#searchEntitySearchBox').modal('show');">
@@ -278,21 +281,6 @@
                                     </li>
 
                                 </ui:repeat>
-                                <!-- button to add new breadcrumbs -->
-                                <!--
-                            <li>
-                                <button
-                                    class="btn"
-                                    style="background: #fff"
-                                    jsf:action="#{NavigationForm.workflowPlugin.searchWithoutType}"
-                                    jsf:onclick="$('#searchEntitySearchBox').modal('show');">
-                                    <f:ajax
-                                        execute="@this"
-                                        render=":searchEntityModalContent" />
-                                    <i class="fa fa-plus  big-icon" />
-                                </button>
-                            </li>
-                            -->
                             </ul>
                         </div>
                     </h:form>
@@ -319,6 +307,7 @@
                                 </h3>
 
                                 <button
+                                type="button"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
                                     class="btn btn-link btn--generateBibliography"
                                     jsf:id="generateBibliography"
@@ -378,6 +367,7 @@
                                                         <!-- publish button -->
                                                         <h:panelGroup id="pubBtn">
                                                             <button
+                                                            type="button"
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="toggle-export"
                                                                 jsf:rendered="#{field.displayPublishButton}"
@@ -396,6 +386,7 @@
 
                                                         <!-- delete button -->
                                                         <button
+                                                        type="button"
                                                             class="btn pull-right toggle"
                                                             jsf:id="remove"
                                                             jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
@@ -411,6 +402,7 @@
 
                                                         <!-- duplicate button -->
                                                         <button
+                                                        type="button"
                                                             class="btn pull-right toggle"
                                                             jsf:id="duplicate"
                                                             jsf:rendered="#{field.configField.repeatable}"
@@ -426,6 +418,7 @@
 
                                                         <!-- button to add source-->
                                                         <button
+                                                        type="button"
                                                             jsf:rendered="#{field.allowSources}"
                                                             jsf:id="addSource"
                                                             class="btn pull-right toggle "
@@ -748,7 +741,8 @@
                     <button
                         class="btn"
                         jsf:id="save"
-                        jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
+                        jsf:action="#{NavigationForm.workflowPlugin.saveEntity}"
+                        type="button">
                         <h:outputText value="#{msgs.save}" />
                     </button>
 
@@ -761,7 +755,8 @@
                             aria-haspopup="true"
                             aria-expanded="false"
                             onclick="switchExpanded(this.id)"
-                            data-toggle="dropdown">
+                            data-toggle="dropdown"
+                            type="button">
                             #{msgs.plugin_workflow_entity_export}
                             <span class="caret"></span>
                         </button>
@@ -771,14 +766,16 @@
                             <button
                                 class="btn btn-link"
                                 jsf:id="exportSingle"
-                                jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}">
+                                jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}"
+                                type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
                             </button>
 
                             <button
                                 class="btn btn-link"
                                 jsf:id="exportAll"
-                                jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}">
+                                jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}"
+                                type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
                             </button>
 
