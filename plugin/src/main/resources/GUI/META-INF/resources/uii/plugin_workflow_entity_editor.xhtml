@@ -19,17 +19,26 @@
 
     <ui:define name="navigation">
 
-	    <script type="text/javascript">
-        	function switchExpanded(id){
-            var x = document.getElementById(id).getAttribute("aria-expanded");
-            if (x == "true"){
-              x = "false"
-            } else {
-              x = "true"
-            }
-            document.getElementById(id).setAttribute("aria-expanded", x);
-          }
-        </script>
+        <script type="text/javascript">
+                                    function switchExpanded( id ) {
+                                        var x = document.getElementById( id ).getAttribute( "aria-expanded" );
+                                        if ( x == "true" ) {
+                                            x = "false"
+                                        }
+                                        else {
+                                            x = "true"
+                                        }
+                                        document.getElementById( id ).setAttribute( "aria-expanded", x );
+                                    }
+
+                                    function fireOnEnter( object, selector ) {
+                                        var btn = $( '#' + selector );
+                                        event.preventDefault();
+                                        if ( event.keyCode == 13 ) {
+                                            btn.click();
+                                        }
+                                    }
+                                </script>
 
 
         <h:form id="menu">
@@ -250,27 +259,27 @@
 
 
                         <div class="breadcrumbs">
-                        <div class="breadcrumb-label">
-                            <h:outputText
-                                styleClass="skew-fix"
-                                style="padding-left: 5px"
-                                value="My Tabs:" />
-                        </div>
-                        <ul class="breadcrumb-container row">
-                            <ui:repeat
-                                var="breadcrumb"
-                                value="#{NavigationForm.workflowPlugin.breadcrumbList}">
-                                <li>
-                                    <entity:entity_breadcrumb
-                                        entityType="#{breadcrumb.entityType}"
-                                        entityName="#{breadcrumb.entityName}"
-                                        entityColor="#{breadcrumb.color}"
-                                        entityIcon="#{breadcrumb.icon}" />
-                                </li>
+                            <div class="breadcrumb-label">
+                                <h:outputText
+                                    styleClass="skew-fix"
+                                    style="padding-left: 5px"
+                                    value="My Tabs:" />
+                            </div>
+                            <ul class="breadcrumb-container row">
+                                <ui:repeat
+                                    var="breadcrumb"
+                                    value="#{NavigationForm.workflowPlugin.breadcrumbList}">
+                                    <li>
+                                        <entity:entity_breadcrumb
+                                            entityType="#{breadcrumb.entityType}"
+                                            entityName="#{breadcrumb.entityName}"
+                                            entityColor="#{breadcrumb.color}"
+                                            entityIcon="#{breadcrumb.icon}" />
+                                    </li>
 
-                            </ui:repeat>
-                            <!-- button to add new breadcrumbs -->
-                            <!--
+                                </ui:repeat>
+                                <!-- button to add new breadcrumbs -->
+                                <!--
                             <li>
                                 <button
                                     class="btn"
@@ -284,99 +293,97 @@
                                 </button>
                             </li>
                             -->
-                        </ul>
-                    </div>
+                            </ul>
+                        </div>
                     </h:form>
                 </div>
 
 
-                    <div class="row">
-                        <div class="col-sm-12 col-md-6">
-                            <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}">
 
 
 
-                                <div
-                                    class="box-title"
-                                    jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
-                                    <h3>
-                                        <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
+                            <div
+                                class="box-title"
+                                jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
+                                <h3>
+                                    <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
 
-                                        <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
-                                            <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
-                                            <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
-                                        </h:outputFormat>
+                                    <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
+                                        <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
+                                        <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                    </h:outputFormat>
 
-                                    </h3>
+                                </h3>
 
-                                    <button
-                                        jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
-                                        class="btn btn-link btn--generateBibliography"
-                                        jsf:id="generateBibliography"
-                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
-                                        title="#{msgs.plugin_workflow_entity_createBibliography}"
-                                        data-toggle="tooltip"
-                                        data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
-                                        >
-                                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
-                                    </button>
+                                <button
+                                    jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
+                                    class="btn btn-link btn--generateBibliography"
+                                    jsf:id="generateBibliography"
+                                    jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
+                                    title="#{msgs.plugin_workflow_entity_createBibliography}"
+                                    data-toggle="tooltip"
+                                    data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                    <i class="fa fa-plus-circle margin-right-5 big-icon" />
+                                </button>
 
 
-                                </div>
-                                <div
-                                    class="box-content nopadding"
-                                    jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
+                            </div>
+                            <div
+                                class="box-content nopadding"
+                                jsf:style="border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
 
-                                    <h:form
-                                        styleClass="form-horizontal form-bordered"
-                                        prependId="false"
-                                        enctype="multipart/form-data"
-                                        id="metadataForm">
+                                <h:form
+                                    styleClass="form-horizontal form-bordered"
+                                    prependId="false"
+                                    enctype="multipart/form-data"
+                                    id="metadataForm">
 
-                                        <!-- badges area -->
-                                        <h:panelGroup
-                                            id="badge-area"
-                                            layout="block"
-                                            styleClass="badge-area">
-                                            <x:dataList
-                                                var="item"
-                                                value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}">
-                                                <ui:fragment>
-                                                    <entity:entity_badge
-                                                        styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
-                                                        fieldname="#{msgs[item.name]}"
-                                                        showfield="#{item.showField}" />
-                                                </ui:fragment>
-                                            </x:dataList>
-                                        </h:panelGroup>
+                                    <!-- badges area -->
+                                    <h:panelGroup
+                                        id="badge-area"
+                                        layout="block"
+                                        styleClass="badge-area">
+                                        <x:dataList
+                                            var="item"
+                                            value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}">
+                                            <ui:fragment>
+                                                <entity:entity_badge
+                                                    styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
+                                                    fieldname="#{msgs[item.name]}"
+                                                    showfield="#{item.showField}" />
+                                            </ui:fragment>
+                                        </x:dataList>
+                                    </h:panelGroup>
 
-                                        <!-- list all metadata fields -->
-                                        <div class="main-area">
+                                    <!-- list all metadata fields -->
+                                    <div class="main-area">
+                                        <ui:repeat
+                                            value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}"
+                                            var="configuredField"
+                                            varStatus="status">
                                             <ui:repeat
-                                                value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}"
-                                                var="configuredField"
-                                                varStatus="status">
-                                                <ui:repeat
-                                                    var="field"
-                                                    value="#{configuredField.metadataList}"
-                                                    rendered="#{configuredField.showField}">
+                                                var="field"
+                                                value="#{configuredField.metadataList}"
+                                                rendered="#{configuredField.showField}">
 
-                                                    <div class="form-group">
-                                                        <div class="col-sm-3 control-label">
+                                                <div class="form-group">
+                                                    <div class="col-sm-3 control-label">
 
-                                                            <h:outputLabel
-                                                                for="field_#{status.index}"
-                                                                value="#{msgs[configuredField.label]}" />
-                                                            <!-- publish button -->
-                                                            <h:panelGroup id="pubBtn">
+                                                        <h:outputLabel
+                                                            for="field_#{status.index}"
+                                                            value="#{msgs[configuredField.label]}" />
+                                                        <!-- publish button -->
+                                                        <h:panelGroup id="pubBtn">
                                                             <button
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="toggle-export"
                                                                 jsf:rendered="#{field.displayPublishButton}"
                                                                 title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
                                                                 data-toggle="tooltip"
-                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
-                                                                >
+                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                                 <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
                                                                 <f:ajax
                                                                     execute="pubBtn"
@@ -385,328 +392,325 @@
                                                                     value="#{not field.publishField.booleanValue}"
                                                                     target="#{field.publishField.booleanValue}" />
                                                             </button>
-                                                            </h:panelGroup>
-
-                                                            <!-- delete button -->
-                                                            <button
-                                                                class="btn pull-right toggle"
-                                                                jsf:id="remove"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
-                                                                title="#{msgs.plugin_workflow_entity_delete}"
-                                                                data-toggle="tooltip"
-                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
-                                                                >
-                                                                <i class="fa fa-minus-circle" />
-                                                                <f:ajax
-                                                                    execute="@this"
-                                                                    render="@form" />
-                                                            </button>
-
-
-                                                            <!-- duplicate button -->
-                                                            <button
-                                                                class="btn pull-right toggle"
-                                                                jsf:id="duplicate"
-                                                                jsf:rendered="#{field.configField.repeatable}"
-                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
-                                                                title="#{msgs.plugin_workflow_entity_duplicate}"
-                                                                data-toggle="tooltip"
-                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
-                                                                >
-                                                                <i class="fa fa-plus-circle" />
-                                                                <f:ajax
-                                                                    execute="@this"
-                                                                    render="@form" />
-                                                            </button>
-
-                                                            <!-- button to add source-->
-                                                            <button
-                                                                jsf:rendered="#{field.allowSources}"
-                                                                jsf:id="addSource"
-                                                                class="btn pull-right toggle "
-                                                                jsf:onclick="$('#sourceSearchBox').modal('show');"
-                                                                title="#{msgs.plugin_workflow_entity_addSource}"
-                                                                data-toggle="tooltip"
-                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }"
-                                                                >
-                                                                <i class="fa fa-quote-left" />
-                                                                <f:ajax
-                                                                    execute="@this"
-                                                                    render=":sourceModalContent" />
-                                                                <f:setPropertyActionListener
-                                                                    value="#{field}"
-                                                                    target="#{NavigationForm.workflowPlugin.currentField}" />
-                                                                <f:setPropertyActionListener
-                                                                    value=""
-                                                                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
-                                                            </button>
-
-
-                                                        </div>
-
-                                                        <h:panelGroup
-                                                            layout="block"
-                                                            rendered="#{!field.configField.group}"
-                                                            styleClass="col-sm-9">
-
-                                                            <ui:fragment rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
-                                                                <x:inputText
-                                                                    styleClass="form-control"
-                                                                    value="#{field.metadata.value}"
-                                                                    required="false"
-                                                                    id="field_#{status.index}"
-                                                                    readonly="#{field.configField.readonly  or field.configField.fieldType == 'generated'}">
-                                                                    <f:ajax
-                                                                        execute="@this"
-                                                                        render="badge-area :header"
-                                                                        event="blur"
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                </x:inputText>
-                                                            </ui:fragment>
-
-                                                            <ui:fragment rendered="#{field.configField.fieldType == 'checkbox'}">
-                                                                <h:selectBooleanCheckbox
-                                                                    styleClass="form-control checkbox-height-fix"
-                                                                    style="width: auto;"
-                                                                    value="#{field.booleanValue}">
-                                                                    <f:ajax
-                                                                        event="change"
-                                                                        render="badge-area" />
-                                                                </h:selectBooleanCheckbox>
-                                                            </ui:fragment>
-                                                            <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
-                                                                <h:selectOneMenu
-                                                                    styleClass="form-control"
-                                                                    value="#{field.metadata.value}">
-                                                                    <f:ajax
-                                                                        event="change"
-                                                                        render="badge-area :header"
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                    <f:selectItem
-                                                                        itemValue=""
-                                                                        itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                        itemDisabled="true" />
-                                                                    <f:selectItems
-                                                                        value="#{field.configField.valueList}"
-                                                                        var="item"
-                                                                        itemLabel="#{item}"
-                                                                        itemValue="#{item}" />
-                                                                </h:selectOneMenu>
-                                                            </ui:fragment>
-
-                                                            <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
-                                                                <h:selectOneMenu
-                                                                    styleClass="form-control"
-                                                                    value="#{field.vocabularyValue}">
-                                                                    <f:ajax
-                                                                        event="change"
-                                                                        render="badge-area :header"
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                    <f:selectItem
-                                                                        itemValue=""
-                                                                        itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                        itemDisabled="false" />
-                                                                    <f:selectItems
-                                                                        value="#{field.configField.vocabularyList}"
-                                                                        var="item"
-                                                                        itemLabel="#{item}"
-                                                                        itemValue="#{item}" />
-                                                                </h:selectOneMenu>
-                                                            </ui:fragment>
-
                                                         </h:panelGroup>
 
-                                                        <h:panelGroup
-                                                            id="group"
-                                                            layout="block"
-                                                            rendered="#{field.configField.group}"
-                                                            styleClass="col-sm-9">
-                                                            <ui:repeat
-                                                                var="subfield"
-                                                                value="#{field.subfields}">
+                                                        <!-- delete button -->
+                                                        <button
+                                                            class="btn pull-right toggle"
+                                                            jsf:id="remove"
+                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
+                                                            title="#{msgs.plugin_workflow_entity_delete}"
+                                                            data-toggle="tooltip"
+                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            <i class="fa fa-minus-circle" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                render="@form" />
+                                                        </button>
+
+
+                                                        <!-- duplicate button -->
+                                                        <button
+                                                            class="btn pull-right toggle"
+                                                            jsf:id="duplicate"
+                                                            jsf:rendered="#{field.configField.repeatable}"
+                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
+                                                            title="#{msgs.plugin_workflow_entity_duplicate}"
+                                                            data-toggle="tooltip"
+                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            <i class="fa fa-plus-circle" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                render="@form" />
+                                                        </button>
+
+                                                        <!-- button to add source-->
+                                                        <button
+                                                            jsf:rendered="#{field.allowSources}"
+                                                            jsf:id="addSource"
+                                                            class="btn pull-right toggle "
+                                                            jsf:onclick="$('#sourceSearchBox').modal('show');"
+                                                            title="#{msgs.plugin_workflow_entity_addSource}"
+                                                            data-toggle="tooltip"
+                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            <i class="fa fa-quote-left" />
+                                                            <f:ajax
+                                                                execute="@this"
+                                                                render=":sourceModalContent" />
+                                                            <f:setPropertyActionListener
+                                                                value="#{field}"
+                                                                target="#{NavigationForm.workflowPlugin.currentField}" />
+                                                            <f:setPropertyActionListener
+                                                                value=""
+                                                                target="#{NavigationForm.workflowPlugin.sourceMode}" />
+                                                        </button>
+
+
+                                                    </div>
+
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        rendered="#{!field.configField.group}"
+                                                        styleClass="col-sm-9">
+
+                                                        <ui:fragment rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
+                                                            <x:inputText
+                                                                styleClass="form-control"
+                                                                value="#{field.metadata.value}"
+                                                                required="false"
+                                                                id="field_#{status.index}"
+                                                                readonly="#{field.configField.readonly  or field.configField.fieldType == 'generated'}">
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render="badge-area :header"
+                                                                    event="blur"
+                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                            </x:inputText>
+                                                        </ui:fragment>
+
+                                                        <ui:fragment rendered="#{field.configField.fieldType == 'checkbox'}">
+                                                            <h:selectBooleanCheckbox
+                                                                styleClass="form-control checkbox-height-fix"
+                                                                style="width: auto;"
+                                                                value="#{field.booleanValue}">
+                                                                <f:ajax
+                                                                    event="change"
+                                                                    render="badge-area" />
+                                                            </h:selectBooleanCheckbox>
+                                                        </ui:fragment>
+                                                        <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
+                                                            <h:selectOneMenu
+                                                                styleClass="form-control"
+                                                                value="#{field.metadata.value}">
+                                                                <f:ajax
+                                                                    event="change"
+                                                                    render="badge-area :header"
+                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                <f:selectItem
+                                                                    itemValue=""
+                                                                    itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                    itemDisabled="true" />
+                                                                <f:selectItems
+                                                                    value="#{field.configField.valueList}"
+                                                                    var="item"
+                                                                    itemLabel="#{item}"
+                                                                    itemValue="#{item}" />
+                                                            </h:selectOneMenu>
+                                                        </ui:fragment>
+
+                                                        <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
+                                                            <h:selectOneMenu
+                                                                styleClass="form-control"
+                                                                value="#{field.vocabularyValue}">
+                                                                <f:ajax
+                                                                    event="change"
+                                                                    render="badge-area :header"
+                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                <f:selectItem
+                                                                    itemValue=""
+                                                                    itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                    itemDisabled="false" />
+                                                                <f:selectItems
+                                                                    value="#{field.configField.vocabularyList}"
+                                                                    var="item"
+                                                                    itemLabel="#{item}"
+                                                                    itemValue="#{item}" />
+                                                            </h:selectOneMenu>
+                                                        </ui:fragment>
+
+                                                    </h:panelGroup>
+
+                                                    <h:panelGroup
+                                                        id="group"
+                                                        layout="block"
+                                                        rendered="#{field.configField.group}"
+                                                        styleClass="col-sm-9">
+                                                        <ui:repeat
+                                                            var="subfield"
+                                                            value="#{field.subfields}">
+                                                            <h:panelGroup
+                                                                layout="block"
+                                                                styleClass="group-metadata #{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                                rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                                <h:outputText
+                                                                    styleClass="field-label"
+                                                                    value="#{msgs[subfield.configField.label]}"
+                                                                    rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
                                                                 <h:panelGroup
-                                                                    layout="block"
-                                                                    styleClass="group-metadata #{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
-                                                                    rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
-
-                                                                    <h:outputText
-                                                                        styleClass="field-label"
-                                                                        value="#{msgs[subfield.configField.label]}"
-                                                                        rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
-
-                                                                    <h:panelGroup
-                                                                        rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
-                                                                        id="inputGroup">
-                                                                        <x:inputText
-                                                                            styleClass="form-control"
-                                                                            value="#{subfield.metadata.value}"
-                                                                            required="false"
-                                                                            validator="#{subfield.requiredValidator}"
-                                                                            readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}"
-                                                                            id="inputField">
-                                                                            <f:ajax
-                                                                                execute="@this"
-                                                                                render="badge-area :header"
-                                                                                event="blur"
-                                                                                listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                        </x:inputText>
-                                                                        <h:panelGroup
-                                                                            layout="block"
-                                                                            rendered="#{!subfield.valid}"
-                                                                            styleClass="font-danger validation-message">
-                                                                            <h:outputText value="#{subfield.validationErrorMessage}" />
-                                                                        </h:panelGroup>
-                                                                    </h:panelGroup>
-
-                                                                    <x:inputTextarea
+                                                                    rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
+                                                                    id="inputGroup">
+                                                                    <x:inputText
                                                                         styleClass="form-control"
                                                                         value="#{subfield.metadata.value}"
                                                                         required="false"
-                                                                        rendered="#{subfield.configField.fieldType == 'textarea'}"
-                                                                        readonly="#{subfield.configField.readonly}">
+                                                                        validator="#{subfield.requiredValidator}"
+                                                                        readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}"
+                                                                        id="inputField">
                                                                         <f:ajax
                                                                             execute="@this"
                                                                             render="badge-area :header"
                                                                             event="blur"
                                                                             listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
-                                                                    </x:inputTextarea>
-
-                                                                    <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
-                                                                        <h:selectOneMenu
-                                                                            styleClass="form-control"
-                                                                            value="#{subfield.metadata.value}">
-                                                                            <f:ajax
-                                                                                event="change"
-                                                                                render="badge-area" />
-                                                                            <f:selectItem
-                                                                                itemValue=""
-                                                                                itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                                itemDisabled="true" />
-                                                                            <f:selectItems
-                                                                                value="#{subfield.configField.valueList}"
-                                                                                var="item"
-                                                                                itemLabel="#{item}"
-                                                                                itemValue="#{item}" />
-                                                                        </h:selectOneMenu>
-                                                                    </ui:fragment>
-
-                                                                    <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
-                                                                        <h:selectOneMenu
-                                                                            styleClass="form-control"
-                                                                            value="#{subfield.vocabularyValue}">
-                                                                            <f:ajax
-                                                                                event="change"
-                                                                                render="badge-area" />
-                                                                            <f:selectItem
-                                                                                itemValue=""
-                                                                                itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                                itemDisabled="false" />
-                                                                            <f:selectItems
-                                                                                value="#{subfield.configField.vocabularyList}"
-                                                                                var="item"
-                                                                                itemLabel="#{item}"
-                                                                                itemValue="#{item}" />
-                                                                        </h:selectOneMenu>
-                                                                    </ui:fragment>
-
-                                                                    <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
-                                                                        <div class="vocabulary-search">
-                                                                            <x:inputText
-                                                                                styleClass="form-control"
-                                                                                value="#{subfield.metadata.value}"
-                                                                                required="false"
-                                                                                id="field_#{status.index}"
-                                                                                readonly="true">
-                                                                                <f:ajax
-                                                                                    execute="@this"
-                                                                                    render="badge-area"
-                                                                                    event="blur" />
-                                                                            </x:inputText>
-                                                                            <span>
-                                                                                <button
-                                                                                    jsf:id="vocabularySearch"
-                                                                                    class="btn vocabularySearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
-                                                                                    title="#{msgs.NORM_vocabularySearch}"
-                                                                                    aria-label="#{msgs.NORM_vocabularySearch}"
-                                                                                    type="button"
-                                                                                    jsf:onclick="$('#vocabularySearchBox').modal('show');">
-                                                                                    <img
-                                                                                        class="toggle"
-                                                                                        style="width: 16px;"
-                                                                                        alt="Vocabulary"
-                                                                                        src="template/img/Icons_Vocabulary_color.png" />
-                                                                                    <f:setPropertyActionListener
-                                                                                        value="#{subfield}"
-                                                                                        target="#{NavigationForm.workflowPlugin.searchField}" />
-                                                                                    <f:ajax
-                                                                                        execute="@this"
-                                                                                        render=":vocabularySearchModalContent" />
-                                                                                    <f:passThroughAttribute
-                                                                                        name="data-toggle"
-                                                                                        value="tooltip" />
-                                                                                    <f:passThroughAttribute
-                                                                                        name="data-placement"
-                                                                                        value="top" />
-                                                                                </button>
-                                                                            </span>
-                                                                        </div>
-                                                                    </ui:fragment>
-                                                                    <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
-
-                                                                        <h:inputFile
-                                                                            id="thirdtab_fileupload3"
-                                                                            value="#{subfield.uploadedFile}"
-                                                                            storage="file"
-                                                                            styleClass="form-control form-control-file"
-                                                                            style="border: 0;padding-left: 0px;"
-                                                                            required="false">
-                                                                            <f:ajax
-                                                                                listener="#{subfield.uploadFile}"
-                                                                                render="thirdtab_fileupload3_message" />
-                                                                        </h:inputFile>
-                                                                    </ui:fragment>
+                                                                    </x:inputText>
                                                                     <h:panelGroup
-                                                                        rendered="#{subfield.configField.fieldType == 'date'}"
-                                                                        id="group">
-                                                                        <!-- TODO show wrong syntax errors, add date picker  -->
+                                                                        layout="block"
+                                                                        rendered="#{!subfield.valid}"
+                                                                        styleClass="font-danger validation-message">
+                                                                        <h:outputText value="#{subfield.validationErrorMessage}" />
+                                                                    </h:panelGroup>
+                                                                </h:panelGroup>
+
+                                                                <x:inputTextarea
+                                                                    styleClass="form-control"
+                                                                    value="#{subfield.metadata.value}"
+                                                                    required="false"
+                                                                    rendered="#{subfield.configField.fieldType == 'textarea'}"
+                                                                    readonly="#{subfield.configField.readonly}">
+                                                                    <f:ajax
+                                                                        execute="@this"
+                                                                        render="badge-area :header"
+                                                                        event="blur"
+                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                </x:inputTextarea>
+
+                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
+                                                                    <h:selectOneMenu
+                                                                        styleClass="form-control"
+                                                                        value="#{subfield.metadata.value}">
+                                                                        <f:ajax
+                                                                            event="change"
+                                                                            render="badge-area" />
+                                                                        <f:selectItem
+                                                                            itemValue=""
+                                                                            itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                            itemDisabled="true" />
+                                                                        <f:selectItems
+                                                                            value="#{subfield.configField.valueList}"
+                                                                            var="item"
+                                                                            itemLabel="#{item}"
+                                                                            itemValue="#{item}" />
+                                                                    </h:selectOneMenu>
+                                                                </ui:fragment>
+
+                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
+                                                                    <h:selectOneMenu
+                                                                        styleClass="form-control"
+                                                                        value="#{subfield.vocabularyValue}">
+                                                                        <f:ajax
+                                                                            event="change"
+                                                                            render="badge-area" />
+                                                                        <f:selectItem
+                                                                            itemValue=""
+                                                                            itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                            itemDisabled="false" />
+                                                                        <f:selectItems
+                                                                            value="#{subfield.configField.vocabularyList}"
+                                                                            var="item"
+                                                                            itemLabel="#{item}"
+                                                                            itemValue="#{item}" />
+                                                                    </h:selectOneMenu>
+                                                                </ui:fragment>
+
+                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
+                                                                    <div class="vocabulary-search">
                                                                         <x:inputText
                                                                             styleClass="form-control"
                                                                             value="#{subfield.metadata.value}"
                                                                             required="false"
-                                                                            readonly="false"
-                                                                            id="dateField"
-                                                                            validator="#{subfield.dateValidator}">
+                                                                            id="field_#{status.index}"
+                                                                            readonly="true">
                                                                             <f:ajax
                                                                                 execute="@this"
-                                                                                render="badge-area group"
+                                                                                render="badge-area"
                                                                                 event="blur" />
                                                                         </x:inputText>
-                                                                        <h:panelGroup
-                                                                            layout="block"
-                                                                            rendered="#{!subfield.valid}"
-                                                                            styleClass="font-danger validation-message">
-                                                                            <h:outputText value="#{subfield.validationErrorMessage}" />
-                                                                        </h:panelGroup>
+                                                                        <span>
+                                                                            <button
+                                                                                jsf:id="vocabularySearch"
+                                                                                class="btn vocabularySearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
+                                                                                title="#{msgs.NORM_vocabularySearch}"
+                                                                                aria-label="#{msgs.NORM_vocabularySearch}"
+                                                                                type="button"
+                                                                                jsf:onclick="$('#vocabularySearchBox').modal('show');">
+                                                                                <img
+                                                                                    class="toggle"
+                                                                                    style="width: 16px;"
+                                                                                    alt="Vocabulary"
+                                                                                    src="template/img/Icons_Vocabulary_color.png" />
+                                                                                <f:setPropertyActionListener
+                                                                                    value="#{subfield}"
+                                                                                    target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                                <f:ajax
+                                                                                    execute="@this"
+                                                                                    render=":vocabularySearchModalContent" />
+                                                                                <f:passThroughAttribute
+                                                                                    name="data-toggle"
+                                                                                    value="tooltip" />
+                                                                                <f:passThroughAttribute
+                                                                                    name="data-placement"
+                                                                                    value="top" />
+                                                                            </button>
+                                                                        </span>
+                                                                    </div>
+                                                                </ui:fragment>
+                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
+
+                                                                    <h:inputFile
+                                                                        id="thirdtab_fileupload3"
+                                                                        value="#{subfield.uploadedFile}"
+                                                                        storage="file"
+                                                                        styleClass="form-control form-control-file"
+                                                                        style="border: 0;padding-left: 0px;"
+                                                                        required="false">
+                                                                        <f:ajax
+                                                                            listener="#{subfield.uploadFile}"
+                                                                            render="thirdtab_fileupload3_message" />
+                                                                    </h:inputFile>
+                                                                </ui:fragment>
+                                                                <h:panelGroup
+                                                                    rendered="#{subfield.configField.fieldType == 'date'}"
+                                                                    id="group">
+                                                                    <!-- TODO show wrong syntax errors, add date picker  -->
+                                                                    <x:inputText
+                                                                        styleClass="form-control"
+                                                                        value="#{subfield.metadata.value}"
+                                                                        required="false"
+                                                                        readonly="false"
+                                                                        id="dateField"
+                                                                        validator="#{subfield.dateValidator}">
+                                                                        <f:ajax
+                                                                            execute="@this"
+                                                                            render="badge-area group"
+                                                                            event="blur" />
+                                                                    </x:inputText>
+                                                                    <h:panelGroup
+                                                                        layout="block"
+                                                                        rendered="#{!subfield.valid}"
+                                                                        styleClass="font-danger validation-message">
+                                                                        <h:outputText value="#{subfield.validationErrorMessage}" />
                                                                     </h:panelGroup>
-
                                                                 </h:panelGroup>
-                                                            </ui:repeat>
-                                                            <ui:include src="includes/sources.xhtml" />
-                                                        </h:panelGroup>
-                                                    </div>
-                                                </ui:repeat>
+
+                                                            </h:panelGroup>
+                                                        </ui:repeat>
+                                                        <ui:include src="includes/sources.xhtml" />
+                                                    </h:panelGroup>
+                                                </div>
                                             </ui:repeat>
+                                        </ui:repeat>
 
-                                        </div>
-                                        <!-- vocabulary search modal -->
-                                        <ui:include src="includes/vocabulary_search_modal.xhtml" />
+                                    </div>
+                                    <!-- vocabulary search modal -->
+                                    <ui:include src="includes/vocabulary_search_modal.xhtml" />
 
-                                        <!-- sources modal -->
-                                        <ui:include src="includes/source_modal.xhtml" />
-                                    </h:form>
-                                </div>
+                                    <!-- sources modal -->
+                                    <ui:include src="includes/source_modal.xhtml" />
+                                </h:form>
                             </div>
                         </div>
+                    </div>
 
 
 
@@ -725,7 +729,8 @@
                         </h:form>
                     </div>
 
-                </div> <!-- end row -->
+                </div>
+                <!-- end row -->
 
 
 
