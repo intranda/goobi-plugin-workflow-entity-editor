@@ -254,6 +254,19 @@
                                         </ui:repeat>
 
                                     </li>
+                                    <!-- TODO display it only for admins -->
+                                    <ui:fragment rendered="true">
+                                        <li>
+                                            <button
+                                                jsf:id="deleteEntity"
+                                                class="font-danger"
+                                                jsf:action="#{NavigationForm.workflowPlugin.deleteEntity}"
+                                                onclick="if (!confirm('#{msgs.wirklichAusfuehren}')) return false">
+                                                <i class="fa fa-trash big-icon" />
+
+                                            </button>
+                                        </li>
+                                    </ui:fragment>
                                 </ul>
                             </div>
                         </div>
@@ -741,8 +754,7 @@
                     <button
                         class="btn"
                         jsf:id="save"
-                        jsf:action="#{NavigationForm.workflowPlugin.saveEntity}"
-                        type="button">
+                        jsf:action="#{NavigationForm.workflowPlugin.saveEntity}">
                         <h:outputText value="#{msgs.save}" />
                     </button>
 

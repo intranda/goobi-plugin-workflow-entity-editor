@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.commons.configuration.XMLConfiguration;
@@ -80,20 +81,20 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // contains the last opened elements
     @Getter
-    private List<BreadcrumbItem> breadcrumbList = new ArrayList<>();
+    private transient List<BreadcrumbItem> breadcrumbList = new ArrayList<>();
 
     // select a breadcrumb to open
     @Getter
     @Setter
-    private BreadcrumbItem selectedBreadcrumb;
+    private transient BreadcrumbItem selectedBreadcrumb;
 
     // configuration object
-    private EntityConfig configuration;
+    private transient EntityConfig configuration;
 
     // current field for vocabulary search
     @Getter
     @Setter
-    private MetadataField searchField;
+    private transient MetadataField searchField;
 
     // search value for vocabularies
     @Getter
@@ -121,7 +122,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     // selected field to add sources
     @Getter
     @Setter
-    private MetadataField currentField;
+    private transient MetadataField currentField;
     // list of all sources
     @Getter
     private List<VocabRecord> sources;
@@ -147,28 +148,28 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private String sourceMode;
 
     @Getter
-    private Entity entity;
+    private transient Entity entity;
 
     @Getter
     @Setter
     private String entitySearch;
 
     @Getter
-    private List<Entity> entities = new ArrayList<>();
+    private transient List<Entity> entities = new ArrayList<>();
 
     @Getter
     @Setter
-    private EntityType entityType;
+    private transient EntityType entityType;
 
     @Getter
-    private List<RelationshipType> relationshipTypes = new ArrayList<>();
+    private transient List<RelationshipType> relationshipTypes = new ArrayList<>();
 
     @Getter
     @Setter
-    private Entity selectedEntity;
+    private transient Entity selectedEntity;
     @Getter
     @Setter
-    private RelationshipType selectedRelationship;
+    private transient RelationshipType selectedRelationship;
 
     @Getter
     @Setter
@@ -541,6 +542,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
         entity = new Entity(configuration, newProcess);
+        entity.saveEntity();
+
+        //  breadcrumb
+        BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
+                entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
+        breadcrumbList.add(item);
     }
 
     public void setRelationship(String selectedRelationship) {
@@ -709,6 +716,32 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return entityType.getName();
         }
         return "";
+    }
+
+    public String deleteEntity() {
+        // run through relationships; remove process
+        for (Entry<EntityType, List<Relationship>> entry : entity.getLinkedRelationships().entrySet()) {
+            List<Relationship> relations = new ArrayList<>(entry.getValue());
+            for (Relationship rel : relations) {
+                // remove each relationship
+                removeRelationship(entry.getKey(), rel);
+            }
+        }
+
+        // remove entity from breadcrumbs
+        for (BreadcrumbItem bci : breadcrumbList) {
+            if (bci.getProcessId() == entity.getCurrentProcess().getId().intValue()) {
+                breadcrumbList.remove(bci);
+                break;
+            }
+        }
+
+        // remove process from database
+        ProcessManager.deleteProcess(entity.getCurrentProcess());
+
+        entity = null;
+        return exitPlugin();
+        // remove screen?
     }
 
     /*

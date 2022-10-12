@@ -29,7 +29,7 @@
                         styleClass="modal-content"
                         layout="block"
                         id="searchEntityModalContent">
-                        <h:form styleClass="form-horizontal">
+                        <h:form styleClass="form-horizontal" id="searchEntityForm">
 
                             <div class="modal-header">
                                 <button
@@ -90,8 +90,11 @@
                                         <x:inputText
                                             id="entitySearchInput"
                                             styleClass="form-control"
-                                            value="#{NavigationForm.workflowPlugin.entitySearch}" />
+                                            value="#{NavigationForm.workflowPlugin.entitySearch}" 
+                                            onkeyup="fireOnEnter(this.id, 'searchEntityForm:searchEntities')" 
+                                            />
                                         <button
+                                            jsf:id="searchEntities"
                                             type="button"
                                             class="btn btn-primary"
                                             jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
@@ -128,7 +131,6 @@
                                             </div>
                                             <div class="create-new-entity__actions">
                                                 <button
-                                                    type="button"
                                                     class="btn btn-primary"
                                                     jsf:id="createNewEntityButton"
                                                     jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
