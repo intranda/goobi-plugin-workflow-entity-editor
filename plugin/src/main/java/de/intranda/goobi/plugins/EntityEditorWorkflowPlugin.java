@@ -63,11 +63,6 @@ import ugh.fileformats.mets.MetsMods;
 @Log4j2
 public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
-    // TODO search for entities: exclude current entity, maybe limit the result to 10 and add paginator?
-
-    // TODO save uploaded files in correct folder, add it to phys sequence, prevent second upload with same filename
-    // TODO generate bibliography on export
-
     private static final long serialVersionUID = 8882911907364782646L;
 
     @Getter
@@ -345,7 +340,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         sourceType = getSourceFieldValue(configuration.getSourceTypeFields());
         sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
 
-        //  pages;
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
 
         MetadataGroup mg = null;
@@ -640,7 +634,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // mark process as published
             entity.getStatusProperty().setWert("Published");
         }
-
+        entity.generateBibliography();
         // save
         entity.saveEntity();
         // run export plugin for current process
@@ -664,6 +658,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // mark process as published
             entity.getStatusProperty().setWert("Published");
         }
+        entity.generateBibliography();
         // save
         entity.saveEntity();
         // run export plugin for current process
@@ -671,8 +666,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         try {
             exportPlugin.startExport(p);
             // run export for all linked entities with status published
-            for (EntityType type : entity.getLinkedRelationships().keySet()) {
-                List<Relationship> relationships = entity.getLinkedRelationships().get(type);
+            for (List<Relationship> relationships : entity.getLinkedRelationships().values()) {
                 for (Relationship rel : relationships) {
                     if ("Published".equals(rel.getProcessStatus()) && StringUtils.isNotBlank(rel.getProcessId())
                             && StringUtils.isNumeric(rel.getProcessId())) {
@@ -747,7 +741,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     /*
      * SQL statements to generate display name for each type
 
-    delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
+    clear old data: delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
 
 
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
