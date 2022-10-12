@@ -20,6 +20,15 @@
     <ui:define name="navigation">
 
         <script type="text/javascript">
+
+            function preventSubmit() {
+                event.preventDefault();
+                console.log(event)
+                const submitBtn = event.target.querySelector('[id$="searchSource"]')
+                console.log(submitBtn)
+                submitBtn.click();
+            }
+
                                     function switchExpanded( id ) {
                                         var x = document.getElementById( id ).getAttribute( "aria-expanded" );
                                         if ( x == "true" ) {
@@ -32,8 +41,8 @@
                                     }
 
                                     function fireOnEnter( object, selector ) {
-                                        var btn = $( '#' + selector );
                                         event.preventDefault();
+                                        var btn = $( '#' + selector );
                                         if ( event.keyCode == 13 ) {
                                             btn.click();
                                         }
@@ -757,6 +766,7 @@
 
 
                     <div class="dropup dropdown--exportBtn">
+
 
                         <button
                             jsf:id="exportBtnDropdownToggle"

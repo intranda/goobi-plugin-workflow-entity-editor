@@ -875,6 +875,17 @@ body,
 
 /* Source modal */
 
+.flex-form {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+}
+
+.flex-form [id$="sourceSearchInput"] {
+    height: 30px;
+}
+
 #addSource .form-group:first-child {
   border-top: 1px solid rgb(204, 204, 204);
 }

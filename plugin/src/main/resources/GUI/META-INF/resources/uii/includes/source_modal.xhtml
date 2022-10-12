@@ -55,6 +55,9 @@
                                 styleClass="row form-group vocabulary-searcharea"
                                 rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
                                 <div class="source-modal__search-bar">
+
+                                <h:form onsubmit="preventSubmit()" styleClass="flex-form">
+
                                     <h:outputLabel
                                         value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                         for="sourceSearchInput" />
@@ -62,7 +65,7 @@
                                         id="sourceSearchInput"
                                         styleClass="form-control"
                                         value="#{NavigationForm.workflowPlugin.searchValue}"
-                                        onkeyup="fireOnEnter(this.id, 'searchSource')" />
+                                    />
 
                                     <button
                                         class="btn btn-primary"
@@ -80,6 +83,7 @@
                                             execute="@form"
                                             render="sourcesList" />
                                     </button>
+                                    </h:form>
 
 
                                     <!-- ADD new source-->
