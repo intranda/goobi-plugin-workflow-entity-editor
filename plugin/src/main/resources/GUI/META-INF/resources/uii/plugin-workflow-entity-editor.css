@@ -658,6 +658,20 @@ body,
 
 }
 
+.editor-actions [id$="deleteEntity"] {
+  padding: 2px 4px;
+  margin-bottom: 0;
+  background: transparent;
+  color: #721c24;
+  border-color: #e3abb2;
+  background-color: #f8d7da;
+}
+
+.editor-actions [id$="deleteEntity"]:hover {
+    color: #721c24;
+    background-color: #e3abb2;
+}
+
 .editor-actions [id$="save"] {
   padding: 2px 4px;
   margin-bottom: 0;
