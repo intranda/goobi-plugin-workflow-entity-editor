@@ -31,7 +31,7 @@
                         id="vocabularySearchModalContent">
 
                         <h:form
-                            onkeypress="submitOnEnter(event);"
+                            onkeypress="submitOnEnter(event, 'vocabularySearch');"
                             prependId="false">
 
                             <div class="modal-header">
@@ -68,7 +68,7 @@
                                         onkeyup="fireOnEnter('vocabularySearchAction')" />
                                     <button
                                         jsf:id="vocabularySearchAction"
-                                        class="btn btn-primary btn--loader submitOnEnter"
+                                        class="btn btn-primary btn--loader vocabularySearch"
                                         jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
                                         <i
                                             class="fa fa-search"
