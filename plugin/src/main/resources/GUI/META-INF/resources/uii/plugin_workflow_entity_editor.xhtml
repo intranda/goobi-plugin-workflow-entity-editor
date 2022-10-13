@@ -22,11 +22,9 @@
         <script type="text/javascript">
 
             function preventSubmit() {
+                if ( event.keyCode == 13 ) {
                 event.preventDefault();
-                console.log(event)
-                const submitBtn = event.target.querySelector('[id$="searchSource"]')
-                console.log(submitBtn)
-                submitBtn.click();
+                }
             }
 
                                     function switchExpanded( id ) {
@@ -40,10 +38,9 @@
                                         document.getElementById( id ).setAttribute( "aria-expanded", x );
                                     }
 
-                                    function fireOnEnter( object, selector ) {
-                                        event.preventDefault();
-                                        var btn = $( '#' + selector );
+                                    function fireOnEnter( selector ) {
                                         if ( event.keyCode == 13 ) {
+	                                        var btn = $( '#' + selector );
                                             btn.click();
                                         }
                                     }
@@ -336,7 +333,9 @@
                                     styleClass="form-horizontal form-bordered"
                                     prependId="false"
                                     enctype="multipart/form-data"
-                                    id="metadataForm">
+                                    id="metadataForm"
+                                    onsubmit="preventSubmit()"
+                                    >
 
                                     <!-- badges area -->
                                     <h:panelGroup

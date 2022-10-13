@@ -56,8 +56,6 @@
                                 rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
                                 <div class="source-modal__search-bar">
 
-                                <h:form onsubmit="preventSubmit()" styleClass="flex-form">
-
                                     <h:outputLabel
                                         value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                         for="sourceSearchInput" />
@@ -65,7 +63,7 @@
                                         id="sourceSearchInput"
                                         styleClass="form-control"
                                         value="#{NavigationForm.workflowPlugin.searchValue}"
-                                    />
+                                        onkeyup="fireOnEnter('searchSource')" />
 
                                     <button
                                         class="btn btn-primary"
@@ -83,14 +81,12 @@
                                             execute="@form"
                                             render="sourcesList" />
                                     </button>
-                                    </h:form>
 
 
                                     <!-- ADD new source-->
                                     <button
                                         class="btn btn-lightgrey margin-left-10"
-                                        jsf:action="#{NavigationForm.workflowPlugin.createNewSource}"
-                                        type="button">
+                                        jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
                                         <i
                                             class="fa fa-plus"
                                             aria-hidden="true"></i>
@@ -192,8 +188,7 @@
                                     <div class="source-modal__actions">
                                         <button
                                             class="btn btn-lightgrey "
-                                            jsf:action="#{NavigationForm.Reload}"
-                                            type="button">
+                                            jsf:action="#{NavigationForm.Reload}">
                                             <i
                                                 class="fa fa-ban"
                                                 aria-hidden="true"></i>
@@ -210,7 +205,6 @@
                                         </button>
 
                                         <button
-                                            type="button"
                                             jsf:id="check"
                                             class="btn btn-primary"
                                             jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
