@@ -30,7 +30,8 @@
                         styleClass="modal-content"
                         layout="block"
                         id="entityModalContent">
-                        <h:form>
+                        <h:form                            onkeypress="submitOnEnter(event);"
+                            prependId="false">
 
                             <div class="modal-header">
                                 <button
@@ -59,14 +60,13 @@
                                     <div class="link-entity-modal__search-bar">
                                         <h:outputLabel
                                             value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
-                                            for="entitySearchInput" />
+                                            for="linkSearchInput" />
                                         <x:inputText
-                                            id="entitySearchInput"
+                                            id="linkSearchInput"
                                             styleClass="form-control"
                                             value="#{NavigationForm.workflowPlugin.entitySearch}" />
 
                                         <button
-                                            type="button"
                                             class="btn btn-primary"
                                             jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
                                             <i
@@ -92,7 +92,6 @@
                                         <div class="create-new-entity__hits">#{msgs.NORM_noHits}</div>
                                         <div class="create-new-entity__actions">
                                             <button
-                                                type="button"
                                                 class="btn btn-primary"
                                                 jsf:id="createEntityButton"
                                                 jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
@@ -179,7 +178,6 @@
 
                                                     <div class="col-sm-1 vocabulary-searchfield">
                                                         <button
-                                                            type="button"
                                                             jsf:id="check"
                                                             class="btn btn-lightgrey greenCheckButton">
                                                             <f:ajax
@@ -369,7 +367,6 @@
 
                                 <!-- back to search list -->
                                 <button
-                                    type="button"
                                     class="btn pull-left"
                                     jsf:id="back"
                                     jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">

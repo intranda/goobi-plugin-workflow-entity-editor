@@ -29,7 +29,11 @@
                         styleClass="modal-content"
                         layout="block"
                         id="searchEntityModalContent">
-                        <h:form styleClass="form-horizontal" id="searchEntityForm">
+                        <h:form
+                            styleClass="form-horizontal"
+                            id="searchEntityForm"
+                            onkeypress="submitOnEnter(event);"
+                            prependId="false">
 
                             <div class="modal-header">
                                 <button
@@ -90,13 +94,10 @@
                                         <x:inputText
                                             id="entitySearchInput"
                                             styleClass="form-control"
-                                            value="#{NavigationForm.workflowPlugin.entitySearch}" 
-                                            onkeyup="fireOnEnter('#searchEntityForm:searchEntities')" 
-                                            />
+                                            value="#{NavigationForm.workflowPlugin.entitySearch}" />
                                         <button
                                             jsf:id="searchEntities"
-                                            type="button"
-                                            class="btn btn-primary"
+                                            class="btn btn-primary submitOnEnter"
                                             jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
                                             <i
                                                 class="fa fa-search"
@@ -217,7 +218,6 @@
 
                                                     <div class="col-sm-1 vocabulary-searchfield">
                                                         <button
-                                                            type="button"
                                                             jsf:id="check"
                                                             class="btn btn-lightgrey">
                                                             <f:ajax

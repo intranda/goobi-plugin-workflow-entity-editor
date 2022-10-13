@@ -21,12 +21,6 @@
 
         <script type="text/javascript">
 
-            function preventSubmit() {
-                if ( event.keyCode == 13 ) {
-                event.preventDefault();
-                }
-            }
-
                                     function switchExpanded( id ) {
                                         var x = document.getElementById( id ).getAttribute( "aria-expanded" );
                                         if ( x == "true" ) {
@@ -36,13 +30,6 @@
                                             x = "true"
                                         }
                                         document.getElementById( id ).setAttribute( "aria-expanded", x );
-                                    }
-
-                                    function fireOnEnter( selector ) {
-                                        if ( event.keyCode == 13 ) {
-	                                        var btn = $( '#' + selector );
-                                            btn.click();
-                                        }
                                     }
                                 </script>
 
@@ -334,7 +321,6 @@
                                     prependId="false"
                                     enctype="multipart/form-data"
                                     id="metadataForm"
-                                    onsubmit="preventSubmit()"
                                     >
 
                                     <!-- badges area -->
@@ -702,12 +688,12 @@
                                         </ui:repeat>
 
                                     </div>
+                                </h:form>
                                     <!-- vocabulary search modal -->
                                     <ui:include src="includes/vocabulary_search_modal.xhtml" />
 
                                     <!-- sources modal -->
                                     <ui:include src="includes/source_modal.xhtml" />
-                                </h:form>
                             </div>
                         </div>
                     </div>
