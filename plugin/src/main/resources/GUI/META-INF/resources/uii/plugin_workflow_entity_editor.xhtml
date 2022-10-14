@@ -732,7 +732,7 @@
                 <h:form styleClass="col-sm-12">
 
                     <!-- TODO display it only for admins -->
-                    <ui:fragment rendered="true">
+                    <ui:fragment rendered="#{LoginForm.hasRole('Plugin_Workflow_Entity_Deletion')}">
                         <button
                             jsf:id="deleteEntity"
                             class="btn"
