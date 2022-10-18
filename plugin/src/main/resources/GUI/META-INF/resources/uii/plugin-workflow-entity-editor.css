@@ -349,7 +349,17 @@ main {
 
 .editor-actions {
   margin-bottom: 2.4rem;
+}
+.editor-actions button {
+  margin-bottom: 2.4rem;
+}
 
+.editor-actions form > button {
+  text-transform: capitalize;
+}
+
+.plugin-entity-editor #metadataForm .badge {
+    text-transform: capitalize;
 }
 
 
