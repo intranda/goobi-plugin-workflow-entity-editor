@@ -117,6 +117,8 @@
                                 <h:panelGroup id="addSource">
                                     <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedSource != null and NavigationForm.workflowPlugin.sourceMode == 'edition'}">
 
+                                    <div class="selected-source__fields">
+
                                         <x:dataList
                                             value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
                                             var="field">
@@ -192,6 +194,8 @@
                                             </div>
                                         </div>
 
+
+                                        </div>
 
 
                                         <div class="source-modal__actions">

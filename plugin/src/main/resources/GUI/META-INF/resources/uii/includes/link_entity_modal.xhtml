@@ -31,6 +31,7 @@
                         layout="block"
                         id="entityModalContent">
                         <h:form
+                            styleClass="form-horizontal"
                             onkeypress="submitOnEnter(event, 'searchEntity');"
                             prependId="false">
 
@@ -209,14 +210,14 @@
                                 <h:panelGroup
                                     id="selectedEntity"
                                     rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
-                                    <h3>
-                                        <h:outputText value="#{NavigationForm.workflowPlugin.selectedEntity.entityName}" />
-                                    </h3>
-
                                     <div
                                         class="row form-group"
                                         style="border-color: #368ee0;">
-                                        <div class="col-sm-11 vocabulary-searchfield">
+                                        <div class="col-sm-12 vocabulary-searchfield">
+                                            <h3>
+                                                <h:outputText value="#{NavigationForm.workflowPlugin.selectedEntity.entityName}" />
+                                            </h3>
+
 
                                             <x:dataList
                                                 value="#{NavigationForm.workflowPlugin.selectedEntity.metadataFieldList}"
@@ -274,7 +275,6 @@
                                                 </ui:repeat>
                                             </x:dataList>
                                         </div>
-                                        <div class="col-sm-1 vocabulary-searchfield"></div>
                                     </div>
 
                                     <h:panelGroup
@@ -353,22 +353,11 @@
                                         </h:panelGroup>
                                     </h:panelGroup>
                                 </h:panelGroup>
-                            </div>
-
-
-                            <div class="modal-footer">
-
-                                <!-- cancel/abort -->
-                                <a
-                                    class="btn pull-left"
-                                    title="#{msgs.cancel}"
-                                    data-dismiss="modal">
-                                    <h:outputText value="#{msgs.cancel}" />
-                                </a>
 
                                 <!-- back to search list -->
+                                <div class="link-entity-modal__actions">
                                 <button
-                                    class="btn pull-left"
+                                    class="btn btn-lightgrey"
                                     jsf:id="back"
                                     jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
                                     <i
@@ -393,10 +382,25 @@
                                     jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
                                     jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
                                     title="#{msgs.save}"
-                                    class="btn btn-green pull-right">
+                                    class="btn btn-green">
                                     <i class="fa fa-floppy-o margin-right-10"></i>
                                     <h:outputText value="#{msgs.save}" />
                                 </button>
+                                </div>
+
+                            </div>
+
+
+                            <div class="modal-footer">
+
+                                <!-- cancel/abort -->
+                                <a
+                                    class="btn pull-left"
+                                    title="#{msgs.cancel}"
+                                    data-dismiss="modal">
+                                    <h:outputText value="#{msgs.cancel}" />
+                                </a>
+
                             </div>
                         </h:form>
                     </h:panelGroup>

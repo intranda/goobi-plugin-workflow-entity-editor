@@ -813,6 +813,18 @@ body,
     gap: calc(var(--gap) * 2);
 }
 
+.entity-modal__search-bar,
+.link-entity-modal__search-bar,
+.source-modal__search-bar {
+    margin: 15px;
+}
+
+/*
+.link-entity-modal__search-bar {
+    padding: 0 15px;
+}
+*/
+
 .entity-modal__search-bar {
     margin-bottom: 15px;
 }
@@ -848,6 +860,11 @@ body,
     overflow-x: hidden;
 }
 
+
+.vocab-search-modal__search-results {
+    margin: 15px;
+}
+
 .entity-modal__card,
 .source-modal__card,
 .link-entity-modal__card,
@@ -878,12 +895,12 @@ body,
   font-weight: bold;
 }
 
-.modal-footer [title="Cancel"] {
+.modal-footer [data-dismiss="modal"] {
     border: 1px solid var(--clr-neutral-600);
     background-color: #fff;
 }
 
-.modal-footer [title="Cancel"]:hover {
+.modal-footer [data-dismiss="modal"]:hover {
     background-color: var(--bg-content);
     color: #333;
 }
@@ -901,6 +918,10 @@ body,
     height: 30px;
 }
 
+#sourceSearchInput {
+    height: 3rem;
+}
+
 #addSource .form-group::after {
   content: '';
   display: table;
@@ -913,12 +934,102 @@ body,
   font-size: 8px
 }
 
+.selected-source__fields {
+    background-color: #fff;
+    padding: 20px 15px;
+    border: 1px solid #ccc;
+}
+
 .source-modal__actions {
     margin-top: 3.2rem;
     display: flex;
     justify-content: flex-end;
     gap: var(--gap);
 }
+
+
+#entityList .form-group::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+#entityList .col-sm-3 {
+  padding-left: 0;
+
+}
+
+#entityList .col-sm-3 label {
+  font-weight: bold;
+}
+
+/* Vocab modal */
+.vocab-search-modal__card .row {
+  border: 0;
+  padding-top: 8px !important;
+
+}
+
+.vocab-search-modal__card.row {
+    padding-left: 0 !important
+}
+
+.vocab-search-modal__card .col-sm-3 {
+  font-weight: bold;
+}
+
+.vocab-search-modal__card .col-sm-4 {
+  padding-left: 0;
+  font-weight: bold;
+}
+
+#addSource label {
+    font-weight: bold;
+}
+
+/* link_entity_modal */
+
+#selectedEntity label {
+  font-weight: bold;
+
+}
+
+#selectedEntity .control-label {
+   padding-left: 0;
+}
+
+#selectedEntity  .vocabulary-searchfield:first-of-type {
+  margin: 0 15px;
+  box-sizing: border-box;
+  width: calc(100% - 30px);
+  background-color: #fff;
+  border: 1px solid #ccc !important;
+}
+
+#relationship {
+  background-color: #fff;
+  padding: 20px 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-top: 4px solid #e8860c;
+}
+
+#relationship [class^="col"] {
+  margin: 4px 0;
+}
+
+
+.link-entity-modal__actions {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+  justify-content: flex-end;
+}
+
+.link-entity-modal__actions button {
+  float: none !important;
+}
+
 
 /* Utilities */
 
