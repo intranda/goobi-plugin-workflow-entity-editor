@@ -821,6 +821,11 @@ body,
     margin-bottom: 3rem;
 }
 
+
+.source-modal__search-bar button {
+    text-transform: capitalize;
+}
+
 .entity-modal__search-bar label,
 .vocab-search-modal__search-bar label,
 .source-modal__search-bar label,
@@ -896,15 +901,16 @@ body,
     height: 30px;
 }
 
-#addSource .form-group:first-child {
-  border-top: 1px solid rgb(204, 204, 204);
+#addSource .form-group::after {
+  content: '';
+  display: table;
+  clear: both;
 }
 
-#addSource .form-group {
-  border-left: 1px solid;
-  border-right: 1px solid;
-  border-bottom: 1px solid;
-  border-color: rgb(204, 204, 204);
+#addSource .form-group label ~ i {
+  float: none !important;
+  vertical-align: super;
+  font-size: 8px
 }
 
 .source-modal__actions {

@@ -7,7 +7,8 @@
     xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    >
 
     <composite:interface>
     </composite:interface>
@@ -32,6 +33,7 @@
                         id="sourceModalContent">
 
                         <h:form
+                            styleClass="form-horizontal"
                             onkeypress="submitOnEnter(event, 'searchSources');"
                             prependId="false">
 
@@ -58,7 +60,7 @@
 
                                 <h:panelGroup
                                     layout="block"
-                                    styleClass="row form-group vocabulary-searcharea"
+                                    styleClass="form-group vocabulary-searcharea"
                                     rendered="#{NavigationForm.workflowPlugin.sourceMode != 'edition'}">
                                     <div class="source-modal__search-bar">
 
@@ -91,7 +93,7 @@
                                         <!-- ADD new source-->
                                         <button
                                             type="button"
-                                            class="btn btn-lightgrey margin-left-10"
+                                            class="btn btn-lightgrey"
                                             jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
                                             <i
                                                 class="fa fa-plus"
@@ -107,6 +109,7 @@
                                             <f:ajax
                                                 execute="@form"
                                                 render="modal-body" />
+
                                         </button>
                                     </div>
                                 </h:panelGroup>
@@ -196,9 +199,9 @@
                                                 class="btn btn-lightgrey "
                                                 jsf:action="#{NavigationForm.Reload}">
                                                 <i
-                                                    class="fa fa-ban"
+                                                    class="fa fa-undo"
                                                     aria-hidden="true"></i>
-                                                #{msgs.cancel}
+                                                #{msgs.goBack}
                                                 <f:passThroughAttribute
                                                     name="data-toggle"
                                                     value="tooltip" />
@@ -212,7 +215,7 @@
 
                                             <button
                                                 jsf:id="check"
-                                                class="btn btn-primary"
+                                                class="btn btn-green"
                                                 jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
                                                 <i class="fa fa-save" />
                                                 #{msgs.save}
@@ -291,6 +294,20 @@
 
 
                             </div>
+
+                            <div class="modal-footer">
+
+                                <!-- cancel/abort -->
+                                <a
+                                    class="btn pull-left"
+                                    title="#{msgs.cancel}"
+                                    data-dismiss="modal">
+                                    <h:outputText value="#{msgs.cancel}" />
+                                </a>
+
+                            </div>
+
+
                         </h:form>
                     </h:panelGroup>
                 </div>
