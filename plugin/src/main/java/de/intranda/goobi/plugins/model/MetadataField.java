@@ -54,6 +54,12 @@ public class MetadataField {
 
     private List<SourceField> sources = new ArrayList<>();
 
+    public MetadataField() {
+    }
+
+    public MetadataField(MetadataField mf) {
+    }
+
     public void addSource(SourceField field, MetadataGroup grp) {
         sources.add(field);
         if (group != null && grp != null) {

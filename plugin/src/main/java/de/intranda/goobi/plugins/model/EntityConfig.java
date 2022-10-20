@@ -260,6 +260,53 @@ public class EntityConfig {
         return metadataField;
     }
 
+
+    public EntityConfig(EntityConfig other) {
+
+        sourceSearchFields = other.getSourceSearchFields();
+
+        sourceDisplayFields = other.getSourceDisplayFields();
+
+        sourceVocabularyName = other.getSourceVocabularyName();
+
+        sourceVocabularyId = other.getSourceVocabularyId();
+
+        sourceNameFields = other.getSourceDisplayFields();
+
+        sourceUrlFields = other.getSourceUrlFields();
+
+        sourceTypeFields=  other.getSourceTypeFields();
+
+        for (EntityType t : other.getAllTypes()) {
+            allTypes.add(new EntityType(t));
+        }
+
+        relationshipMetadataName = other.relationshipMetadataName;
+
+        relationshipEntityType = other.relationshipEntityType;
+
+        relationshipBeginningDate = other.relationshipBeginningDate;
+
+        relationshipEndDate = other.relationshipEndDate;
+
+        relationshipAdditionalData = other.relationshipAdditionalData;
+
+        relationshipProcessId = other.relationshipProcessId;
+
+        relationshipDisplayName = other.relationshipDisplayName;
+
+
+        relationshipType = other.relationshipType;
+
+        processTemplateId = other.processTemplateId;
+
+
+
+        exportPluginName = other.exportPluginName;
+
+
+    }
+
     public EntityType getTypeByName(String name) {
         for (EntityType et : allTypes) {
             if (et.getName().equals(name)) {
@@ -268,5 +315,7 @@ public class EntityConfig {
         }
         return null;
     }
+
+
 
 }

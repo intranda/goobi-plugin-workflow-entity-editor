@@ -65,7 +65,7 @@ public class Entity {
     private Processproperty displayNameProperty = null;
 
     public Entity(EntityConfig configuration, Process process) {
-        this.configuration = configuration;
+        this.configuration = new EntityConfig(configuration);
         this.currentProcess = process;
         if (process.getEigenschaftenSize() > 0) {
             for (Processproperty property : process.getEigenschaften()) {
@@ -134,7 +134,7 @@ public class Entity {
                             if (!"Source".equals(subfield.getMetadataName())) {
                                 List<Metadata> mdl = group.getMetadataByType(subfield.getMetadataName());
                                 Metadata metadata = null;
-                                if (mdl != null && mdl.size() > 0) {
+                                if (mdl != null && !mdl.isEmpty()) {
                                     metadata = mdl.get(0);
                                 } else {
                                     MetadataType metadataType = prefs.getMetadataTypeByName(subfield.getMetadataName());

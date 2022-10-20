@@ -124,6 +124,54 @@ public class ConfiguredField {
     private List<ConfiguredField> subfieldList = new ArrayList<>(); // fields for group
 
 
+
+    public ConfiguredField(ConfiguredField other) {
+
+        label =other.getLabel();
+
+        labelPosition  =other.getLabelPosition();
+
+        fieldType =other.getFieldType();
+
+        metadataName =other.getMetadataName();
+        required =other.isRequired();
+        readonly =other.isReadonly();
+        repeatable  =other.isRepeatable();
+        source  =other.isSource();
+
+        vocabularyName =other.getVocabularyName();
+        vocabularyId =other.getVocabularyId();
+        vocabularyUrl =other.getVocabularyUrl();
+        vocabularyList =other.getVocabularyList();
+
+        searchFields  =other.getSearchFields();
+
+        displayFields =other.getDisplayFields();
+
+        valueList =other.getValueList();
+
+        generationRule =other.getGenerationRule();
+
+        defaultValue =other.getDefaultValue();
+
+        group =other.isGroup();
+
+        showField  =other.isShowField();
+        valid = true;
+        validationError =other.getValidationError();
+
+        showInSearch  =other.isShowInSearch();
+
+
+        for (MetadataField mf : other.getMetadataList()) {
+            metadataList .add(new MetadataField(mf));
+        }
+
+        for (ConfiguredField mf : other.getSubfieldList()) {
+            subfieldList .add(new ConfiguredField(mf));
+        }
+    }
+
     @Getter
     @Setter
     private Entity entity;
@@ -245,4 +293,5 @@ public class ConfiguredField {
             cf.clearMetadata(entity);
         }
     }
+
 }

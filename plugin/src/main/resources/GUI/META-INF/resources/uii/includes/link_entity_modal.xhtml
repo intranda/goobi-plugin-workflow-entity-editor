@@ -128,16 +128,16 @@
                                                                 value="#{configuredField.metadataList}"
                                                                 rendered="#{configuredField.showInSearch}">
 
-                                                                <h:panelGroup styleClass="form-group noborder">
-                                                                    <h:panelGroup
-                                                                        styleClass="col-sm-3 control-label"
-                                                                        rendered="#{field.configField.group or field.metadata.value != null}">
+                                                                <h:panelGroup
+                                                                    styleClass="form-group"
+                                                                    rendered="#{field.showFieldInSearchResult}">
+                                                                    <h:panelGroup styleClass="col-sm-3 control-label">
                                                                         <h:outputLabel
                                                                             for="field_#{status.index}"
                                                                             value="#{msgs[configuredField.label]}" />
                                                                     </h:panelGroup>
 
-                                                                    <h:panelGroup
+<h:panelGroup
                                                                         layout="block"
                                                                         rendered="#{!field.configField.group and field.metadata.value != null}"
                                                                         styleClass="col-sm-9">
@@ -154,7 +154,7 @@
                                                                         <ui:repeat
                                                                             var="subfield"
                                                                             value="#{field.subfields}">
-                                                                            <h:panelGroup
+                                                               <h:panelGroup
                                                                                 layout="block"
                                                                                 styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
                                                                                 rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
