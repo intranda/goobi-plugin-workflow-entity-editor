@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.faces.event.AjaxBehaviorEvent;
+
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
@@ -542,6 +544,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
                 entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
         breadcrumbList.add(item);
+        selectedBreadcrumb = item;
     }
 
     public void setRelationship(String selectedRelationship) {
@@ -738,8 +741,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // remove screen?
     }
 
-
-
     public boolean isShowAddTabButton() {
 
         if (entities != null) {
@@ -750,6 +751,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             }
         }
         return false;
+    }
+
+    public void updateDisplayName(AjaxBehaviorEvent event) {
+        try {
+            DocStruct logical = entity.getCurrentFileformat().getDigitalDocument().getLogicalDocStruct();
+            entity.generateDisplayName(logical, logical.getType().getName());
+            selectedBreadcrumb.setEntityName(entity.getEntityName());
+        } catch (PreferencesException e) {
+            log.error(e);
+        }
     }
 
     /*

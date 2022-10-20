@@ -451,7 +451,7 @@
                                                                     execute="@this"
                                                                     render="badge-area :header"
                                                                     event="blur"
-                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                    listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                             </x:inputText>
                                                         </ui:fragment>
 
@@ -472,7 +472,7 @@
                                                                 <f:ajax
                                                                     event="change"
                                                                     render="badge-area :header"
-                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                    listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                                 <f:selectItem
                                                                     itemValue=""
                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
@@ -492,7 +492,7 @@
                                                                 <f:ajax
                                                                     event="change"
                                                                     render="badge-area :header"
-                                                                    listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                    listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                                 <f:selectItem
                                                                     itemValue=""
                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
@@ -539,7 +539,7 @@
                                                                             execute="@this"
                                                                             render="badge-area :header"
                                                                             event="blur"
-                                                                            listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                            listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                                     </x:inputText>
                                                                     <h:panelGroup
                                                                         layout="block"
@@ -559,7 +559,7 @@
                                                                         execute="@this"
                                                                         render="badge-area :header"
                                                                         event="blur"
-                                                                        listener="#{NavigationForm.workflowPlugin.entity.updateDisplayName}" />
+                                                                        listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                                 </x:inputTextarea>
 
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">

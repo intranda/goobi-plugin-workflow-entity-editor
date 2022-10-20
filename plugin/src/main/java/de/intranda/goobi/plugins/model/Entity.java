@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.event.AjaxBehaviorEvent;
-
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
@@ -112,7 +110,7 @@ public class Entity {
             DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
             String entityType = logical.getType().getName();
             currentType = configuration.getTypeByName(entityType);
-            getDisplayName(logical, entityType);
+            generateDisplayName(logical, entityType);
 
             metadataFieldList.clear();
 
@@ -371,7 +369,7 @@ public class Entity {
     }
 
     // generate the display name for the current entity
-    private void getDisplayName(DocStruct logical, String entityType) {
+    public void generateDisplayName(DocStruct logical, String entityType) {
         // read main name from metadata
 
         String configuredLanguages = currentType.getLanguageOrder();
@@ -397,24 +395,28 @@ public class Entity {
                                 for (String lang : languages) {
                                     if (!found) {
                                         for (Metadata md : mg.getMetadataList()) {
-                                            if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
-                                                if (sb.length() > 0) {
-                                                    sb.append(" ");
+                                            if (StringUtils.isNotBlank(md.getValue())) {
+                                                if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
+                                                    if (sb.length() > 0) {
+                                                        sb.append(" ");
+                                                    }
+                                                    sb.append(md.getValue());
+                                                    found = true;
+                                                    break;
                                                 }
-                                                sb.append(md.getValue());
-                                                found = true;
-                                                break;
                                             }
                                         }
                                     }
                                 }
                             } else {
                                 for (Metadata md : mg.getMetadataList()) {
-                                    if (md.getType().getName().equals(parts[1])) {
-                                        if (sb.length() > 0) {
-                                            sb.append(" ");
+                                    if (StringUtils.isNotBlank(md.getValue())) {
+                                        if (md.getType().getName().equals(parts[1])) {
+                                            if (sb.length() > 0) {
+                                                sb.append(" ");
+                                            }
+                                            sb.append(md.getValue());
                                         }
-                                        sb.append(md.getValue());
                                     }
                                 }
                             }
@@ -426,11 +428,13 @@ public class Entity {
 
                 } else {
                     for (Metadata md : logical.getAllMetadata()) {
-                        if (md.getType().getName().equals(metadata)) {
-                            if (sb.length() > 0) {
-                                sb.append(" ");
+                        if (StringUtils.isNotBlank(md.getValue())) {
+                            if (md.getType().getName().equals(metadata)) {
+                                if (sb.length() > 0) {
+                                    sb.append(" ");
+                                }
+                                sb.append(md.getValue());
                             }
-                            sb.append(md.getValue());
                         }
                     }
                 }
@@ -589,7 +593,6 @@ public class Entity {
             }
         }
     }
-
 
     public boolean isShowGenerateBibliographyButton() {
         for (ConfiguredField cf : metadataFieldList) {
@@ -765,15 +768,4 @@ public class Entity {
         relationships.add(rel);
 
     }
-
-    public void updateDisplayName(AjaxBehaviorEvent event) {
-        try {
-            DocStruct logical = currentFileformat.getDigitalDocument().getLogicalDocStruct();
-            getDisplayName(logical, logical.getType().getName());
-        } catch (PreferencesException e) {
-            log.error(e);
-        }
-
-    }
-
 }
