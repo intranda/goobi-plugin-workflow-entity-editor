@@ -590,6 +590,19 @@ public class Entity {
         }
     }
 
+
+    public boolean isShowGenerateBibliographyButton() {
+        for (ConfiguredField cf : metadataFieldList) {
+            for (MetadataField mf : cf.getMetadataList()) {
+                List<SourceField> sourceFields = mf.getSources();
+                if (!sourceFields.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void saveEntity() {
         try {
 

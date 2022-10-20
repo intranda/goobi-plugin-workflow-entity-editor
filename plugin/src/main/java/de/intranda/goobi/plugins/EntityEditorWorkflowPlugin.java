@@ -749,12 +749,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
         }
-
         return false;
     }
-
-
-
 
     /*
      * SQL statements to generate display name for each type

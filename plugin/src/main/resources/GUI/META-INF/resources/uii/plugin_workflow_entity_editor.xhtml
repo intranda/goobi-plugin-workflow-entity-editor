@@ -254,7 +254,7 @@
 
 
 
-                        <div class="breadcrumbs">
+                        <h:panelGroup layout="block" id="breadcrumbs" styleClass="breadcrumbs">
                             <div class="breadcrumb-label">
                                 <h:outputText
                                     styleClass="skew-fix"
@@ -275,7 +275,7 @@
 
                                 </ui:repeat>
                             </ul>
-                        </div>
+                        </h:panelGroup>
                     </h:form>
                 </div>
 
@@ -300,6 +300,7 @@
                                 </h3>
 
                                 <button
+                                    jsf:rendered="#{NavigationForm.workflowPlugin.entity.showGenerateBibliographyButton}"
                                     jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
                                     class="btn btn-link btn--generateBibliography"
                                     jsf:id="generateBibliography"
