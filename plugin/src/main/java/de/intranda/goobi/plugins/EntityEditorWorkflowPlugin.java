@@ -738,6 +738,24 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // remove screen?
     }
 
+
+
+    public boolean isShowAddTabButton() {
+
+        if (entities != null) {
+            for (Entity e : entities) {
+                if (e.isSelected()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+
+
     /*
      * SQL statements to generate display name for each type
 

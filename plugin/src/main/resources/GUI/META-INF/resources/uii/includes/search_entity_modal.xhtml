@@ -108,7 +108,7 @@
                                                 value="tooltip" />
                                             <f:ajax
                                                 execute="@form"
-                                                render="searchEntityList" />
+                                                render="searchEntityList modal-footer" />
                                         </button>
 
                                     </div>
@@ -222,7 +222,7 @@
                                                             class="btn btn-lightgrey">
                                                             <f:ajax
                                                                 execute="@this"
-                                                                render="@this" />
+                                                                render="@this modal-footer" />
 
                                                             <f:setPropertyActionListener
                                                                 value="#{not record.selected}"
@@ -245,7 +245,7 @@
                             </div>
 
 
-                            <div class="modal-footer">
+                            <h:panelGroup id="modal-footer" styleClass="modal-footer" layout="block">
 
                                 <!-- cancel/abort -->
                                 <a
@@ -257,12 +257,13 @@
 
                                 <!-- add/save buttons -->
                                 <button
+                                    jsf:rendered="#{NavigationForm.workflowPlugin.showAddTabButton}"
                                     jsf:action="#{NavigationForm.workflowPlugin.addBreadcrumbs}"
                                     title="#{msgs.plugin_workflow_entity_addTabs}"
                                     class="btn btn-primary pull-right">
                                     <h:outputText value="#{msgs.plugin_workflow_entity_addTabs}" />
                                 </button>
-                            </div>
+                            </h:panelGroup>
                         </h:form>
                     </h:panelGroup>
                 </div>
