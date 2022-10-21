@@ -480,7 +480,7 @@
                                                                 <f:selectItems
                                                                     value="#{field.configField.valueList}"
                                                                     var="item"
-                                                                    itemLabel="#{item}"
+                                                                    itemLabel="#{msgs[item]}"
                                                                     itemValue="#{item}" />
                                                             </h:selectOneMenu>
                                                         </ui:fragment>
@@ -500,8 +500,8 @@
                                                                 <f:selectItems
                                                                     value="#{field.configField.vocabularyList}"
                                                                     var="item"
-                                                                    itemLabel="#{item}"
-                                                                    itemValue="#{item}" />
+                                                                    itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                                    itemValue="#{item.mainValue}" />
                                                             </h:selectOneMenu>
                                                         </ui:fragment>
 
@@ -576,7 +576,7 @@
                                                                         <f:selectItems
                                                                             value="#{subfield.configField.valueList}"
                                                                             var="item"
-                                                                            itemLabel="#{item}"
+                                                                            itemLabel="#{msgs[item]}"
                                                                             itemValue="#{item}" />
                                                                     </h:selectOneMenu>
                                                                 </ui:fragment>
@@ -595,8 +595,8 @@
                                                                         <f:selectItems
                                                                             value="#{subfield.configField.vocabularyList}"
                                                                             var="item"
-                                                                            itemLabel="#{item}"
-                                                                            itemValue="#{item}" />
+                                                                                           itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                                    itemValue="#{item.mainValue}" />
                                                                     </h:selectOneMenu>
                                                                 </ui:fragment>
 
@@ -738,7 +738,7 @@
                             class="btn"
                             jsf:action="#{NavigationForm.workflowPlugin.deleteEntity}"
                             onclick="if (!confirm('#{msgs.wirklichAusfuehren}')) return false">
-                            #{msgs.delete}
+                            #{msgs.plugin_workflow_entity_editor_delete}
                         </button>
                     </ui:fragment>
 

@@ -355,11 +355,11 @@ main {
 }
 
 .editor-actions form > button {
-  text-transform: capitalize;
+/*   text-transform: capitalize; */
 }
 
 .plugin-entity-editor #metadataForm .badge {
-    text-transform: capitalize;
+/*     text-transform: capitalize; */
 }
 
 

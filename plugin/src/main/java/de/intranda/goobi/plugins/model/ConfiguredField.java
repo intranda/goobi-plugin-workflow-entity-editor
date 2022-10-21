@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.model.SelectItem;
-
 import org.apache.commons.lang.StringUtils;
 import org.goobi.vocabulary.Field;
 import org.goobi.vocabulary.VocabRecord;
@@ -73,8 +71,9 @@ public class ConfiguredField {
     private String vocabularyId;
     @Getter
     private String vocabularyUrl;
+
     @Getter
-    private List<SelectItem> vocabularyList;
+    private List<VocabularyEntry> vocabularyList;
 
     @Getter
     @Setter
@@ -123,59 +122,55 @@ public class ConfiguredField {
     @Getter
     private List<ConfiguredField> subfieldList = new ArrayList<>(); // fields for group
 
-
-
     public ConfiguredField(ConfiguredField other) {
 
-        label =other.getLabel();
+        label = other.getLabel();
 
-        labelPosition  =other.getLabelPosition();
+        labelPosition = other.getLabelPosition();
 
-        fieldType =other.getFieldType();
+        fieldType = other.getFieldType();
 
-        metadataName =other.getMetadataName();
-        required =other.isRequired();
-        readonly =other.isReadonly();
-        repeatable  =other.isRepeatable();
-        source  =other.isSource();
+        metadataName = other.getMetadataName();
+        required = other.isRequired();
+        readonly = other.isReadonly();
+        repeatable = other.isRepeatable();
+        source = other.isSource();
 
-        vocabularyName =other.getVocabularyName();
-        vocabularyId =other.getVocabularyId();
-        vocabularyUrl =other.getVocabularyUrl();
-        vocabularyList =other.getVocabularyList();
+        vocabularyName = other.getVocabularyName();
+        vocabularyId = other.getVocabularyId();
+        vocabularyUrl = other.getVocabularyUrl();
+        vocabularyList = other.getVocabularyList();
 
-        searchFields  =other.getSearchFields();
+        searchFields = other.getSearchFields();
 
-        displayFields =other.getDisplayFields();
+        displayFields = other.getDisplayFields();
 
-        valueList =other.getValueList();
+        valueList = other.getValueList();
 
-        generationRule =other.getGenerationRule();
+        generationRule = other.getGenerationRule();
 
-        defaultValue =other.getDefaultValue();
+        defaultValue = other.getDefaultValue();
 
-        group =other.isGroup();
+        group = other.isGroup();
 
-        showField  =other.isShowField();
+        showField = other.isShowField();
         valid = true;
-        validationError =other.getValidationError();
+        validationError = other.getValidationError();
 
-        showInSearch  =other.isShowInSearch();
-
+        showInSearch = other.isShowInSearch();
 
         for (MetadataField mf : other.getMetadataList()) {
-            metadataList .add(new MetadataField(mf));
+            metadataList.add(new MetadataField(mf));
         }
 
         for (ConfiguredField mf : other.getSubfieldList()) {
-            subfieldList .add(new ConfiguredField(mf));
+            subfieldList.add(new ConfiguredField(mf));
         }
     }
 
     @Getter
     @Setter
     private Entity entity;
-
 
     public void addSubfield(ConfiguredField field) {
         subfieldList.add(field);
@@ -193,10 +188,35 @@ public class ConfiguredField {
             vocabularyList = new ArrayList<>(recordList.size());
             if (currentVocabulary != null && currentVocabulary.getId() != null) {
                 for (VocabRecord vr : recordList) {
+
+                    VocabularyEntry ve = new VocabularyEntry();
+
+                    String fieldName = null;
                     for (Field f : vr.getFields()) {
                         if (f.getDefinition().isMainEntry()) {
-                            vocabularyList.add(new SelectItem(String.valueOf(vr.getId()), f.getValue()));
+                            fieldName = f.getDefinition().getLabel();
+                            ve.setMainValue(f.getValue());
+                            vocabularyList.add(ve);
                             break;
+                        }
+                    }
+                    if (fieldName != null) {
+                        for (Field f : vr.getFields()) {
+                            if (f.getDefinition().getLabel().equals(fieldName)) {
+                                switch (f.getLanguage()) {
+                                    case "eng":
+                                        ve.setLabelEn(f.getValue());
+                                        break;
+                                    case "fre":
+                                        ve.setLabelFr(f.getValue());
+                                        break;
+                                    case "ger":
+                                        ve.setLabelDe(f.getValue());
+                                        break;
+
+                                }
+                            }
+
                         }
                     }
                 }
@@ -287,7 +307,7 @@ public class ConfiguredField {
     // only call it when new entity is loaded
     public void clearMetadata(Entity entity) {
         this.entity = entity;
-        showField=false;
+        showField = false;
         metadataList.clear();
         for (ConfiguredField cf : subfieldList) {
             cf.clearMetadata(entity);

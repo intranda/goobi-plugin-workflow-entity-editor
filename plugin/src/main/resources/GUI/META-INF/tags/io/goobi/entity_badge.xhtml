@@ -14,7 +14,7 @@
                 action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(item)}"
                 rendered="#{item.repeatable and item.showField}">
                 <i class="fa fa-plus-circle margin-right-5" />
-                <h:outputText value="#{item.label}" />
+                <h:outputText value="#{msgs[item.label]}" />
                 <x:updateActionListener
                     property="#{item.showField}"
                     value="true" />
@@ -27,7 +27,7 @@
                 <ui:fragment rendered="#{item.repeatable}">
                     <i class="fa fa-plus-circle margin-right-5" />
                 </ui:fragment>
-                <h:outputText value="#{item.label}" />
+                <h:outputText value="#{msgs[item.label]}" />
                 <ui:fragment rendered="#{!item.valid}">
                     <i class="fa fa-exclamation-triangle margin-left-5" />
                 </ui:fragment>

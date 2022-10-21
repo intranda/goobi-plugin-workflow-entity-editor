@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
@@ -112,9 +111,9 @@ public class MetadataField {
 
     public void setVocabularyValue(String value) {
         if (StringUtils.isNotBlank(value)) {
-            for (SelectItem item : configField.getVocabularyList()) {
-                if (value.equals(item.getValue())) {
-                    metadata.setValue(item.getLabel());
+            for (VocabularyEntry item : configField.getVocabularyList()) {
+                if (value.equals(item.getMainValue())) {
+                    metadata.setValue(item.getMainValue());
                     metadata.setAutorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
                             configField.getVocabularyUrl() + "/" + value);
                 }
@@ -125,9 +124,9 @@ public class MetadataField {
     public String getVocabularyValue() {
         String label = metadata.getValue();
         if (StringUtils.isNotBlank(label)) {
-            for (SelectItem item : configField.getVocabularyList()) {
-                if (label.equals(item.getLabel())) {
-                    return (String) item.getValue();
+            for (VocabularyEntry item : configField.getVocabularyList()) {
+                if (label.equals(item.getMainValue())) {
+                    return item.getMainValue();
                 }
             }
         }
