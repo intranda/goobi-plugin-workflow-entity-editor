@@ -331,7 +331,18 @@ public class Entity {
                     relationship.setAdditionalData(additionalData);
                     relationship.setProcessId(processId);
                     relationship.setDisplayName(displayName);
-                    relationship.setType(type);
+
+                    for (RelationshipType rel : currentType.getConfiguredRelations()) {
+                        if (rel.getRelationshipNameEn().equals(type)) {
+                            relationship.setType(rel);
+                            break;
+                        } else if (StringUtils.isNotBlank(rel.getReversedRelationshipNameEn()) && rel.getReversedRelationshipNameEn().equals(type)) {
+                            relationship.setType(rel);
+                            rel.setReversed(true);
+                            break;
+                        }
+                    }
+
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
                     relationship.setMetadataGroup(group);
@@ -676,11 +687,7 @@ public class Entity {
         rel.setEntityName(selectedEntity.getCurrentType().getName());
         rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
         rel.setProcessStatus(relationshipStatus);
-        if (reversed && StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
-            rel.setType(selectedRelationship.getReversedRelationshipNameEn());
-        } else {
-            rel.setType(selectedRelationship.getRelationshipNameEn());
-        }
+        rel.setType(selectedRelationship);
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
 
@@ -743,7 +750,13 @@ public class Entity {
                 md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipType()));
                 relationGroup.addMetadata(md);
             }
-            md.setValue(rel.getType());
+
+            if (reversed && StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
+                rel.setReverse(true);
+                md.setValue(selectedRelationship.getReversedRelationshipNameEn());
+            } else {
+                md.setValue(selectedRelationship.getRelationshipNameEn());
+            }
             md.setAutorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
 
             if (StringUtils.isNotBlank(relationshipData)) {

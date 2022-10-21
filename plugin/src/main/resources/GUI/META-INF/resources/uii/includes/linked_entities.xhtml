@@ -23,8 +23,8 @@
                     <h3>
                         <i class="fa #{type.key.icon} big-icon" />
                         <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
-                            <f:param value="#{type.key.plural}" />
-                            <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                            <f:param value="#{msgs[type.key.plural]}" />
+                            <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.entityName]}" />
 
                             <f:param value="#{type.value.size()}" />
                         </h:outputFormat>
@@ -44,7 +44,6 @@
                             title="#{msgs.plugin_workflow_entity_addRelationship}"
                             data-toggle="tooltip"
                             data-placement="top">
-                            <!--                         <i class="fa fa-chain big-icon" /> -->
                             <i class="fa fa-plus big-icon" />
                             <f:ajax
                                 execute="@this"
@@ -158,7 +157,7 @@
                                             rendered="#{ not empty relationship.type }">
                                             <div class="sources__key">#{msgs.plugin_workflow_entity_editor_type}:</div>
                                             <div class="sources__val">
-                                                <span> #{relationship.type} </span>
+                                                <span> #{relationship.type.getLabel(SpracheForm.locale)} </span>
                                             </div>
                                         </h:panelGroup>
 

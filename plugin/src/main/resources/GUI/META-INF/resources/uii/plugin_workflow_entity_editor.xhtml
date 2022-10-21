@@ -238,7 +238,7 @@
                                                 jsf:onclick="$('#searchEntitySearchBox').modal('show');">
                                                 <i class="fa #{type.icon} big-icon" />
                                                 <h:outputText
-                                                    value="#{type.plural}"
+                                                    value="#{msgs[type.plural]}"
                                                     styleClass="btn-text" />
                                                 <f:ajax
                                                     execute="@this"
@@ -259,7 +259,7 @@
                                 <h:outputText
                                     styleClass="skew-fix"
                                     style="padding-left: 5px"
-                                    value="My Tabs:" />
+                                    value="#{msgs.plugin_workflow_entity_myTabs}:" />
                             </div>
                             <ul class="breadcrumb-container row">
                                 <ui:repeat

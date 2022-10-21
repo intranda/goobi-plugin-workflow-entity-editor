@@ -300,7 +300,7 @@
                                                 <f:selectItems
                                                     value="#{NavigationForm.workflowPlugin.relationshipTypes}"
                                                     var="item"
-                                                    itemLabel="#{item.relationshipNameEn}"
+                                                    itemLabel="#{item.getLabel(SpracheForm.locale)}"
                                                     itemValue="#{item.relationshipNameEn}" />
                                                 <f:ajax
                                                     event="change"
