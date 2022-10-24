@@ -228,7 +228,7 @@
                                                     value="#{configuredField.metadataList}"
                                                     rendered="#{configuredField.showInSearch}">
 
-                                                    <h:panelGroup styleClass="form-group noborder">
+                                                    <h:panelGroup styleClass="form-group noborder" rendered="#{field.showFieldInSearchResult}">
                                                         <h:panelGroup
                                                             styleClass="col-sm-3 control-label"
                                                             rendered="#{field.configField.group or field.metadata.value != null}">
