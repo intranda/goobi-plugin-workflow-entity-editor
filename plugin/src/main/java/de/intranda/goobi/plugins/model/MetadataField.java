@@ -13,6 +13,7 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -302,22 +303,32 @@ public class MetadataField {
     }
 
     @Data
-    @RequiredArgsConstructor
+
     public class SourceField {
-        @NonNull
+
         private String sourceId;
-        @NonNull
+
         private String sourceUri;
-        @NonNull
+
         private String sourceName;
-        @NonNull
+
         private String sourceType;
-        @NonNull
+
         private String sourceLink;
-        @NonNull
+
         private String pageRange;
 
         private boolean showDetails;
+
+        public SourceField(String sourceId, String sourceUri, String sourceName, String sourceType, String sourceLink, String sourcePageRange) {
+            this.sourceId = sourceId;
+            this.sourceUri = sourceUri;
+            this.sourceName = sourceName;
+            this.sourceType = sourceType;
+            this.sourceLink = sourceLink;
+            this.pageRange = sourcePageRange;
+
+        }
 
         public boolean isShowDetails() {
             return showDetails;
