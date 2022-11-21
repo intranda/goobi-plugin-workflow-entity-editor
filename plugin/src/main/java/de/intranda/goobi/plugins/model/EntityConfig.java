@@ -245,6 +245,9 @@ public class EntityConfig {
             List<String> displayFields = Arrays.asList(field.getStringArray("/vocabulary/@displayfields"));
             metadataField.setSearchFields(searchFields);
             metadataField.setDisplayFields(displayFields);
+        } else if ("geonames".equals(fieldType)) {
+            List<String> searchFields = Arrays.asList(field.getStringArray("@source"));
+            metadataField.setSearchFields(searchFields);
         }
         metadataField.setGenerationRule(field.getString("/rule"));
 

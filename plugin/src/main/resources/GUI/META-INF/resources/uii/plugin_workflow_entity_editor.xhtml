@@ -659,7 +659,6 @@
                                                                 <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'date'}"
                                                                     id="group">
-                                                                    <!-- TODO show wrong syntax errors, add date picker  -->
                                                                     <x:inputText
                                                                         styleClass="form-control"
                                                                         value="#{subfield.metadata.value}"
@@ -680,6 +679,50 @@
                                                                     </h:panelGroup>
                                                                 </h:panelGroup>
 
+<ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
+                                                                    <div class="geonames-search">
+                                                                        <x:inputText
+                                                                            styleClass="form-control"
+                                                                            value="#{subfield.metadata.value}"
+                                                                            required="false"
+                                                                            id="geonamesfield_#{status.index}"
+                                                                            readonly="true">
+                                                                            <f:ajax
+                                                                                execute="@this"
+                                                                                render="badge-area"
+                                                                                event="blur" />
+                                                                        </x:inputText>
+                                                                        <span>
+                                                                            <button
+                                                                                jsf:id="geonamesSearch"
+                                                                                class="btn geonamesSearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
+                                                                                title="#{msgs.NORM_geonamesSearch}"
+                                                                                aria-label="#{msgs.NORM_geonamesSearch}"
+                                                                                type="button"
+                                                                                jsf:onclick="$('#geonamesSearchBox').modal('show');">
+                                                                                <img
+                                                                                    class="toggle"
+                                                                                    style="width: 16px;"
+                                                                                    alt="Vocabulary"
+                                                                                    src="template/img/Icons_GeoNames_color.png" />
+                                                                                <f:setPropertyActionListener
+                                                                                    value="#{subfield}"
+                                                                                    target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                                <f:ajax
+                                                                                    execute="@this"
+                                                                                    render=":geonamesSearchModalContent" />
+                                                                                <f:passThroughAttribute
+                                                                                    name="data-toggle"
+                                                                                    value="tooltip" />
+                                                                                <f:passThroughAttribute
+                                                                                    name="data-placement"
+                                                                                    value="top" />
+                                                                            </button>
+                                                                        </span>
+                                                                    </div>
+                                                                </ui:fragment>
+
+
                                                             </h:panelGroup>
                                                         </ui:repeat>
                                                         <ui:include src="includes/sources.xhtml" />
@@ -692,7 +735,8 @@
                                 </h:form>
                                     <!-- vocabulary search modal -->
                                     <ui:include src="includes/vocabulary_search_modal.xhtml" />
-
+                                    <!-- geonames search modal -->
+                                    <ui:include src="includes/geonames_search_modal.xhtml" />
                                     <!-- sources modal -->
                                     <ui:include src="includes/source_modal.xhtml" />
                             </div>

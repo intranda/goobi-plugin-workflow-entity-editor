@@ -3,8 +3,10 @@ package de.intranda.goobi.plugins;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.faces.event.AjaxBehaviorEvent;
@@ -12,6 +14,11 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
+import org.geonames.Style;
+import org.geonames.Toponym;
+import org.geonames.ToponymSearchCriteria;
+import org.geonames.ToponymSearchResult;
+import org.geonames.WebService;
 import org.goobi.beans.Process;
 import org.goobi.production.cli.helper.StringPair;
 import org.goobi.production.enums.PluginGuiType;
@@ -97,6 +104,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String searchValue;
+
+
+    // search value for geonames
+    @Getter
+    @Setter
+    private String   geonamesSearchValue;
 
     // search value for sources
     @Getter
@@ -267,6 +280,47 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             showNotHits = false;
         }
         Collections.sort(records);
+    }
+
+    @Getter
+    private transient List<Toponym> resultList;
+    @Getter @Setter
+    private transient Toponym currentToponym;
+    @Getter
+    private int totalResults;
+
+    public void searchGeonames() {
+        String credentials = ConfigurationHelper.getInstance().getGeonamesCredentials();
+        WebService.setUserName(credentials);
+        ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
+        searchCriteria.setNameEquals(geonamesSearchValue);
+        searchCriteria.setStyle(Style.FULL);
+
+        Set<String> languageCodes = new HashSet<>();
+        for (String field : searchField.getConfigField().getSearchFields()) {
+            languageCodes.add(field);
+        }
+        searchCriteria.setCountryCodes(languageCodes);
+        try {
+            ToponymSearchResult searchResult = WebService.search(searchCriteria);
+            resultList = searchResult.getToponyms();
+            totalResults = searchResult.getTotalResultsCount();
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        if (totalResults == 0) {
+            showNotHits = true;
+        } else {
+            showNotHits = false;
+        }
+    }
+
+    public void importGeonamesData() {
+        Metadata md = searchField.getMetadata();
+        md.setValue(currentToponym.getName());
+        md.setAutorityFile("geonames", "http://www.geonames.org/", "" + currentToponym.getGeoNameId());
+        resultList = new ArrayList<>();
     }
 
     /**

@@ -260,7 +260,7 @@
     margin-bottom: 10px;
 }
 
-.vocabulary-search {
+.vocabulary-search, .geonames-search {
     display: grid;
     grid-template-columns: 90% 10%;
     grid-template-rows: auto;
@@ -762,6 +762,7 @@ body,
 
 #searchEntityModalContent,
 #sourceModalContent,
+
 #entityModalContent,
 #vocabularySearchModalContent {
   background-color: var(--bg-content) !important;
@@ -792,6 +793,7 @@ body,
 
 .entity-modal .modal-dialog,
 #entitySearchBox .modal-dialog,
+#geonamesSearchBox .modal-dialog,
 #vocabularySearchBox .modal-dialog,
 #sourceSearchBox .modal-dialog {
     width: 80vw;

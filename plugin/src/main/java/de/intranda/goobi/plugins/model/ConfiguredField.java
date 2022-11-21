@@ -44,6 +44,7 @@ public class ConfiguredField {
      * source: linked source
      * fileupload: file upload button
      * date: date field incl. date picker
+     * geonames
      */
     @Getter
     @NonNull

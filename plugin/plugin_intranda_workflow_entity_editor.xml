@@ -135,9 +135,7 @@
 
 			<field label="Birthplace" metadata="BirthplaceGroup" repeatable="true" group="true" showInSearch="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Birthplace" metadata="Birthplace" type="vocabularySearch" required="false" labelPosition="none" showInSearch="true">
-					<vocabulary name="Location" id="5" searchfields="Location" displayfields="Location|Authority URI|Authority Value" />
-				</field>
+				<field label="Birthplace" metadata="Birthplace" type="vocabularySearch" required="false" labelPosition="none" showInSearch="true" source="DE|AT|CH" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
@@ -155,9 +153,7 @@
 
 			<field label="Deathplace" metadata="DeathplaceGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Deathplace" metadata="Deathplace" type="vocabularySearch" required="false" labelPosition="none">
-					<vocabulary name="Location" id="5" searchfields="Location" displayfields="Location|Authority URI|Authority Value" />
-				</field>
+				<field label="Deathplace" metadata="Deathplace" type="vocabularySearch" required="false" labelPosition="none" source="DE|AT|CH" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
