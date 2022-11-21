@@ -43,12 +43,14 @@ import de.intranda.goobi.plugins.model.RelationshipType;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.ExportFileException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import de.sub.goobi.persistence.managers.VocabularyManager;
+import io.goobi.workflow.locking.LockingBean;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -105,11 +107,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private String searchValue;
 
-
     // search value for geonames
     @Getter
     @Setter
-    private String   geonamesSearchValue;
+    private String geonamesSearchValue;
 
     // search value for sources
     @Getter
@@ -230,6 +231,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         Process currentProcess = ProcessManager.getProcessById(selectedBreadcrumb.getProcessId());
         prefs = currentProcess.getRegelsatz().getPreferences();
+
+        if (!LockingBean.lockObject(String.valueOf(currentProcess.getId()), Helper.getCurrentUser().getNachVorname())) {
+            Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            return "";
+        }
+
         entity = new Entity(configuration, currentProcess);
 
         // create breadcrumb item for new entity
@@ -250,11 +257,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void removeBreadcrumb(BreadcrumbItem breadcrumb) {
+        // unlock breadcrumb
+        LockingBean.freeObject(String.valueOf(breadcrumb.getProcessId()));
         breadcrumbList.remove(breadcrumb);
 
     }
 
     public String exitPlugin() {
+        // unlock all breadcrumbs
+        for (BreadcrumbItem bci : breadcrumbList) {
+            LockingBean.freeObject(String.valueOf(bci.getProcessId()));
+        }
+
         return "/uii/index.xhtml";
     }
 
@@ -284,7 +298,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     @Getter
     private transient List<Toponym> resultList;
-    @Getter @Setter
+    @Getter
+    @Setter
     private transient Toponym currentToponym;
     @Getter
     private int totalResults;
@@ -443,14 +458,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                     if (field.getDefinition().getLabel().equals(fieldname)) {
                         return field.getValue();
                     }
-                } else if (StringUtils.isNotBlank(lang) && StringUtils.isNotBlank(field.getDefinition().getLanguage())) {
-                    if (field.getDefinition().getLabel().equals(fieldname) && field.getDefinition().getLanguage().equals(lang)) {
-                        return field.getValue();
-                    }
-
+                } else if (StringUtils.isNotBlank(lang) && StringUtils.isNotBlank(field.getDefinition().getLanguage())
+                        && field.getDefinition().getLabel().equals(fieldname) && field.getDefinition().getLanguage().equals(lang)) {
+                    return field.getValue();
                 }
             }
-
         }
         return "";
     }
@@ -516,6 +528,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
                 }
                 if (!isAdded) {
+                    if (!LockingBean.lockObject(String.valueOf(e.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname())) {
+                        Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+                        return;
+                    }
+
                     BreadcrumbItem item = new BreadcrumbItem(e.getCurrentType().getName(), e.getEntityName(), e.getCurrentProcess().getId(),
                             e.getCurrentType().getColor(), e.getCurrentType().getIcon());
                     breadcrumbList.add(item);
@@ -594,6 +611,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity = new Entity(configuration, newProcess);
         entity.saveEntity();
 
+        LockingBean.lockObject(String.valueOf(entity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname());
+
         //  breadcrumb
         BreadcrumbItem item = new BreadcrumbItem(entity.getCurrentType().getName(), entity.getEntityName(), entity.getCurrentProcess().getId(),
                 entity.getCurrentType().getColor(), entity.getCurrentType().getIcon());
@@ -623,6 +642,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void addRelationshipBetweenEntities() {
 
+        if (LockingBean.isLocked(String.valueOf(selectedEntity.getCurrentProcess().getId()))
+                && !LockingBean.lockObject(String.valueOf(selectedEntity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname())) {
+            Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            return;
+        }
+
         entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false);
 
         // reverse relationship in other entity
@@ -639,6 +664,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void removeRelationship(EntityType type, Relationship relationship) {
+        // load other process, remove relationship from there
+        Process otherProcess = ProcessManager.getProcessById(Integer.parseInt(relationship.getProcessId()));
+        if (otherProcess == null) {
+            return;
+        }
+        // check if relation is locked
+        // if this is the case, check if it is locked by the current user
+        if (LockingBean.isLocked(String.valueOf(otherProcess.getId()))
+                && !LockingBean.lockObject(String.valueOf(otherProcess.getId()), Helper.getCurrentUser().getNachVorname())) {
+            Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            return;
+        }
 
         entity.getLinkedRelationships().get(type).remove(relationship);
 
@@ -650,11 +687,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         entity.saveEntity();
 
-        // load other process, remove relationship from there
-        Process otherProcess = ProcessManager.getProcessById(Integer.parseInt(relationship.getProcessId()));
-        if (otherProcess == null) {
-            return;
-        }
         Entity other = new Entity(configuration, otherProcess);
         List<Relationship> relationships = other.getLinkedRelationships().get(entity.getCurrentType());
         String processid = String.valueOf(entity.getCurrentProcess().getId());
@@ -770,6 +802,19 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public String deleteEntity() {
+        for (Entry<EntityType, List<Relationship>> entry : entity.getLinkedRelationships().entrySet()) {
+            List<Relationship> relations = new ArrayList<>(entry.getValue());
+            for (Relationship rel : relations) {
+                // check if relation is locked
+                // if this is the case, check if it is locked by the current user
+                if (LockingBean.isLocked(rel.getProcessId())
+                        && !LockingBean.lockObject(rel.getProcessId(), Helper.getCurrentUser().getNachVorname())) {
+                    Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+                    return "";
+                }
+            }
+        }
+
         // run through relationships; remove process
         for (Entry<EntityType, List<Relationship>> entry : entity.getLinkedRelationships().entrySet()) {
             List<Relationship> relations = new ArrayList<>(entry.getValue());
