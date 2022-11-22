@@ -149,6 +149,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String pages = "";
+    
+    @Getter
+    @Setter
+    private String sourceType = "";
 
     @Getter
     @Setter
@@ -400,7 +404,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         String sourceId = String.valueOf(selectedSource.getId());
         String sourceUri;
         String sourceName = "";
-        String sourceType = "";
         String sourceLink = "";
 
         if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
@@ -413,7 +416,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
         sourceName = getSourceFieldValue(configuration.getSourceNameFields());
-        sourceType = getSourceFieldValue(configuration.getSourceTypeFields());
         sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
 
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);

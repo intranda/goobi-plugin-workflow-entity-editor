@@ -177,6 +177,28 @@
                                                 value="#{msgs[field.validationMessage]}" />
                                         </x:dataList>
 
+
+
+
+        <div class="form-group">
+            <div class="col-sm-3"  style="background: var(- -bg-content); border-left: 0">
+                <h:outputLabel for="sourceType" value="#{msgs.plugin_workflow_entity_editor_sourceType}" />
+                <h:panelGroup>
+                    <i class="fa fa-asterisk pull-right font-asterisk" title="#{msgs.requiredField}" data-toggle="tooltip"/>
+                </h:panelGroup>
+            </div>
+            <div class="col-sm-9">
+                <h:selectOneMenu id="sourceType" styleClass="form-control"
+                    value="#{NavigationForm.workflowPlugin.sourceType}">
+                    <f:selectItem itemValue="null" itemLabel="#{msgs.bitteAuswaehlen}" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_primary}" itemValue="Primary" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_secondary}" itemValue="Secondary" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_tertiary}" itemValue="Tertiary" />
+                </h:selectOneMenu>
+            </div>
+        </div>
+                                   
+
                                         <div class="form-group">
                                             <div
                                                 class="col-sm-3"
@@ -252,6 +274,27 @@
                                                                 </div>
                                                             </div>
                                                         </x:dataList>
+
+                                                        <div
+                                                            class="row"
+                                                            style="margin: 0px">
+                                                            <div class="col-sm-3 noborder">
+                                                                <h:outputLabel
+                                                                    value="#{msgs.plugin_workflow_entity_editor_sourceType}"
+                                                                    for="sourceType" />
+                                                            </div>
+       
+            <div class="col-sm-9">
+                <h:selectOneMenu id="sourceType" styleClass="form-control"
+                    value="#{NavigationForm.workflowPlugin.sourceType}">
+                    <f:selectItem itemValue="null" itemLabel="#{msgs.bitteAuswaehlen}" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_primary}" itemValue="Primary" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_secondary}" itemValue="Secondary" />
+                    <f:selectItem itemLabel="#{msgs.plugin_workflow_entity_editor_tertiary}" itemValue="Tertiary" />
+                </h:selectOneMenu>
+            </div>
+        </div>
+
 
                                                         <div
                                                             class="row"
