@@ -330,7 +330,6 @@ public class Entity {
                     relationship.setEndDate(endDate);
                     relationship.setAdditionalData(additionalData);
                     relationship.setProcessId(processId);
-                    relationship.setDisplayName(displayName);
 
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getRelationshipNameEn().equals(type)) {
@@ -343,6 +342,7 @@ public class Entity {
                         }
                     }
 
+                    relationship.setDisplayName(displayName);
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
                     relationship.setMetadataGroup(group);
