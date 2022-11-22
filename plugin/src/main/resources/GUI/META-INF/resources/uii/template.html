@@ -120,6 +120,10 @@
     <!-- Theme scripts -->
     <script src="template/js/application.js?v=#{HelperForm.buildVersion}"></script>
 
+        <script
+            type="text/javascript"
+            src='template/js/plugins/tinymce/tinymce.min.js'></script>
+
     <!--[if lte IE 9]>
 	<script src="template/js/plugins/placeholder/jquery.placeholder.min.js?v=#{HelperForm.buildVersion}"></script>
 		<script>
@@ -268,6 +272,76 @@
             myfaces.config = myfaces.config || {};
             //set the config part
             myfaces.config.no_portlet_env = true;
+            
+            
+            
+            var simpleTinyMceConfig = {
+                    selector: '.tinymce',
+                    setup: function( editor ) {
+                        editor.on( 'change', function() {
+                            tinymce.triggerSave();
+                        } );
+                    },
+                    valid_elements: 'p,strong,em,span[!style<text-decoration: underline;],sup,',
+                    statusbar: true,
+                    theme: 'modern',
+                    height: 250,
+                    plugins: [ 'print code preview fullscreen' ],
+                    menu: {},
+                    toolbar: false,
+                    toolbar: 'undo redo | bold italic underline | superscript | code ',
+                    content_css: 'css/content.css',
+                    init_instance_callback: function( editor ) {
+                        var readOnlyAttr = $( "#" + editor.id.replace( ":", "\\:" ) ).attr( "readonly" );
+                        if ( readOnlyAttr === "readonly" ) {
+                            editor.setMode( "readonly" );
+                        }
+                    },
+                    setup: function( editor ) {
+                        editor.on( "blur", function( event, a, b ) {
+                            editor.save();
+                            $( "#" + editor.id.replace( ":", "\\:" ) ).trigger( "change" );
+                        } );
+                    }
+
+                };
+
+                function initTinyMce() {
+                    console.log( "Init tinyMce" );
+                    tinymce.init( simpleTinyMceConfig );
+                }
+
+                $( window ).on( "load", function() {
+                    renderInputFields()
+                } )
+
+                jsf.ajax.addOnEvent( function( data ) {
+                    var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
+                    switch ( ajaxstatus ) {
+                        case "success": // This is called when ajax response is successfully processed.
+                            renderInputFields()
+                            break;
+                    }
+                } );
+
+                function renderInputFields( ajaxData ) {
+                    if ( typeof tinyMCE !== 'undefined' ) {
+                        if ( ajaxData === undefined || ajaxData.status == "begin" ) {
+                            for ( edId in tinyMCE.editors ) {
+                                try {
+                                    tinyMCE.editors[ edId ].remove();
+                                    console.log( "Removed editor " + edId );
+                                }
+                                catch ( error ) {
+                                    console.log( "Error occured during removing editors; ", error );
+                                }
+                            }
+                        }
+                        if ( ajaxData === undefined || ajaxData.status == "success" ) {
+                            initTinyMce( ajaxData );
+                        }
+                    }
+                }
 
          // ]]>
 
