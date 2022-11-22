@@ -198,6 +198,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private Prefs prefs;
 
+    @Getter
+    private transient List<Toponym> resultList;
+    @Getter
+    @Setter
+    private transient Toponym currentToponym;
+    @Getter
+    private int totalResults;
+
     /**
      * Constructor
      */
@@ -222,6 +230,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // save current entity
         if (entity != null) {
             entity.saveEntity();
+            // unlock current entity
+            LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
         }
         //  check if dashboard was selected -> exit to start page
         if (0 == selectedBreadcrumb.getProcessId() && "Dashboard".equals(selectedBreadcrumb.getEntityName())) {
@@ -257,18 +267,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void removeBreadcrumb(BreadcrumbItem breadcrumb) {
-        // unlock breadcrumb
-        LockingBean.freeObject(String.valueOf(breadcrumb.getProcessId()));
         breadcrumbList.remove(breadcrumb);
-
     }
 
     public String exitPlugin() {
-        // unlock all breadcrumbs
-        for (BreadcrumbItem bci : breadcrumbList) {
-            LockingBean.freeObject(String.valueOf(bci.getProcessId()));
-        }
-
+        // unlock current object
+        LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
         return "/uii/index.xhtml";
     }
 
@@ -279,7 +283,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      */
 
     public void searchVocabulary() {
-
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         List<StringPair> data = new ArrayList<>();
 
         for (String field : searchField.getConfigField().getSearchFields()) {
@@ -296,15 +300,35 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Collections.sort(records);
     }
 
-    @Getter
-    private transient List<Toponym> resultList;
-    @Getter
-    @Setter
-    private transient Toponym currentToponym;
-    @Getter
-    private int totalResults;
+    /**
+     * Import data from selected vocabulary record
+     * 
+     */
+    public void importVocabularyData() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
+        Metadata md = searchField.getMetadata();
+        for (Field field : selectedVocabularyRecord.getFields()) {
+            if (field.getDefinition().isMainEntry()) {
+                md.setValue(field.getValue());
+            }
+        }
+
+        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
+                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
+            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
+                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
+                            + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
+        } else {
+            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
+                    searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
+                            + selectedVocabularyRecord.getId());
+        }
+
+    }
 
     public void searchGeonames() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         String credentials = ConfigurationHelper.getInstance().getGeonamesCredentials();
         WebService.setUserName(credentials);
         ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
@@ -332,35 +356,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void importGeonamesData() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         Metadata md = searchField.getMetadata();
         md.setValue(currentToponym.getName());
         md.setAutorityFile("geonames", "http://www.geonames.org/", "" + currentToponym.getGeoNameId());
         resultList = new ArrayList<>();
-    }
-
-    /**
-     * Import data from selected vocabulary record
-     * 
-     */
-    public void importVocabularyData() {
-        Metadata md = searchField.getMetadata();
-        for (Field field : selectedVocabularyRecord.getFields()) {
-            if (field.getDefinition().isMainEntry()) {
-                md.setValue(field.getValue());
-            }
-        }
-
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
-                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                    + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
-        } else {
-            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
-                    searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
-                            + selectedVocabularyRecord.getId());
-        }
-
     }
 
     /**
@@ -369,6 +370,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      */
 
     public void searchSource() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         List<StringPair> data = new ArrayList<>();
 
         for (String field : configuration.getSourceSearchFields()) {
@@ -392,6 +395,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      */
 
     public void addSource() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         String sourceId = String.valueOf(selectedSource.getId());
         String sourceUri;
         String sourceName = "";
@@ -402,7 +407,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
             sourceUri =
                     ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                    + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
+                            + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
         } else {
             sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
         }
@@ -473,6 +478,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void createNewSource() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         selectedSource = new VocabRecord();
         selectedSource.setVocabularyId(sourceVocabulary.getId());
         List<Field> fieldList = new ArrayList<>();
@@ -489,6 +495,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void addRelationship(EntityType type) {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         selectedEntity = null;
         entitySearch = "";
         entityType = type;
@@ -504,6 +512,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void searchForType(EntityType type) {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         selectedEntity = null;
         entitySearch = "";
         entityType = type;
@@ -511,6 +521,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void searchWithoutType() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         selectedEntity = null;
         entitySearch = "";
         entityType = null;
@@ -528,11 +539,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
                 }
                 if (!isAdded) {
-                    if (!LockingBean.lockObject(String.valueOf(e.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname())) {
-                        Helper.setFehlerMeldung("plugin_workflow_entity_locked");
-                        return;
-                    }
-
                     BreadcrumbItem item = new BreadcrumbItem(e.getCurrentType().getName(), e.getEntityName(), e.getCurrentProcess().getId(),
                             e.getCurrentType().getColor(), e.getCurrentType().getIcon());
                     breadcrumbList.add(item);
@@ -546,6 +552,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void searchEntity() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         //  search for processes, load metadata from mets file?
         entities.clear();
 
@@ -579,6 +587,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // save + close current entity
         if (entity != null) {
             entity.saveEntity();
+            // unlock
+            LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
         }
         Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
 
@@ -641,6 +651,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void addRelationshipBetweenEntities() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         if (LockingBean.isLocked(String.valueOf(selectedEntity.getCurrentProcess().getId()))
                 && !LockingBean.lockObject(String.valueOf(selectedEntity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname())) {
@@ -664,6 +675,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void removeRelationship(EntityType type, Relationship relationship) {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         // load other process, remove relationship from there
         Process otherProcess = ProcessManager.getProcessById(Integer.parseInt(relationship.getProcessId()));
         if (otherProcess == null) {
@@ -709,10 +722,13 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void saveEntity() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         entity.saveEntity();
     }
 
     public void exportSingleRecord() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         // get current process
         Process p = entity.getCurrentProcess();
@@ -739,6 +755,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void exportAllRecords() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         // mark process as published
         Process p = entity.getCurrentProcess();
 
@@ -853,6 +871,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void updateDisplayName(AjaxBehaviorEvent event) {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
         try {
             DocStruct logical = entity.getCurrentFileformat().getDigitalDocument().getLogicalDocStruct();
             entity.generateDisplayName(logical, logical.getType().getName());
@@ -864,10 +884,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /*
      * SQL statements to generate display name for each type
-
+    
     clear old data: delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
-
-
+    
+    
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, concat(m1.value, " ", m2.value) as title from (
@@ -877,7 +897,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m2 on t.ProzesseID = m2.processid and m2.name = 'LastnameEn'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Person') x;
-
+    
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -886,8 +906,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Event') x;
-
-
+    
+    
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -896,8 +916,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Work') x;
-
-
+    
+    
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -906,7 +926,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Agent') x;
-
+    
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -915,7 +935,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Award') x;
-
+    
      */
 
 }
