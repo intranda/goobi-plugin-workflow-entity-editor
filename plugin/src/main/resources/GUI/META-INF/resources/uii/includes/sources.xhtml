@@ -22,12 +22,12 @@
 
                 <div class="source">
 
-                    <x:inputTextarea
-                        styleClass="form-control"
+                    <h:outputText
+                        escape="false"
+                       style="padding: 2px 12px; line-height: 1.42857143; font-size: 13px; color: #333; cursor: not-allowed; background-color: #eee; opacity: 1; border: 1px solid #ccc;"
                         value="#{source.sourceName}"
-                        required="false"
-                        readonly="true">
-                    </x:inputTextarea>
+                       >
+                    </h:outputText>
                     <span>
                         <!--  button to remove source -->
                         <button

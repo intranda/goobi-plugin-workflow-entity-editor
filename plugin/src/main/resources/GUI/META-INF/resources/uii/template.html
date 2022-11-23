@@ -284,13 +284,15 @@
                     },
                     valid_elements: 'p,strong,em,span[!style<text-decoration: underline;],sup,',
                     statusbar: true,
-                    theme: 'modern',
-                    height: 250,
-                    plugins: [ 'print code preview fullscreen' ],
+                    
+                    height: 90,
+                    plugins: [],
+                    branding: false,
                     menu: {},
-                    toolbar: false,
-                    toolbar: 'undo redo | bold italic underline | superscript | code ',
+                    menubar: false,
+                    toolbar: 'bold italic underline',
                     content_css: 'css/content.css',
+                    statusbar: false,
                     init_instance_callback: function( editor ) {
                         var readOnlyAttr = $( "#" + editor.id.replace( ":", "\\:" ) ).attr( "readonly" );
                         if ( readOnlyAttr === "readonly" ) {
