@@ -55,11 +55,11 @@
 				<vocabulary name="Person - Primary Role in Database" id="12" />
 			</field>
 			<field label="Importance" metadata="Importance" type="select" required="false" readonly="false">
+	            <value>0</value>
 				<value>1</value>
 				<value>2</value>
 				<value>3</value>
 				<value>4</value>
-				<value>5</value>
 			</field>
 
 
@@ -135,7 +135,7 @@
 
 			<field label="Birthplace" metadata="BirthplaceGroup" repeatable="true" group="true" showInSearch="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Birthplace" metadata="Birthplace" type="geonames" required="false" labelPosition="none" showInSearch="true" source="DE|AT|CH" />
+				<field label="Birthplace" metadata="Birthplace" type="geonames" required="false" labelPosition="none" showInSearch="true" source="DE|AT|CH|LU|FR" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
@@ -153,7 +153,7 @@
 
 			<field label="Deathplace" metadata="DeathplaceGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Deathplace" metadata="Deathplace" type="geonames" required="false" labelPosition="none" source="DE|AT|CH" />
+				<field label="Deathplace" metadata="Deathplace" type="geonames" required="false" labelPosition="none" source="DE|AT|CH|LU|FR" />
 				<field label="Source" metadata="Source" type="source" required="false" repeatable="true" group="true" />
 			</field>
 
@@ -183,7 +183,7 @@
 			<field label="Profession" metadata="ProfessionGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="EndDate" metadata="EndDate" type="date" required="false" labelPosition="top" />
 				<field label="Profession" metadata="Profession" type="vocabularyList" required="false" labelPosition="top">
 					<vocabulary name="Profession" id="15" />
 				</field>
@@ -209,11 +209,11 @@
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="EndDate" metadata="EndDate" type="date" required="false" labelPosition="top" />
 				<field label="Description (fre)" metadata="ShortDescriptionFR" type="textarea" required="false" labelPosition="top" />
 				<field label="Description (ger)" metadata="ShortDescriptionDE" type="textarea" required="false" labelPosition="top" />
 				<field label="Description (eng)" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />
-				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH" />
+				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH|LU|FR" />
 				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
 					<vocabulary name="Biography Type" id="17" />
 				</field>
@@ -226,16 +226,12 @@
 			</field>
 			<field label="Textual description" metadata="TextualDescription" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Text" metadata="Text" type="textarea" required="false" labelPosition="none" />
+				<field label="Text (fre)" metadata="TextFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (ger)" metadata="Text" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (eng)" metadata="TextEN" type="textarea" required="false" labelPosition="top" />
+				<field label="Author" metadata="Text" type="input" required="false" labelPosition="top" />				
 			</field>
-
-			<!--
-			<field label="Author description" metadata="AuthorDescription" repeatable="true" group="true">
-				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Author" metadata="Author" type="input" required="false" />
-			</field>
-		-->
-
+			
 			<field label="Bibliography" metadata="Bibliography" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="Citation" metadata="Citation" type="textarea" required="false" labelPosition="top" />
@@ -279,11 +275,11 @@
 				<vocabulary name="Collective agent - Primary Role in Database" id="13" />
 			</field>
 			<field label="Importance" metadata="Importance" type="select" required="false" readonly="false">
+				<value>0</value>
 				<value>1</value>
 				<value>2</value>
 				<value>3</value>
 				<value>4</value>
-				<value>5</value>
 			</field>
 
 
@@ -338,8 +334,8 @@
 			<field label="Location" metadata="LocationGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH" />
+				<field label="EndDate" metadata="EndDate" type="date" required="false" labelPosition="top" />
+				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH|LU|FR" />
 				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
 					<vocabulary name="Location Type" id="20" />
 				</field>
@@ -377,11 +373,11 @@
 			<field label="Biography" metadata="BiographyGroup" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 				<field label="BeginningDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
-				<field label="EndDate" metadata="BeginningDate" type="date" required="false" labelPosition="top" />
+				<field label="EndDate" metadata="EndDate" type="date" required="false" labelPosition="top" />
 				<field label="Description (fre)" metadata="ShortDescriptionFR" type="textarea" required="false" labelPosition="top" />
 				<field label="Description (ger)" metadata="ShortDescriptionDE" type="textarea" required="false" labelPosition="top" />
 				<field label="Description (eng)" metadata="ShortDescription" type="textarea" required="false" labelPosition="top" />
-				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH" />
+				<field label="Location" metadata="Location" type="geonames" required="false" labelPosition="top" source="DE|AT|CH|LU|FR" />
 				<field label="Type" metadata="Type" type="vocabularyList" required="false" labelPosition="top">
 					<vocabulary name="Biography Type" id="17" />
 				</field>
@@ -393,17 +389,13 @@
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
 			</field>
 
-
 			<field label="Textual description" metadata="TextualDescription" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Text" metadata="Text" type="textarea" required="false" labelPosition="none" />
+				<field label="Text (fre)" metadata="TextFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (ger)" metadata="Text" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (eng)" metadata="TextEN" type="textarea" required="false" labelPosition="top" />
+				<field label="Author" metadata="Text" type="input" required="false" labelPosition="top" />				
 			</field>
-			<!--
-			<field label="Author description" metadata="AuthorDescription" repeatable="true" group="true">
-				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Author" metadata="Author" type="input" required="false" />
-			</field>
-		-->
 		</displayMetadata>
 
 
@@ -488,14 +480,11 @@
 
 			<field label="Textual description" metadata="TextualDescription" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Text" metadata="Text" type="textarea" required="false" labelPosition="none" />
+				<field label="Text (fre)" metadata="TextFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (ger)" metadata="Text" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (eng)" metadata="TextEN" type="textarea" required="false" labelPosition="top" />
+				<field label="Author" metadata="Text" type="input" required="false" labelPosition="top" />				
 			</field>
-			<!--
-			<field label="Author description" metadata="AuthorDescription" repeatable="true" group="true">
-				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Author" metadata="Author" type="input" required="false" />
-			</field>
-		-->
 		</displayMetadata>
 
 
@@ -646,14 +635,11 @@
 
 			<field label="Textual description" metadata="TextualDescription" repeatable="true" group="true">
 				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Text" metadata="Text" type="textarea" required="false" labelPosition="none" />
+				<field label="Text (fre)" metadata="TextFR" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (ger)" metadata="Text" type="textarea" required="false" labelPosition="top" />
+				<field label="Text (eng)" metadata="TextEN" type="textarea" required="false" labelPosition="top" />
+				<field label="Author" metadata="Text" type="input" required="false" labelPosition="top" />				
 			</field>
-			<!--
-			<field label="Author description" metadata="AuthorDescription" repeatable="true" group="true">
-				<field label="Publish field" metadata="Published" type="publish" required="true" />
-				<field label="Author" metadata="Author" type="input" required="false" />
-			</field>
-		-->
 		</displayMetadata>
 
 	</type>
