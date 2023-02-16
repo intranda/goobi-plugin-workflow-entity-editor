@@ -157,7 +157,7 @@
                                             rendered="#{ not empty relationship.type }">
                                             <div class="sources__key">#{msgs.plugin_workflow_entity_editor_type}:</div>
                                             <div class="sources__val">
-                                                <span> #{relationship.type.getLabel(SpracheForm.locale)} </span>
+                                                <span> #{relationship.getLabel(SpracheForm.locale)} </span>
                                             </div>
                                         </h:panelGroup>
 

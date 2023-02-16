@@ -338,6 +338,7 @@ public class Entity {
                         } else if (StringUtils.isNotBlank(rel.getReversedRelationshipNameEn()) && rel.getReversedRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
                             rel.setReversed(true);
+                            relationship.setReverse(true);
                             break;
                         }
                     }
