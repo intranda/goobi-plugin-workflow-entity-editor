@@ -25,9 +25,10 @@
                     <h:outputText
                         escape="false"
                        style="padding: 2px 12px; line-height: 1.42857143; font-size: 13px; color: #333; cursor: not-allowed; background-color: #eee; opacity: 1; border: 1px solid #ccc;"
-                        value="#{source.sourceName}"
+                        value="#{source.sourceName} &lt;br /&gt; #{msgs.plugin_workflow_entity_editor_sourceType}: #{source.sourceType == 'Primary' ? msgs.plugin_workflow_entity_editor_primary : source.sourceType == 'Secondary' ? msgs.plugin_workflow_entity_editor_secondary : msgs.plugin_workflow_entity_editor_tertiary}"
                        >
-                    </h:outputText>
+                       </h:outputText>
+
                     <span>
                         <!--  button to remove source -->
                         <button
