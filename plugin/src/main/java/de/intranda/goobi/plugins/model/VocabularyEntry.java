@@ -15,6 +15,8 @@ public class VocabularyEntry {
     private String labelEn;
     private String labelFr;
 
+    private int id;
+
     public String getLabel(Locale lang) {
         String label;
         switch (lang.getLanguage()) {

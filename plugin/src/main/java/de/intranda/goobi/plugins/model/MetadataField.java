@@ -13,15 +13,12 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.validator.EDTFValidator;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.DigitalDocument;
@@ -76,7 +73,7 @@ public class MetadataField {
         if (group != null) {
             MetadataGroup toRemove = null;
             for (MetadataGroup mg : group.getAllMetadataGroups()) {
-                if (mg.getType().getName().equals("Source")) {
+                if ("Source".equals(mg.getType().getName())) {
                     for (Metadata md : mg.getMetadataByType("SourceID")) {
                         if (md.getValue().equals(field.getSourceId())) {
                             toRemove = mg;
@@ -116,7 +113,7 @@ public class MetadataField {
                 if (value.equals(item.getMainValue())) {
                     metadata.setValue(item.getMainValue());
                     metadata.setAutorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
-                            configField.getVocabularyUrl() + "/" + value);
+                            configField.getVocabularyUrl() + "/" + item.getId());
                 }
             }
         }

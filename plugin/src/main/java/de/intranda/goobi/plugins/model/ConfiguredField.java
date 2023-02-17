@@ -191,7 +191,7 @@ public class ConfiguredField {
                 for (VocabRecord vr : recordList) {
 
                     VocabularyEntry ve = new VocabularyEntry();
-
+                    ve.setId(vr.getId());
                     String fieldName = null;
                     for (Field f : vr.getFields()) {
                         if (f.getDefinition().isMainEntry()) {
