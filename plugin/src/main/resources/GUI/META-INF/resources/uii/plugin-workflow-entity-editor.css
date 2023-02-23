@@ -752,6 +752,11 @@ body,
   color: var(--clr-fg);
 }
 
+.scrolling {
+    overflow-y: auto; 
+    max-height: calc(50vh - 150px);
+}
+
 /* Modals */
 
 .modal-content-wrapper {
