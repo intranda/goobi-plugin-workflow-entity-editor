@@ -20,7 +20,6 @@
     <ui:define name="navigation">
 
         <script type="text/javascript">
-
                                     function switchExpanded( id ) {
                                         var x = document.getElementById( id ).getAttribute( "aria-expanded" );
                                         if ( x == "true" ) {
@@ -54,7 +53,7 @@
                     <!-- Icon to enable help texts -->
                     <li>
                         <button
-                        type="button"
+                            type="button"
                             class="btn"
                             jsf:id="showHelp"
                             aria-label="#{msgs.showHelpMessages}"
@@ -99,7 +98,7 @@
                                     id="plugin4">
                                     <li>
                                         <button
-                                        type="button"
+                                            type="button"
                                             jsf:id="locale"
                                             class="dropdown-item text_head"
                                             jsf:action="#{SpracheForm.SpracheUmschalten}"
@@ -207,8 +206,8 @@
                                 jsf:id="header">
                                 <h1>
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_header}">
-                                        <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
-                                        <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                        <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.currentType.name]}" />
+                                        <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.entityName]}" />
                                     </h:outputFormat>
                                 </h1>
                             </div>
@@ -232,7 +231,7 @@
                                             </style>
 
                                             <button
-                                            type="button"
+                                                type="button"
                                                 class="btn entity-search entity-search--#{type.plural}"
                                                 jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
                                                 jsf:onclick="$('#searchEntitySearchBox').modal('show');">
@@ -254,7 +253,10 @@
 
 
 
-                        <h:panelGroup layout="block" id="breadcrumbs" styleClass="breadcrumbs">
+                        <h:panelGroup
+                            layout="block"
+                            id="breadcrumbs"
+                            styleClass="breadcrumbs">
                             <div class="breadcrumb-label">
                                 <h:outputText
                                     styleClass="skew-fix"
@@ -321,8 +323,7 @@
                                     styleClass="form-horizontal form-bordered"
                                     prependId="false"
                                     enctype="multipart/form-data"
-                                    id="metadataForm"
-                                    >
+                                    id="metadataForm">
 
                                     <!-- badges area -->
                                     <h:panelGroup
@@ -361,7 +362,7 @@
                                                         <!-- publish button -->
                                                         <h:panelGroup id="pubBtn">
                                                             <button
-                                                            type="button"
+                                                                type="button"
                                                                 class="btn pull-right toggle"
                                                                 jsf:id="toggle-export"
                                                                 jsf:rendered="#{field.displayPublishButton}"
@@ -380,7 +381,7 @@
 
                                                         <!-- delete button -->
                                                         <button
-                                                        type="button"
+                                                            type="button"
                                                             class="btn pull-right toggle"
                                                             jsf:id="remove"
                                                             jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
@@ -396,7 +397,7 @@
 
                                                         <!-- duplicate button -->
                                                         <button
-                                                        type="button"
+                                                            type="button"
                                                             class="btn pull-right toggle"
                                                             jsf:id="duplicate"
                                                             jsf:rendered="#{field.configField.repeatable}"
@@ -412,7 +413,7 @@
 
                                                         <!-- button to add source-->
                                                         <button
-                                                        type="button"
+                                                            type="button"
                                                             jsf:rendered="#{field.allowSources}"
                                                             jsf:id="addSource"
                                                             class="btn pull-right toggle "
@@ -595,8 +596,8 @@
                                                                         <f:selectItems
                                                                             value="#{subfield.configField.vocabularyList}"
                                                                             var="item"
-                                                                                           itemLabel="#{item.getLabel(SpracheForm.locale)}"
-                                                                    itemValue="#{item.mainValue}" />
+                                                                            itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                                            itemValue="#{item.mainValue}" />
                                                                     </h:selectOneMenu>
                                                                 </ui:fragment>
 
@@ -643,7 +644,6 @@
                                                                     </div>
                                                                 </ui:fragment>
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
-
                                                                     <h:inputFile
                                                                         id="thirdtab_fileupload3"
                                                                         value="#{subfield.uploadedFile}"
@@ -655,6 +655,31 @@
                                                                             listener="#{subfield.uploadFile}"
                                                                             render="thirdtab_fileupload3_message" />
                                                                     </h:inputFile>
+                                                                    <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
+                                                                        <div
+                                                                            class="goobi-thumbnail img-active"
+                                                                            dir="auto">
+                                                                            <div
+                                                                                class="goobi-thumbnail-image"
+                                                                                style="height: 200px; max-width: 200px">
+
+                                                                                <div
+                                                                                    class="thumb"
+                                                                                    style="max-height: 200px;">
+                                                                                    <h:commandLink title="#{subfield.image.tooltip}">
+                                                                                        <canvas
+                                                                                            class="thumb-canvas"
+                                                                                            style="max-height: 200px;"
+                                                                                            data-image_small="#{subfield.image.thumbnailUrl}"
+                                                                                            data-image_large="#{subfield.image.largeThumbnailUrl}"
+                                                                                            title="#{subfield.image.tooltip}"
+                                                                                            id="thumbnail1"></canvas>
+                                                                                    </h:commandLink>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </ui:fragment>
                                                                 </ui:fragment>
                                                                 <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'date'}"
@@ -679,7 +704,7 @@
                                                                     </h:panelGroup>
                                                                 </h:panelGroup>
 
-<ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
+                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
                                                                     <div class="geonames-search">
                                                                         <x:inputText
                                                                             styleClass="form-control"
@@ -733,12 +758,12 @@
 
                                     </div>
                                 </h:form>
-                                    <!-- vocabulary search modal -->
-                                    <ui:include src="includes/vocabulary_search_modal.xhtml" />
-                                    <!-- geonames search modal -->
-                                    <ui:include src="includes/geonames_search_modal.xhtml" />
-                                    <!-- sources modal -->
-                                    <ui:include src="includes/source_modal.xhtml" />
+                                <!-- vocabulary search modal -->
+                                <ui:include src="includes/vocabulary_search_modal.xhtml" />
+                                <!-- geonames search modal -->
+                                <ui:include src="includes/geonames_search_modal.xhtml" />
+                                <!-- sources modal -->
+                                <ui:include src="includes/source_modal.xhtml" />
                             </div>
                         </div>
                     </div>
@@ -781,9 +806,7 @@
                             jsf:id="deleteEntity"
                             class="btn"
                             jsf:action="#{NavigationForm.workflowPlugin.deleteEntity}"
-                            onclick="if (!confirm('#{msgs.wirklichAusfuehren}')) return false">
-                            #{msgs.plugin_workflow_entity_editor_delete}
-                        </button>
+                            onclick="if (!confirm('#{msgs.wirklichAusfuehren}')) return false">#{msgs.plugin_workflow_entity_editor_delete}</button>
                     </ui:fragment>
 
                     <button

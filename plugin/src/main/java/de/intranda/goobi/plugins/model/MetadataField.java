@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
+import de.sub.goobi.metadaten.Image;
 import de.sub.goobi.validator.EDTFValidator;
 import lombok.Data;
 import lombok.Getter;
@@ -50,6 +53,8 @@ public class MetadataField {
     private boolean allowSources;
 
     private List<SourceField> sources = new ArrayList<>();
+
+    private Image image =null;
 
     public MetadataField() {
     }
@@ -271,10 +276,25 @@ public class MetadataField {
                     log.error(e.getMessage(), e);
                 }
             }
-
         }
-
     }
+
+
+
+
+
+    public Image   getImage() {
+        if (image == null && configField.getFieldType().equals("fileupload") && StringUtils.isNotBlank(metadata.getValue())) {
+            Path file = Paths.get(metadata.getValue());
+            try {
+                image = new Image(  configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
+            } catch (IOException | SwapException | DAOException e) {
+                log.error(e);
+            }
+        }
+        return image;
+    }
+
 
     private String getFileName(final Part part) {
         for (String content : part.getHeader("content-disposition").split(";")) {
@@ -300,7 +320,6 @@ public class MetadataField {
     }
 
     @Data
-
     public class SourceField {
 
         private String sourceId;

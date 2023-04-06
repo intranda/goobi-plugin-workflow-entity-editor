@@ -87,6 +87,49 @@
         rel="stylesheet"
         href="plugin-workflow-entity-editor.css?v=#{HelperForm.buildVersion}" />
 
+
+     <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/reactiveX/rx.lite.min.js"></script>
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/q-promises/q.min.js"></script>
+
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/openseadragon/openseadragon.min.js"></script>
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/openseadragon/openseadragon-viewerinputhook.js"></script>
+
+            <!-- 3D-Models -->
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/three.min.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/OBJLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/MTLLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/PLYLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/STLLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/FBXLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/TDSLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/DRACOLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/GLTFLoader.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/controls/OrbitControls.js"></script>
+            <script type="text/javascript"
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/dependencies/inflate.min.js"></script>
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/x3dom/x3dom.js"></script>
+
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
+            <script
+                src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/objectView.min.js"></script>
+
+
     <script src="template/js/intranda.js?v=1.2"></script>
     <!-- jQuery -->
     <h:outputScript
@@ -206,6 +249,28 @@
         <script>
 
      // <![CDATA[
+         
+         
+            window.onload = function() {
+                                                                        loadImages();
+                                                                    }
+
+                                                                    function loadThumbnails() {
+                                                                        var height = 200;
+                                                                        if ( height ) {
+                                                                            $( '.goobi-thumbnail-image' ).css( 'height', ( height + 25 ) + 'px' );
+                                                                            $( '.goobi-thumbnail-image .thumb' ).css( 'max-height', height + 'px' );
+                                                                            $( '.goobi-thumbnail-image .thumb canvas' ).css( 'max-height', height + 'px' );
+                                                                            $( '.goobi-thumbnail-image' ).css( 'max-width', ( height ) + 'px' );
+                                                                        }
+                                                                    }
+
+                                                                    $( document ).ready( function() {
+                                                                        loadThumbnails();
+                                                                    } );
+                                                                    
+         
+         
             jsf.ajax.addOnEvent(function (data) {
                 var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
                 var ajaxloader = document.getElementById("ajaxloader");

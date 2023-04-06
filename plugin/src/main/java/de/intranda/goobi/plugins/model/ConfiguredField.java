@@ -123,6 +123,11 @@ public class ConfiguredField {
     @Getter
     private List<ConfiguredField> subfieldList = new ArrayList<>(); // fields for group
 
+    @Getter
+    @Setter
+    private Entity entity;
+
+
     public ConfiguredField(ConfiguredField other) {
 
         label = other.getLabel();
@@ -169,9 +174,6 @@ public class ConfiguredField {
         }
     }
 
-    @Getter
-    @Setter
-    private Entity entity;
 
     public void addSubfield(ConfiguredField field) {
         subfieldList.add(field);
