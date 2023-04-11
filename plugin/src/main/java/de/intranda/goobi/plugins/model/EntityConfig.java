@@ -65,15 +65,18 @@ public class EntityConfig {
     @Getter
     private int processTemplateId;
 
-
     @Getter
     private String exportPluginName;
+
+    @Getter
+    private boolean updateProcessTitle = false;
 
     public EntityConfig(XMLConfiguration config) {
 
         processTemplateId = config.getInt("/global/processTemplateId");
         exportPluginName = config.getString("/global/exportPlugin", "intranda_export_luxArtistDictionary");
 
+        updateProcessTitle = config.getBoolean("/global/updateProcessTitle", false);
 
         // data for vocabulary search
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
@@ -303,7 +306,7 @@ public class EntityConfig {
 
         processTemplateId = other.processTemplateId;
 
-
+        updateProcessTitle = other.updateProcessTitle;
 
         exportPluginName = other.exportPluginName;
 

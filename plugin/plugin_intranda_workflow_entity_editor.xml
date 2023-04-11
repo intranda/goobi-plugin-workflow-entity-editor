@@ -17,7 +17,7 @@
 		</relations>
 
 		<processTemplateId>6</processTemplateId>
-
+        <updateProcessTitle>false</updateProcessTitle>
 		<exportPlugin>intranda_export_luxArtistDictionary</exportPlugin>
 	</global>
 

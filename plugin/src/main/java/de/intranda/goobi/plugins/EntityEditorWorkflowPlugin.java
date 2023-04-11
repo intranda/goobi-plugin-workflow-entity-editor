@@ -149,7 +149,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String pages = "";
-    
+
     @Getter
     @Setter
     private String sourceType = "";
@@ -322,7 +322,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
             md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
                     ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
+                    + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
         } else {
             md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
                     searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
@@ -410,7 +410,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
             sourceUri =
                     ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
+                    + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
         } else {
             sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
         }
@@ -886,10 +886,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /*
      * SQL statements to generate display name for each type
-    
+
     clear old data: delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
-    
-    
+
+
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, concat(m1.value, " ", m2.value) as title from (
@@ -899,7 +899,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m2 on t.ProzesseID = m2.processid and m2.name = 'LastnameEn'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Person') x;
-    
+
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -908,8 +908,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Event') x;
-    
-    
+
+
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -918,8 +918,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Work') x;
-    
-    
+
+
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -928,7 +928,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Agent') x;
-    
+
     insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
     select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
     from (select ProzesseID, m1.value as title from (
@@ -937,7 +937,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
     left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
      where t.WERT is null  and m3.value = 'Award') x;
-    
+
      */
 
 }

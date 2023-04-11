@@ -631,9 +631,13 @@ public class Entity {
 
             displayNameProperty.setWert(entityName);
 
-            ProcessManager.saveProcess(currentProcess);
 
             currentProcess.writeMetadataFile(currentFileformat);
+            if (updatedName && configuration.isUpdateProcessTitle()) {
+                currentProcess.changeProcessTitle(entityName.toLowerCase().replaceAll("\\W", "_"));
+            }
+
+            ProcessManager.saveProcess(currentProcess);
 
             // update link name in other entities
             if (updatedName) {
