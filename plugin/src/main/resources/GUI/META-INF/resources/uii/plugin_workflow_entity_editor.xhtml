@@ -657,7 +657,7 @@
                                                                     </h:inputFile>
                                                                     <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
                                                                         <div
-                                                                            class="goobi-thumbnail img-active"
+                                                                            class="goobi-thumbnail"
                                                                             dir="auto">
                                                                             <div
                                                                                 class="goobi-thumbnail-image"
@@ -666,7 +666,13 @@
                                                                                 <div
                                                                                     class="thumb"
                                                                                     style="max-height: 200px;">
-                                                                                    <h:commandLink title="#{subfield.image.tooltip}">
+<!--                                                                                     <button title="#{subfield.image.tooltip}" -->
+<!--                                                                                     class="colorbox-image" -->
+<!--                                                                                       data-toggle="tooltip" -->
+<!--                                                                                    href="#{subfield.image.bookmarkUrl}" -->
+<!--                                                                                     immediate="true" -->
+<!--                                                                                    	jsf:id="showBookmark1" -->
+<!--                                                                                     > -->
                                                                                         <canvas
                                                                                             class="thumb-canvas"
                                                                                             style="max-height: 200px;"
@@ -674,7 +680,8 @@
                                                                                             data-image_large="#{subfield.image.largeThumbnailUrl}"
                                                                                             title="#{subfield.image.tooltip}"
                                                                                             id="thumbnail1"></canvas>
-                                                                                    </h:commandLink>
+<!--                                                                                             <f:ajax execute="@this" render="@form"/> -->
+<!--                                                                                     </button> -->
                                                                                 </div>
 
                                                                             </div>
@@ -859,6 +866,21 @@
 
 
             <script type="text/javascript">
+            
+            function loadColorbox () {
+                $.colorbox.remove();
+                
+                // set colorboxes
+                $( '.colorbox-image' ).colorbox( {
+                    transition: 'fade',
+                    rel: 'colorbox-image',
+                    maxWidth: '90%',
+                    maxHeight: '90%',
+                } );
+            }
+            }
+            
+            
                                                     jsf.ajax.addOnEvent( function( data ) {
                                                         var ajaxstatus = data.status;
                                                         switch ( ajaxstatus ) {
