@@ -244,7 +244,6 @@
                                                     render=":searchEntityModalContent" />
                                             </button>
                                         </ui:repeat>
-
                                     </li>
                                 </ul>
                             </div>
@@ -274,7 +273,6 @@
                                             entityColor="#{breadcrumb.color}"
                                             entityIcon="#{breadcrumb.icon}" />
                                     </li>
-
                                 </ui:repeat>
                             </ul>
                         </h:panelGroup>
@@ -369,7 +367,8 @@
                                                                 title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
                                                                 data-toggle="tooltip"
                                                                 data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                <i class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                                <i
+                                                                    class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
                                                                 <f:ajax
                                                                     execute="pubBtn"
                                                                     render="pubBtn" />
@@ -441,7 +440,8 @@
                                                         rendered="#{!field.configField.group}"
                                                         styleClass="col-sm-9">
 
-                                                        <ui:fragment rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
+                                                        <ui:fragment
+                                                            rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
                                                             <x:inputText
                                                                 styleClass="form-control"
                                                                 value="#{field.metadata.value}"
@@ -655,7 +655,8 @@
                                                                             listener="#{subfield.uploadFile}"
                                                                             render="thirdtab_fileupload3_message" />
                                                                     </h:inputFile>
-                                                                    <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
+                                                                    <ui:fragment
+                                                                        rendered="#{subfield.image != null and subfield.image.type == 'image'}">
                                                                         <div
                                                                             class="goobi-thumbnail"
                                                                             dir="auto">
@@ -666,13 +667,13 @@
                                                                                 <div
                                                                                     class="thumb"
                                                                                     style="max-height: 200px;">
-<!--                                                                                     <button title="#{subfield.image.tooltip}" -->
-<!--                                                                                     class="colorbox-image" -->
-<!--                                                                                       data-toggle="tooltip" -->
-<!--                                                                                    href="#{subfield.image.bookmarkUrl}" -->
-<!--                                                                                     immediate="true" -->
-<!--                                                                                    	jsf:id="showBookmark1" -->
-<!--                                                                                     > -->
+                                                                                    <button
+                                                                                        title="#{subfield.image.tooltip}"
+                                                                                        class="colorbox-image"
+                                                                                        data-toggle="tooltip"
+                                                                                        href="#{subfield.image.bookmarkUrl}"
+                                                                                        jsf:id="showBookmark1"
+                                                                                        jsf:onclick="$('#imageBox').modal('show');">
                                                                                         <canvas
                                                                                             class="thumb-canvas"
                                                                                             style="max-height: 200px;"
@@ -680,8 +681,16 @@
                                                                                             data-image_large="#{subfield.image.largeThumbnailUrl}"
                                                                                             title="#{subfield.image.tooltip}"
                                                                                             id="thumbnail1"></canvas>
-<!--                                                                                             <f:ajax execute="@this" render="@form"/> -->
-<!--                                                                                     </button> -->
+                                                                                        <f:setPropertyActionListener
+                                                                                            value="#{subfield.image.largeThumbnailUrl}"
+                                                                                            target="#{NavigationForm.workflowPlugin.imageUrl}" />
+                                                                                      <f:setPropertyActionListener
+                                                                                            value="#{subfield.image.tooltip}"
+                                                                                            target="#{NavigationForm.workflowPlugin.imageName}" />                                                                                            
+                                                                                        <f:ajax
+                                                                                            execute="@this"
+                                                                                            render="imageBoxContent" />
+                                                                                    </button>
                                                                                 </div>
 
                                                                             </div>
@@ -771,6 +780,7 @@
                                 <ui:include src="includes/geonames_search_modal.xhtml" />
                                 <!-- sources modal -->
                                 <ui:include src="includes/source_modal.xhtml" />
+                                <ui:include src="includes/image_modal.xhtml" />
                             </div>
                         </div>
                     </div>
@@ -856,7 +866,7 @@
                                 jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}"
                                 type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
-                                 <f:ajax execute="@this" />
+                                <f:ajax execute="@this" />
                             </button>
 
                         </div>

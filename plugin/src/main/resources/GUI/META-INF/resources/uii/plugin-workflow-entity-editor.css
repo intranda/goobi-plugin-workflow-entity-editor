@@ -767,7 +767,7 @@ body,
 
 #searchEntityModalContent,
 #sourceModalContent,
-
+#imageBoxContent,
 #entityModalContent,
 #vocabularySearchModalContent {
   background-color: var(--bg-content) !important;
