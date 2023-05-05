@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.intranda.goobi.plugins.workflow</groupId>
   <artifactId>entity_editor-main</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>23.04.1</version>
   <properties>
     <jar.name>plugin_intranda_workflow_entity_editor</jar.name>
     <dest.folder>/opt/digiverso/goobi/plugins/workflow/</dest.folder>
@@ -10,20 +10,20 @@
   <parent>
     <groupId>de.intranda.goobi.plugins.workflow</groupId>
     <artifactId>entity_editor</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>23.04.1</version>
   </parent>
   <build>
     <finalName>${jar.name}</finalName>
     <sourceDirectory>${project.basedir}/../src/main/java</sourceDirectory>
     <testSourceDirectory>${project.basedir}/../src/test/java</testSourceDirectory>
- 	<resources>
-       <resource>
-         <directory>src/main/java</directory>
-         <excludes>
-            <exclude>**/de/intranda/goobi/plugins/model/*</exclude>
-         </excludes>
-       </resource>
-       </resources>    
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <excludes>
+          <exclude>**/de/intranda/goobi/plugins/model/*</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
