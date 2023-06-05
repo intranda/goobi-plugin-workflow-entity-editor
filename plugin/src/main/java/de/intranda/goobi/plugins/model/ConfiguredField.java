@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.goobi.vocabulary.Field;
 import org.goobi.vocabulary.VocabRecord;
 import org.goobi.vocabulary.Vocabulary;
+import org.jboss.weld.exceptions.IllegalStateException;
 
 import de.sub.goobi.persistence.managers.VocabularyManager;
 import lombok.Getter;
@@ -183,6 +184,10 @@ public class ConfiguredField {
         vocabularyName = name;
         vocabularyId = id;
         Vocabulary currentVocabulary = VocabularyManager.getVocabularyByTitle(vocabularyName);
+        if(currentVocabulary == null) {
+            log.error("Cannot find vocabulary " + vocabularyName);
+            return;
+        }
         vocabularyUrl = EntityConfig.vocabularyUrl + currentVocabulary.getId();
         if (currentVocabulary != null && "vocabularyList".equals(fieldType)) {
             VocabularyManager.getAllRecords(currentVocabulary);

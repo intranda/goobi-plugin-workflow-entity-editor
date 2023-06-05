@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang.StringUtils;
 
 import de.sub.goobi.helper.Helper;
+import de.sub.goobi.helper.NIOFileUtils;
+import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
@@ -24,6 +27,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Metadata;
@@ -220,17 +224,21 @@ public class MetadataField {
                 basename = basename.substring(basename.lastIndexOf("\\") + 1);
             }
 
-            String filename = configField.getEntity().getCurrentProcess().getImagesOrigDirectory(false) + basename;
+            Path mediaDirectory = Paths.get(configField.getEntity().getCurrentProcess().getImagesTifDirectory(true));
+            if(!Files.exists(mediaDirectory)) {
+                Files.createDirectory(mediaDirectory);
+            }
+            Path file = mediaDirectory.resolve(basename).toAbsolutePath();
 
             inputStream = this.uploadedFile.getInputStream();
-            outputStream = new FileOutputStream(filename);
+            outputStream = new FileOutputStream(file.toString());
 
             byte[] buf = new byte[1024];
             int len;
             while ((len = inputStream.read(buf)) > 0) {
                 outputStream.write(buf, 0, len);
             }
-            metadata.setValue(filename);
+            metadata.setValue(file.toString());
 
             try {
                 Prefs prefs = configField.getEntity().getPrefs();
@@ -238,7 +246,12 @@ public class MetadataField {
                 DocStruct physical = dd.getPhysicalDocStruct();
                 int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
                 DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
-
+                
+                ContentFile cf = new ContentFile();
+                cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
+                cf.setLocation(file.toString());
+                page.addContentFile(cf);
+                
                 // phys + log page numbers
                 Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
                 mdLog.setValue("uncounted");
@@ -258,7 +271,7 @@ public class MetadataField {
                 log.error(e);
             }
 
-        } catch (IOException | SwapException | DAOException e) {
+        } catch (IOException | SwapException e) {
             log.error(e.getMessage(), e);
             Helper.setFehlerMeldung("uploadFailed");
         } finally {
