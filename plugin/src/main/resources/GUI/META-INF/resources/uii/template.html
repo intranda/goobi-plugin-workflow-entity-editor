@@ -303,15 +303,16 @@
                             tinymce.triggerSave();
                         } );
                     },
-                    valid_elements: 'p,strong,em,span[!style<text-decoration: underline;],sup,',
                     statusbar: true,
-                    
-                    height: 90,
-                    plugins: [],
-                    branding: false,
+                    height: 200,
                     menu: {},
+                    plugins: [
+                        'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+                        'searchreplace wordcount visualblocks visualchars code insertdatetime media nonbreaking',
+                        'save table contextmenu directionality emoticons template paste'],
+                    content_css: 'css/content.css',
+                    toolbar: 'undo redo | styleselect | bold italic underline strikethrough | bullist numlist | image link | fullscreen code',
                     menubar: false,
-                    toolbar: 'bold italic underline',
                     content_css: 'css/content.css',
                     statusbar: false,
                     init_instance_callback: function( editor ) {
@@ -323,14 +324,14 @@
                     setup: function( editor ) {
                         editor.on( "blur", function( event, a, b ) {
                             editor.save();
-                            $( "#" + editor.id.replace( ":", "\\:" ) ).trigger( "change" );
+                            $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
                         } );
                     }
 
                 };
 
                 function initTinyMce() {
-                    console.log( "Init tinyMce" );
+                    console.log( "Init tinyMce", simpleTinyMceConfig);
                     tinymce.init( simpleTinyMceConfig );
                 }
 

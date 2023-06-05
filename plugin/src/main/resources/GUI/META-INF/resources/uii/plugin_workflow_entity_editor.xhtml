@@ -551,7 +551,7 @@
                                                                 </h:panelGroup>
 
                                                                 <x:inputTextarea
-                                                                    styleClass="form-control"
+                                                                    styleClass="form-control tinymce"
                                                                     value="#{subfield.metadata.value}"
                                                                     required="false"
                                                                     rendered="#{subfield.configField.fieldType == 'textarea'}"
@@ -559,7 +559,7 @@
                                                                     <f:ajax
                                                                         execute="@this"
                                                                         render="badge-area :header"
-                                                                        event="blur"
+                                                                        event="change"
                                                                         listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
                                                                 </x:inputTextarea>
 
@@ -890,23 +890,22 @@
                     maxHeight: '90%',
                 } );
             }
-            }
             
             
-                                                    jsf.ajax.addOnEvent( function( data ) {
-                                                        var ajaxstatus = data.status;
-                                                        switch ( ajaxstatus ) {
-                                                            case "begin":
-                                                                var scrollPosition = $( '.main-area' ).scrollTop();
-                                                                $( '#scrollpos' ).val( scrollPosition );
-                                                                break;
-                                                            case "success":
-                                                                var scrollPosition = $( '#scrollpos' ).val();
-                                                                $( '.main-area' ).scrollTop( scrollPosition )
-                                                                break;
-                                                        }
-                                                    } );
-                                                </script>
+            jsf.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status;
+                switch ( ajaxstatus ) {
+                    case "begin":
+                        var scrollPosition = $( '.main-area' ).scrollTop();
+                        $( '#scrollpos' ).val( scrollPosition );
+                        break;
+                    case "success":
+                        var scrollPosition = $( '#scrollpos' ).val();
+                        $( '.main-area' ).scrollTop( scrollPosition )
+                        break;
+                }
+            } );
+        </script>
 
         </main>
     </ui:define>
