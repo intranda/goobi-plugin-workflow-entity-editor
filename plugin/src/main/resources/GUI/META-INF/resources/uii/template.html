@@ -366,10 +366,21 @@
                         }
                     }
                 }
+                
+                function showLoader(data) {
+                	if(data?.status == "begin") {
+                		$("#ajaxLoader").show();
+                	} else {
+                		$("#ajaxLoader").hide();
+                	}
+                }
 
          // ]]>
 
-                                </script>
+        </script>
+        <div id="ajaxLoader" class="ajax-loader-overlay">
+        	<img src="template/img/goobi/ajaxloader2.gif" alt="Loading..." />
+        </div>
     </f:view>
 </h:body>
 </html>

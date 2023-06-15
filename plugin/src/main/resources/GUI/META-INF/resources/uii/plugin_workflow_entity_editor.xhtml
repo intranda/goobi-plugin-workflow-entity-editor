@@ -653,7 +653,8 @@
                                                                         required="false">
                                                                         <f:ajax
                                                                             listener="#{subfield.uploadFile}"
-                                                                            render="thirdtab_fileupload3_message" />
+                                                                            render="thirdtab_fileupload3_message" 
+                                                                            onevent="showLoader"/>
                                                                     </h:inputFile>
                                                                     <ui:fragment
                                                                         rendered="#{subfield.image != null and subfield.image.type == 'image'}">
