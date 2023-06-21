@@ -627,7 +627,7 @@ public class Entity {
             statusProperty.setCreationDate(new Date());
 
             // check if the display name was changed, in this case linked entities must be updated
-            boolean updatedName = !entityName.equals(displayNameProperty.getWert());
+            boolean updatedName = !entityName.equals(displayNameProperty.getWert()) && !entityName.equals(currentType.getName());
 
             displayNameProperty.setWert(entityName);
 
@@ -680,9 +680,7 @@ public class Entity {
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
             RelationshipType selectedRelationship, boolean reversed) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
-        String relationshipStatus = "New";
-
-        relationshipStatus = selectedEntity.getStatusProperty().getWert();
+        String relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
         Relationship rel = new Relationship();
         rel.setAdditionalData(relationshipData);

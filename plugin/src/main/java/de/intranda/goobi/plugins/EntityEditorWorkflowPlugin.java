@@ -287,7 +287,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public String exitPlugin() {
         // unlock current object
-        LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
+        if (entity != null) {
+            LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
+        }
         return "/uii/index.xhtml";
     }
 
@@ -632,8 +634,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
         entity = new Entity(configuration, newProcess);
+        entity.getDisplayNameProperty().setWert(processname);
         entity.saveEntity();
-
         LockingBean.lockObject(String.valueOf(entity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname());
 
         //  breadcrumb
@@ -764,7 +766,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
                 | DAOException e) {
             log.error(e);
+            return;
         }
+        Helper.setMeldung("ExportFinished");
     }
 
     public void exportAllRecords() {
@@ -803,6 +807,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 | DAOException e) {
             log.error(e);
         }
+        Helper.setMeldung("ExportFinished");
     }
 
     @Override
