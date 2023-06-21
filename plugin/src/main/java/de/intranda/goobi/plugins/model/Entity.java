@@ -1,6 +1,7 @@
 package de.intranda.goobi.plugins.model;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -529,10 +531,23 @@ public class Entity {
      */
 
     public void removeMetadata(MetadataField field) {
+        // TODO remove image
         ConfiguredField cf = field.getConfigField();
         if (cf.isGroup()) {
             MetadataGroup grp = field.getGroup();
             grp.getParent().removeMetadataGroup(grp, true);
+            for (ConfiguredField sub : cf.getSubfieldList()) {
+                if ("fileupload".equals(sub.getFieldType())) {
+                    try {
+                        String imageName = sub.getMetadataList().get(0).getMetadata().getValue();
+                        StorageProvider.getInstance().deleteFile(Paths.get(imageName));
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+
+                }
+            }
+
         } else {
             Metadata md = field.getMetadata();
             md.getParent().removeMetadata(md, true);
@@ -630,7 +645,6 @@ public class Entity {
             boolean updatedName = !entityName.equals(displayNameProperty.getWert()) && !entityName.equals(currentType.getName());
 
             displayNameProperty.setWert(entityName);
-
 
             currentProcess.writeMetadataFile(currentFileformat);
             if (updatedName && configuration.isUpdateProcessTitle()) {

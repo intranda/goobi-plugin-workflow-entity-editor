@@ -266,7 +266,6 @@ public class EntityConfig {
         return metadataField;
     }
 
-
     public EntityConfig(EntityConfig other) {
 
         sourceSearchFields = other.getSourceSearchFields();
@@ -281,7 +280,7 @@ public class EntityConfig {
 
         sourceUrlFields = other.getSourceUrlFields();
 
-        sourceTypeFields=  other.getSourceTypeFields();
+        sourceTypeFields = other.getSourceTypeFields();
 
         for (EntityType t : other.getAllTypes()) {
             allTypes.add(new EntityType(t));
@@ -301,7 +300,6 @@ public class EntityConfig {
 
         relationshipDisplayName = other.relationshipDisplayName;
 
-
         relationshipType = other.relationshipType;
 
         processTemplateId = other.processTemplateId;
@@ -309,7 +307,6 @@ public class EntityConfig {
         updateProcessTitle = other.updateProcessTitle;
 
         exportPluginName = other.exportPluginName;
-
 
     }
 
@@ -321,7 +318,5 @@ public class EntityConfig {
         }
         return null;
     }
-
-
 
 }

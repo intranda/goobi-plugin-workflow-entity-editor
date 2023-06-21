@@ -18,7 +18,6 @@ import org.apache.commons.lang.StringUtils;
 
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.NIOFileUtils;
-import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
@@ -58,7 +57,7 @@ public class MetadataField {
 
     private List<SourceField> sources = new ArrayList<>();
 
-    private Image image =null;
+    private Image image = null;
 
     public MetadataField() {
     }
@@ -225,7 +224,7 @@ public class MetadataField {
             }
 
             Path mediaDirectory = Paths.get(configField.getEntity().getCurrentProcess().getImagesTifDirectory(true));
-            if(!Files.exists(mediaDirectory)) {
+            if (!Files.exists(mediaDirectory)) {
                 Files.createDirectory(mediaDirectory);
             }
             Path file = mediaDirectory.resolve(basename).toAbsolutePath();
@@ -246,12 +245,12 @@ public class MetadataField {
                 DocStruct physical = dd.getPhysicalDocStruct();
                 int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
                 DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
-                
+
                 ContentFile cf = new ContentFile();
                 cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
                 cf.setLocation(file.toString());
                 page.addContentFile(cf);
-                
+
                 // phys + log page numbers
                 Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
                 mdLog.setValue("uncounted");
@@ -292,22 +291,17 @@ public class MetadataField {
         }
     }
 
-
-
-
-
-    public Image   getImage() {
+    public Image getImage() {
         if (image == null && configField.getFieldType().equals("fileupload") && StringUtils.isNotBlank(metadata.getValue())) {
             Path file = Paths.get(metadata.getValue());
             try {
-                image = new Image(  configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
+                image = new Image(configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
             } catch (IOException | SwapException | DAOException e) {
                 log.error(e);
             }
         }
         return image;
     }
-
 
     private String getFileName(final Part part) {
         for (String content : part.getHeader("content-disposition").split(";")) {
