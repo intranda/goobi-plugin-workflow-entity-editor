@@ -644,59 +644,61 @@
                                                                     </div>
                                                                 </ui:fragment>
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
-                                                                    <h:inputFile
-                                                                        id="thirdtab_fileupload3"
-                                                                        value="#{subfield.uploadedFile}"
-                                                                        storage="file"
-                                                                        styleClass="form-control form-control-file"
-                                                                        style="border: 0;padding-left: 0px;"
-                                                                        required="false">
-                                                                        <f:ajax
-                                                                            listener="#{subfield.uploadFile}"
-                                                                            render="thirdtab_fileupload3_message" 
-                                                                            onevent="showLoader"/>
-                                                                    </h:inputFile>
-                                                                    <ui:fragment
-                                                                        rendered="#{subfield.image != null and subfield.image.type == 'image'}">
-                                                                        <div
-                                                                            class="goobi-thumbnail"
-                                                                            dir="auto">
+                                                                    <h:panelGroup id="imageArea">
+                                                                        <h:inputFile
+                                                                            rendered="#{subfield.image == null}"
+                                                                            id="thirdtab_fileupload3"
+                                                                            value="#{subfield.uploadedFile}"
+                                                                            storage="file"
+                                                                            styleClass="form-control form-control-file"
+                                                                            style="border: 0;padding-left: 0px;"
+                                                                            required="false">
+                                                                            <f:ajax
+                                                                                listener="#{subfield.uploadFile}"
+                                                                                render="imageArea"
+                                                                                onevent="showLoader" />
+                                                                        </h:inputFile>
+                                                                        <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
                                                                             <div
-                                                                                class="goobi-thumbnail-image"
-                                                                                style="height: 200px; max-width: 200px">
-
+                                                                                class="goobi-thumbnail"
+                                                                                dir="auto">
                                                                                 <div
-                                                                                    class="thumb"
-                                                                                    style="max-height: 200px;">
-                                                                                    <button
-                                                                                        title="#{subfield.image.tooltip}"
-                                                                                        class="colorbox-image"
-                                                                                        data-toggle="tooltip"
-                                                                                        href="#{subfield.image.bookmarkUrl}"
-                                                                                        jsf:id="showBookmark1"
-                                                                                        jsf:onclick="$('#imageBox').modal('show');">
-                                                                                        <canvas
-                                                                                            class="thumb-canvas"
-                                                                                            style="max-height: 200px;"
-                                                                                            data-image_small="#{subfield.image.thumbnailUrl}"
-                                                                                            data-image_large="#{subfield.image.largeThumbnailUrl}"
-                                                                                            title="#{subfield.image.tooltip}"
-                                                                                            id="thumbnail1"></canvas>
-                                                                                        <f:setPropertyActionListener
-                                                                                            value="#{subfield.image.largeThumbnailUrl}"
-                                                                                            target="#{NavigationForm.workflowPlugin.imageUrl}" />
-                                                                                      <f:setPropertyActionListener
-                                                                                            value="#{subfield.image.tooltip}"
-                                                                                            target="#{NavigationForm.workflowPlugin.imageName}" />                                                                                            
-                                                                                        <f:ajax
-                                                                                            execute="@this"
-                                                                                            render="imageBoxContent" />
-                                                                                    </button>
-                                                                                </div>
+                                                                                    class="goobi-thumbnail-image"
+                                                                                    style="height: 200px; max-width: 200px">
 
+                                                                                    <div
+                                                                                        class="thumb"
+                                                                                        style="max-height: 200px;">
+                                                                                        <button
+                                                                                            title="#{subfield.image.tooltip}"
+                                                                                            class="colorbox-image"
+                                                                                            data-toggle="tooltip"
+                                                                                            href="#{subfield.image.bookmarkUrl}"
+                                                                                            jsf:id="showBookmark1"
+                                                                                            jsf:onclick="$('#imageBox').modal('show');">
+                                                                                            <canvas
+                                                                                                class="thumb-canvas"
+                                                                                                style="max-height: 200px;"
+                                                                                                data-image_small="#{subfield.image.thumbnailUrl}"
+                                                                                                data-image_large="#{subfield.image.largeThumbnailUrl}"
+                                                                                                title="#{subfield.image.tooltip}"
+                                                                                                id="thumbnail"></canvas>
+                                                                                            <f:setPropertyActionListener
+                                                                                                value="#{subfield.image.largeThumbnailUrl}"
+                                                                                                target="#{NavigationForm.workflowPlugin.imageUrl}" />
+                                                                                            <f:setPropertyActionListener
+                                                                                                value="#{subfield.image.tooltip}"
+                                                                                                target="#{NavigationForm.workflowPlugin.imageName}" />
+                                                                                            <f:ajax
+                                                                                                execute="@this"
+                                                                                                render="imageBoxContent" />
+                                                                                        </button>
+                                                                                    </div>
+
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </ui:fragment>
+                                                                        </ui:fragment>
+                                                                    </h:panelGroup>
                                                                 </ui:fragment>
                                                                 <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'date'}"
@@ -858,7 +860,7 @@
                                 jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}"
                                 type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
-                                <f:ajax execute="@this" />
+                                <f:ajax execute="@this" render="messages" />
                             </button>
 
                             <button
@@ -867,7 +869,7 @@
                                 jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}"
                                 type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
-                                <f:ajax execute="@this" />
+                                <f:ajax execute="@this" render="messages"/>
                             </button>
 
                         </div>
@@ -891,8 +893,9 @@
                     maxHeight: '90%',
                 } );
             }
-            
-            
+			window.onload = function() {
+				loadImages();
+			}
             jsf.ajax.addOnEvent( function( data ) {
                 var ajaxstatus = data.status;
                 switch ( ajaxstatus ) {
@@ -902,7 +905,8 @@
                         break;
                     case "success":
                         var scrollPosition = $( '#scrollpos' ).val();
-                        $( '.main-area' ).scrollTop( scrollPosition )
+                        $( '.main-area' ).scrollTop( scrollPosition );
+						loadImages();
                         break;
                 }
             } );
