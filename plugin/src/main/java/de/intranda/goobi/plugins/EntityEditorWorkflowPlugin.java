@@ -280,7 +280,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     public String removeBreadcrumb(BreadcrumbItem breadcrumb) {
         breadcrumbList.remove(breadcrumb);
         if (breadcrumbList.isEmpty()) {
-            return exitPlugin() ;
+            return exitPlugin();
         }
         return "";
     }
@@ -300,7 +300,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      */
 
     public void searchVocabulary() {
-        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        if (entity != null) {
+            LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        }
         List<StringPair> data = new ArrayList<>();
 
         for (String field : searchField.getConfigField().getSearchFields()) {
@@ -527,8 +529,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void searchForType(EntityType type) {
-        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
-
+        if (entity != null) {
+            LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        }
         selectedEntity = null;
         entitySearch = "";
         entityType = type;
@@ -536,7 +539,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void searchWithoutType() {
-        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        if (entity != null) {
+            LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        }
         selectedEntity = null;
         entitySearch = "";
         entityType = null;
@@ -564,11 +569,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         selectedEntity = null;
         entitySearch = "";
         entityType = null;
+        if (entity == null && !breadcrumbList.isEmpty()) {
+            selectedBreadcrumb = breadcrumbList.get(0);
+            loadSelectedBreadcrumb();
+        }
+
     }
 
     public void searchEntity() {
-        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
-
+        if (entity != null) {
+            LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+        }
         //  search for processes, load metadata from mets file?
         entities.clear();
 

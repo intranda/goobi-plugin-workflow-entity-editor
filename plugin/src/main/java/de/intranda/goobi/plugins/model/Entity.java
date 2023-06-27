@@ -531,7 +531,6 @@ public class Entity {
      */
 
     public void removeMetadata(MetadataField field) {
-        // TODO remove image
         ConfiguredField cf = field.getConfigField();
         if (cf.isGroup()) {
             MetadataGroup grp = field.getGroup();
