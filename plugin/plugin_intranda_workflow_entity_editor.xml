@@ -19,6 +19,12 @@
 		<processTemplateId>6</processTemplateId>
         <updateProcessTitle>false</updateProcessTitle>
 		<exportPlugin>intranda_export_luxArtistDictionary</exportPlugin>
+        
+        <!-- foldername to upload files, default folder is media -->
+        <uploadFolderName>master</uploadFolderName>
+        <!-- foldername to store converted files, default is empty
+        leave it blank to disable image conversion -->
+        <conversionFolderName>media</conversionFolderName>        
 	</global>
 
 	<type name="Person" plural="Persons" rulesetName="Person">
