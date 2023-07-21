@@ -1,5 +1,6 @@
 package de.intranda.goobi.plugins.model;
 
+import java.awt.image.RenderedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,10 @@ import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
 import de.sub.goobi.validator.EDTFValidator;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageInterpreter;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
+import de.unigoettingen.sub.commons.contentlib.imagelib.JpegInterpreter;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,7 +65,11 @@ public class MetadataField {
 
     private List<SourceField> sources = new ArrayList<>();
 
-    private Image image =null;
+    private Image image = null;
+
+    @Getter
+    @Setter
+    private Part uploadedFile = null;
 
     public MetadataField() {
     }
@@ -171,9 +180,7 @@ public class MetadataField {
         } else {
             String dateValue = (String) value;
             EDTFValidator validator = new EDTFValidator();
-            if (validator.isValid(dateValue)) {
-                return;
-            } else {
+            if (!validator.isValid(dateValue)) {
                 valid = false;
                 validationErrorMessage = "Invalid date format. Dates must comply with EDTF specifications.";
             }
@@ -187,21 +194,12 @@ public class MetadataField {
             valid = false;
             validationErrorMessage = "Field is required";
         }
-        return;
     }
 
     private boolean isEmpty(Object value) {
         String fieldContents = (String) value;
-        if (value == null || StringUtils.isBlank(fieldContents)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (value == null || StringUtils.isBlank(fieldContents));
     }
-
-    @Getter
-    @Setter
-    private Part uploadedFile = null;
 
     /**
      * File upload with binary copying.
@@ -226,11 +224,14 @@ public class MetadataField {
                 basename = basename.substring(basename.lastIndexOf("\\") + 1);
             }
 
-            Path mediaDirectory = Paths.get(configField.getEntity().getCurrentProcess().getImagesTifDirectory(true));
-            if(!Files.exists(mediaDirectory)) {
-                Files.createDirectory(mediaDirectory);
+            String uploadFolderName = configField.getEntity().getConfiguration().getUploadFolderName();
+            String conversionFolderName = configField.getEntity().getConfiguration().getConversionFolderName();
+
+            Path uploadDirectory = Paths.get(configField.getEntity().getCurrentProcess().getConfiguredImageFolder(uploadFolderName));
+            if (!Files.exists(uploadDirectory)) {
+                Files.createDirectory(uploadDirectory);
             }
-            Path file = mediaDirectory.resolve(basename).toAbsolutePath();
+            Path file = uploadDirectory.resolve(basename).toAbsolutePath();
 
             inputStream = this.uploadedFile.getInputStream();
             outputStream = new FileOutputStream(file.toString());
@@ -240,7 +241,6 @@ public class MetadataField {
             while ((len = inputStream.read(buf)) > 0) {
                 outputStream.write(buf, 0, len);
             }
-            metadata.setValue(file.toString());
 
             try {
                 Prefs prefs = configField.getEntity().getPrefs();
@@ -249,8 +249,44 @@ public class MetadataField {
             } catch (UGHException e) {
                 log.error(e);
             }
+            
+            // optional: convert uploaded file to jpeg
+            if (StringUtils.isNotBlank(conversionFolderName)) {
 
-        } catch (IOException | SwapException e) {
+                // TODO only convert images, copy other file types instead
+
+                Path destinationDirectory = Paths.get(configField.getEntity().getCurrentProcess().getConfiguredImageFolder(conversionFolderName));
+                if (!Files.exists(destinationDirectory)) {
+                    Files.createDirectory(destinationDirectory);
+                }
+                Path convertedFile = Paths.get(destinationDirectory.toString(),
+                        file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".jpg");
+
+                try (ImageManager im = new ImageManager(file.toUri());
+                        ImageInterpreter ii = im.getMyInterpreter()) {
+                    RenderedImage ri2 = ii.getRenderedImage();
+                    try (JpegInterpreter pi = new JpegInterpreter(ri2)) {
+                        pi.setXResolution(ii.getXResolution());
+                        pi.setYResolution(ii.getYResolution());
+
+                        OutputStream outputFileStream = StorageProvider.getInstance().newOutputStream(convertedFile);
+
+                        pi.writeToStream(null, outputFileStream);
+                        outputFileStream.close();
+                    }
+                } catch (ContentLibException e) {
+                    log.error(e);
+                }
+                file = convertedFile;
+            }
+
+            metadata.setValue(file.toString());
+
+            createPage(file);
+
+        } catch (IOException | SwapException |
+
+                DAOException e) {
             log.error(e.getMessage(), e);
             Helper.setFehlerMeldung("uploadFailed");
         } finally {
@@ -299,15 +335,44 @@ public class MetadataField {
         physical.addChild(page);
     }
 
+    private void createPage(Path file) {
+        try {
+            Prefs prefs = configField.getEntity().getPrefs();
+            DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
+            DocStruct physical = dd.getPhysicalDocStruct();
+            int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
+            DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
 
+            ContentFile cf = new ContentFile();
+            cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
+            cf.setLocation(file.toString());
+            page.addContentFile(cf);
 
+            // phys + log page numbers
+            Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
+            mdLog.setValue("uncounted");
+            page.addMetadata(mdLog);
 
+            Metadata mdPhys = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
+            mdPhys.setValue(String.valueOf(physPageNumber));
+            page.addMetadata(mdPhys);
 
-    public Image   getImage() {
-        if (image == null && configField.getFieldType().equals("fileupload") && StringUtils.isNotBlank(metadata.getValue())) {
+            // link to logical docstruct
+            DocStruct logical = dd.getLogicalDocStruct();
+            logical.addReferenceTo(page, "logical_physical");
+
+            // add to physical sequence
+            physical.addChild(page);
+        } catch (UGHException e) {
+            log.error(e);
+        }
+    }
+
+    public Image getImage() {
+        if (image == null && "fileupload".equals(configField.getFieldType()) && StringUtils.isNotBlank(metadata.getValue())) {
             Path file = Paths.get(metadata.getValue());
             try {
-                image = new Image(  configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
+                image = new Image(configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
             } catch (IOException | SwapException | DAOException e) {
                 log.error(e);
             }
@@ -315,14 +380,13 @@ public class MetadataField {
         return image;
     }
 
-
     private String getFileName(final Part part) {
         for (String content : part.getHeader("content-disposition").split(";")) {
             if (content.trim().startsWith("filename")) {
                 return content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
             }
         }
-        return null;
+        return "";
     }
 
     public boolean isShowFieldInSearchResult() {

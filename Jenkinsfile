@@ -22,7 +22,7 @@ pipeline {
 
     stage('build') {
       steps {
-        sh 'mvn -f plugin/pom.xml deploy'
+        sh 'mvn -f plugin/pom.xml package'
         recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }

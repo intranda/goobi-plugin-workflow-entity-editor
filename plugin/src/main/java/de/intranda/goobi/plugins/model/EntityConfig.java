@@ -71,12 +71,19 @@ public class EntityConfig {
     @Getter
     private boolean updateProcessTitle = false;
 
+    @Getter
+    private String uploadFolderName;
+    @Getter
+    private String conversionFolderName;
+
     public EntityConfig(XMLConfiguration config) {
 
         processTemplateId = config.getInt("/global/processTemplateId");
         exportPluginName = config.getString("/global/exportPlugin", "intranda_export_luxArtistDictionary");
 
         updateProcessTitle = config.getBoolean("/global/updateProcessTitle", false);
+        uploadFolderName = config.getString("/global/uploadFolderName", "media");
+        conversionFolderName = config.getString("/global/conversionFolderName", null);
 
         // data for vocabulary search
         vocabularyUrl = config.getString("/global/vocabularyServerUrl");
@@ -146,14 +153,12 @@ public class EntityConfig {
                                         } else if ("fre".equals(f.getLanguage())) {
                                             relationType.setRelationshipNameFr(f.getValue());
                                         }
-                                    } else {
-                                        if ("eng".equals(f.getLanguage())) {
-                                            relationType.setReversedRelationshipNameEn(f.getValue());
-                                        } else if ("ger".equals(f.getLanguage())) {
-                                            relationType.setReversedRelationshipNameDe(f.getValue());
-                                        } else if ("fre".equals(f.getLanguage())) {
-                                            relationType.setReversedRelationshipNameFr(f.getValue());
-                                        }
+                                    } else if ("eng".equals(f.getLanguage())) {
+                                        relationType.setReversedRelationshipNameEn(f.getValue());
+                                    } else if ("ger".equals(f.getLanguage())) {
+                                        relationType.setReversedRelationshipNameDe(f.getValue());
+                                    } else if ("fre".equals(f.getLanguage())) {
+                                        relationType.setReversedRelationshipNameFr(f.getValue());
                                     }
                                     break;
                                 case "Reverse relationship":
@@ -166,14 +171,12 @@ public class EntityConfig {
                                             } else if ("fre".equals(f.getLanguage())) {
                                                 relationType.setRelationshipNameFr(f.getValue());
                                             }
-                                        } else {
-                                            if ("eng".equals(f.getLanguage())) {
-                                                relationType.setReversedRelationshipNameEn(f.getValue());
-                                            } else if ("ger".equals(f.getLanguage())) {
-                                                relationType.setReversedRelationshipNameDe(f.getValue());
-                                            } else if ("fre".equals(f.getLanguage())) {
-                                                relationType.setReversedRelationshipNameFr(f.getValue());
-                                            }
+                                        } else if ("eng".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameEn(f.getValue());
+                                        } else if ("ger".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameDe(f.getValue());
+                                        } else if ("fre".equals(f.getLanguage())) {
+                                            relationType.setReversedRelationshipNameFr(f.getValue());
                                         }
                                     }
                                     break;
@@ -266,7 +269,6 @@ public class EntityConfig {
         return metadataField;
     }
 
-
     public EntityConfig(EntityConfig other) {
 
         sourceSearchFields = other.getSourceSearchFields();
@@ -281,7 +283,7 @@ public class EntityConfig {
 
         sourceUrlFields = other.getSourceUrlFields();
 
-        sourceTypeFields=  other.getSourceTypeFields();
+        sourceTypeFields = other.getSourceTypeFields();
 
         for (EntityType t : other.getAllTypes()) {
             allTypes.add(new EntityType(t));
@@ -301,7 +303,6 @@ public class EntityConfig {
 
         relationshipDisplayName = other.relationshipDisplayName;
 
-
         relationshipType = other.relationshipType;
 
         processTemplateId = other.processTemplateId;
@@ -309,8 +310,8 @@ public class EntityConfig {
         updateProcessTitle = other.updateProcessTitle;
 
         exportPluginName = other.exportPluginName;
-
-
+        uploadFolderName = other.uploadFolderName;
+        conversionFolderName = other.conversionFolderName;
     }
 
     public EntityType getTypeByName(String name) {
@@ -321,7 +322,5 @@ public class EntityConfig {
         }
         return null;
     }
-
-
 
 }

@@ -1,6 +1,7 @@
 package de.intranda.goobi.plugins.model;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
@@ -67,9 +69,9 @@ public class Entity {
         this.currentProcess = process;
         if (process.getEigenschaftenSize() > 0) {
             for (Processproperty property : process.getEigenschaften()) {
-                if (property.getTitel().equals("ProcessStatus")) {
+                if ("ProcessStatus".equals(property.getTitel())) {
                     statusProperty = property;
-                } else if (property.getTitel().equals("DisplayName")) {
+                } else if ("DisplayName".equals(property.getTitel())) {
                     displayNameProperty = property;
                 }
             }
@@ -100,6 +102,7 @@ public class Entity {
             currentFileformat.read(currentProcess.getMetadataFilePath());
         } catch (UGHException | IOException | SwapException e) {
             log.error(e);
+            throw new IllegalArgumentException();
         }
         readMetadata();
     }
@@ -175,16 +178,16 @@ public class Entity {
                                             String sourcePageRange = null;
 
                                             for (Metadata md : sourceGroup.getMetadataList()) {
-                                                if (md.getType().getName().equals("SourceID")) {
+                                                if ("SourceID".equals(md.getType().getName())) {
                                                     sourceId = md.getValue();
                                                     sourceUri = md.getAuthorityURI();
-                                                } else if (md.getType().getName().equals("SourceName")) {
+                                                } else if ("SourceName".equals(md.getType().getName())) {
                                                     sourceName = md.getValue();
-                                                } else if (md.getType().getName().equals("SourceType")) {
+                                                } else if ("SourceType".equals(md.getType().getName())) {
                                                     sourceType = md.getValue();
-                                                } else if (md.getType().getName().equals("SourceLink")) {
+                                                } else if ("SourceLink".equals(md.getType().getName())) {
                                                     sourceLink = md.getValue();
-                                                } else if (md.getType().getName().equals("SourcePage")) {
+                                                } else if ("SourcePage".equals(md.getType().getName())) {
                                                     sourcePageRange = md.getValue();
                                                 }
 
@@ -408,7 +411,7 @@ public class Entity {
                                     if (!found) {
                                         for (Metadata md : mg.getMetadataList()) {
                                             if (StringUtils.isNotBlank(md.getValue())) {
-                                                if (md.getType().getName().equalsIgnoreCase(parts[1] + lang)) {
+                                                if ((parts[1] + lang).equalsIgnoreCase(md.getType().getName())) {
                                                     if (sb.length() > 0) {
                                                         sb.append(" ");
                                                     }
@@ -435,18 +438,16 @@ public class Entity {
                         }
                     }
                 }
-            } else {
-                if (checkLanguages) {
+            } else if (checkLanguages) {
 
-                } else {
-                    for (Metadata md : logical.getAllMetadata()) {
-                        if (StringUtils.isNotBlank(md.getValue())) {
-                            if (md.getType().getName().equals(metadata)) {
-                                if (sb.length() > 0) {
-                                    sb.append(" ");
-                                }
-                                sb.append(md.getValue());
+            } else {
+                for (Metadata md : logical.getAllMetadata()) {
+                    if (StringUtils.isNotBlank(md.getValue())) {
+                        if (md.getType().getName().equals(metadata)) {
+                            if (sb.length() > 0) {
+                                sb.append(" ");
                             }
+                            sb.append(md.getValue());
                         }
                     }
                 }
@@ -533,6 +534,20 @@ public class Entity {
         if (cf.isGroup()) {
             MetadataGroup grp = field.getGroup();
             grp.getParent().removeMetadataGroup(grp, true);
+            for (ConfiguredField sub : cf.getSubfieldList()) {
+                if ("fileupload".equals(sub.getFieldType())) {
+                    try {
+                        String imageName = sub.getMetadataList().get(0).getMetadata().getValue();
+                        StorageProvider.getInstance().deleteFile(Paths.get(imageName));
+
+                        // TODO if image conversion and derivate is used, remove original file as well
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+
+                }
+            }
+
         } else {
             Metadata md = field.getMetadata();
             md.getParent().removeMetadata(md, true);
@@ -558,7 +573,7 @@ public class Entity {
                     }
                 }
             }
-            if (cf.getMetadataName().equals("Bibliography")) {
+            if ("Bibliography".equals(cf.getMetadataName())) {
                 bibliography = cf;
             }
         }
@@ -570,7 +585,7 @@ public class Entity {
 
             for (MetadataField mf : bibliography.getMetadataList()) {
                 for (Metadata md : mf.getGroup().getMetadataList()) {
-                    if (md.getType().getName().equals("SourceID") && sourceId.equals(md.getValue())) {
+                    if ("SourceID".equals(md.getType().getName()) && sourceId.equals(md.getValue())) {
                         sourceMatched = true;
                         break;
                     }
@@ -588,14 +603,14 @@ public class Entity {
                 MetadataField field = bibliography.getMetadataList().get(bibliography.getMetadataList().size() - 1);
 
                 for (MetadataField subfield : field.getSubfields()) {
-                    if (subfield.getConfigField().getLabel().equals("Citation")) {
+                    if ("Citation".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceName());
                         // TODO distinct between source type and bibliography type
-                    } else if (subfield.getConfigField().getLabel().equals("Type")) {
+                    } else if ("Type".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceType());
-                    } else if (subfield.getConfigField().getLabel().equals("Link")) {
+                    } else if ("Link".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceLink());
-                    } else if (subfield.getConfigField().getLabel().equals("SourceID")) {
+                    } else if ("SourceID".equals(subfield.getConfigField().getLabel())) {
                         Metadata md = subfield.getMetadata();
                         md.setValue(currentSource.getSourceId());
                         md.setAutorityFile("Source", currentSource.getSourceId(), currentSource.getSourceUri());
@@ -621,16 +636,15 @@ public class Entity {
     public void saveEntity() {
         try {
 
-            if (statusProperty.getWert().equals("New")) {
+            if ("New".equals(statusProperty.getWert())) {
                 statusProperty.setWert("In work");
             }
             statusProperty.setCreationDate(new Date());
 
             // check if the display name was changed, in this case linked entities must be updated
-            boolean updatedName = !entityName.equals(displayNameProperty.getWert());
+            boolean updatedName = !entityName.equals(displayNameProperty.getWert()) && !entityName.equals(currentType.getName());
 
             displayNameProperty.setWert(entityName);
-
 
             currentProcess.writeMetadataFile(currentFileformat);
             if (updatedName && configuration.isUpdateProcessTitle()) {
@@ -680,9 +694,7 @@ public class Entity {
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
             RelationshipType selectedRelationship, boolean reversed) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
-        String relationshipStatus = "New";
-
-        relationshipStatus = selectedEntity.getStatusProperty().getWert();
+        String relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
         Relationship rel = new Relationship();
         rel.setAdditionalData(relationshipData);

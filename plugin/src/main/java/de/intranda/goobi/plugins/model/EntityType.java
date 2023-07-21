@@ -37,20 +37,19 @@ public class EntityType {
     private String searchValue;
 
     public EntityType(EntityType other) {
-        name=other.getName();
+        name = other.getName();
         plural = other.getPlural();
         rulesetName = other.getRulesetName();
         color = other.getColor();
         icon = other.getIcon();
         identifyingMetadata = other.getIdentifyingMetadata();
-        languageOrder=other.getLanguageOrder();
+        languageOrder = other.getLanguageOrder();
         for (ConfiguredField cf : other.getConfiguredFields()) {
             configuredFields.add(new ConfiguredField(cf));
         }
         configuredRelations = other.getConfiguredRelations();
 
     }
-
 
     private boolean showLinkedContent = true;
 
@@ -143,6 +142,5 @@ public class EntityType {
         result = prime * result + ((rulesetName == null) ? 0 : rulesetName.hashCode());
         return result;
     }
-
 
 }
