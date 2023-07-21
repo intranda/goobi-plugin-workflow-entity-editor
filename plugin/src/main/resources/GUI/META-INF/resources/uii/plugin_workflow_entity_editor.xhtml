@@ -858,7 +858,7 @@
                                 jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}"
                                 type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportSingleRecord}" />
-                                <f:ajax execute="@this" />
+                                <f:ajax execute="@this" onevent="showLoader" />
                             </button>
 
                             <button
@@ -867,7 +867,7 @@
                                 jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}"
                                 type="button">
                                 <h:outputText value="#{msgs.plugin_workflow_entity_exportRecordWithDependencies}" />
-                                <f:ajax execute="@this" />
+                                <f:ajax execute="@this" onevent="showLoader"/>
                             </button>
 
                         </div>

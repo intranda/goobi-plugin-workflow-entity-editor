@@ -35,6 +35,8 @@ import ugh.dl.MetadataGroup;
 import ugh.dl.Prefs;
 import ugh.exceptions.DocStructHasNoTypeException;
 import ugh.exceptions.MetadataTypeNotAllowedException;
+import ugh.exceptions.TypeNotAllowedAsChildException;
+import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 
 @Data
@@ -243,30 +245,7 @@ public class MetadataField {
             try {
                 Prefs prefs = configField.getEntity().getPrefs();
                 DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
-                DocStruct physical = dd.getPhysicalDocStruct();
-                int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
-                DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
-                
-                ContentFile cf = new ContentFile();
-                cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
-                cf.setLocation(file.toString());
-                page.addContentFile(cf);
-                
-                // phys + log page numbers
-                Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
-                mdLog.setValue("uncounted");
-                page.addMetadata(mdLog);
-
-                Metadata mdPhys = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
-                mdPhys.setValue(String.valueOf(physPageNumber));
-                page.addMetadata(mdPhys);
-
-                // link to logical docstruct
-                DocStruct logical = dd.getLogicalDocStruct();
-                logical.addReferenceTo(page, "logical_physical");
-
-                // add to physical sequence
-                physical.addChild(page);
+                addFileToDocument(file, dd, prefs);
             } catch (UGHException e) {
                 log.error(e);
             }
@@ -290,6 +269,34 @@ public class MetadataField {
                 }
             }
         }
+    }
+
+    private void addFileToDocument(Path file, DigitalDocument dd, Prefs prefs)
+            throws TypeNotAllowedForParentException, MetadataTypeNotAllowedException, TypeNotAllowedAsChildException {
+        DocStruct physical = dd.getPhysicalDocStruct();
+        int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
+        DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
+        
+        ContentFile cf = new ContentFile();
+        cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
+        cf.setLocation(file.toString());
+        page.addContentFile(cf);
+        
+        // phys + log page numbers
+        Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
+        mdLog.setValue("uncounted");
+        page.addMetadata(mdLog);
+
+        Metadata mdPhys = new Metadata(prefs.getMetadataTypeByName("physPageNumber"));
+        mdPhys.setValue(String.valueOf(physPageNumber));
+        page.addMetadata(mdPhys);
+
+        // link to logical docstruct
+        DocStruct logical = dd.getLogicalDocStruct();
+        logical.addReferenceTo(page, "logical_physical");
+
+        // add to physical sequence
+        physical.addChild(page);
     }
 
 
