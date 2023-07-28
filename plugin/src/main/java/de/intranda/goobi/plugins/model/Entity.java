@@ -578,6 +578,11 @@ public class Entity {
             }
         }
 
+        if(bibliography == null) {
+            //no bibliography entered. Nothing to generate
+            return;
+        }
+        
         // create bibliography from exported sources
         for (SourceField currentSource : allSources) {
             boolean sourceMatched = false;
