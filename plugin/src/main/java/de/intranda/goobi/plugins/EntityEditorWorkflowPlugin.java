@@ -151,7 +151,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private String pages = "";
 
     @Getter
-    @Setter
     private String sourceType = "";
 
     @Getter
@@ -913,6 +912,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         } catch (PreferencesException e) {
             log.error(e);
         }
+    }
+    
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     /*
