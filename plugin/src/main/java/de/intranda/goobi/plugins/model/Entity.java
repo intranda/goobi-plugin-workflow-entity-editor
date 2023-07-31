@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
@@ -650,6 +651,7 @@ public class Entity {
             boolean updatedName = !entityName.equals(displayNameProperty.getWert()) && !entityName.equals(currentType.getName());
 
             displayNameProperty.setWert(entityName);
+            writeSourcePropertiesToMetadata();
 
             currentProcess.writeMetadataFile(currentFileformat);
             if (updatedName && configuration.isUpdateProcessTitle()) {
@@ -660,6 +662,7 @@ public class Entity {
 
             // update link name in other entities
             if (updatedName) {
+                
                 for (EntityType type : linkedRelationships.keySet()) {
                     List<Relationship> relationships = linkedRelationships.get(type);
 
@@ -693,6 +696,36 @@ public class Entity {
 
         } catch (UGHException | IOException | SwapException | DAOException e) {
             log.error(e);
+        }
+    }
+
+    public void writeSourcePropertiesToMetadata() throws MetadataTypeNotAllowedException {
+        for(ConfiguredField configuredField : metadataFieldList) {
+            for (MetadataField metadataField : configuredField.getMetadataList()) {
+                for (SourceField sourceField : metadataField.getSources()) {
+                    int sourceIndex = metadataField.getSources().indexOf(sourceField);
+                    if(sourceIndex >= 0) {
+                        List<MetadataGroup> sourceGroups = metadataField.getGroup().getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName("Source"));
+                        if(sourceGroups != null && sourceIndex < sourceGroups.size()) {
+                            MetadataGroup sourceGroup = sourceGroups.get(sourceIndex);
+                            
+                            Metadata sourceTypeMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourceType")).flatMap(list -> list.stream().findFirst()).orElse(null);
+                            if(sourceTypeMetadata == null) {
+                                sourceTypeMetadata = new Metadata(prefs.getMetadataTypeByName("SourceType"));
+                                sourceGroup.addMetadata(sourceTypeMetadata);                                        
+                            }
+                            sourceTypeMetadata.setValue(sourceField.getSourceType());
+                            
+                            Metadata sourcePageMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourcePage")).flatMap(list -> list.stream().findFirst()).orElse(null);
+                            if(sourcePageMetadata == null) {
+                                sourcePageMetadata = new Metadata(prefs.getMetadataTypeByName("SourcePage"));
+                                sourceGroup.addMetadata(sourcePageMetadata);                                        
+                            }
+                            sourcePageMetadata.setValue(sourceField.getPageRange());
+                        }
+                    }
+                }
+            }
         }
     }
 

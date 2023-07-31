@@ -463,6 +463,10 @@ public class MetadataField {
         private MetadataField getEnclosingInstance() {
             return MetadataField.this;
         }
+        
+        public void setSourceType(String sourceType) {
+            this.sourceType = sourceType;
+        }
 
     }
 }
