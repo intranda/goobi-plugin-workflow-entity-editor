@@ -255,7 +255,7 @@ public class EntityConfig {
             List<String> searchFields = Arrays.asList(field.getStringArray("@source"));
             metadataField.setSearchFields(searchFields);
         }
-        metadataField.setGenerationRule(field.getString("/rule"));
+        metadataField.setGenerationRule(new GenerationRule(field.getString("/rule"), field.getString("/rule/@numberFormat")));
 
         boolean group = field.getBoolean("@group", false);
         metadataField.setGroup(group);

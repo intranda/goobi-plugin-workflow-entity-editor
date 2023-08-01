@@ -216,15 +216,17 @@ public class Entity {
                                         field.addSubField(sub);
                                         // generate metadata value
                                         if ("generated".equals(subfield.getFieldType())) {
-                                            String value = subfield.getGenerationRule();
-                                            if (StringUtils.isNotBlank(value)) {
+                                            GenerationRule rule = subfield.getGenerationRule();
+                                            if(rule != null) {
                                                 VariableReplacer replacer =
                                                         new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
-                                                metadata.setValue(replacer.replace(value));
-                                                mf.setShowField(true);
+                                                String replacedValue = rule.generate(replacer);
+                                                if (StringUtils.isNotBlank(replacedValue)) {
+                                                    metadata.setValue(replacedValue);
+                                                    mf.setShowField(true);
+                                                }
                                             }
                                         }
-
                                     } else {
                                         // merge metadata
                                         for (Metadata metadata : mdl) {
@@ -258,11 +260,14 @@ public class Entity {
                         metadataFieldList.add(mf);
                         // generate metadata value
                         if ("generated".equals(mf.getFieldType())) {
-                            String value = mf.getGenerationRule();
-                            if (StringUtils.isNotBlank(value)) {
+                            GenerationRule rule = mf.getGenerationRule();
+                            if(rule != null) {
                                 VariableReplacer replacer = new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
-                                metadata.setValue(replacer.replace(value));
-                                mf.setShowField(true);
+                                String value = rule.generate(replacer);
+                                if (StringUtils.isNotBlank(value)) {
+                                    metadata.setValue(replacer.replace(value));
+                                    mf.setShowField(true);
+                                }
                             }
                         }
                     } else {

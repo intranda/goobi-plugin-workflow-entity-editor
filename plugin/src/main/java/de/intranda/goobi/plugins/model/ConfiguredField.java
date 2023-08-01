@@ -90,7 +90,7 @@ public class ConfiguredField {
 
     @Getter
     @Setter
-    private String generationRule;
+    private GenerationRule generationRule;
 
     @Getter
     @Setter

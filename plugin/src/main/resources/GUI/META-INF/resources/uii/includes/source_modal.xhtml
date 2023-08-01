@@ -126,54 +126,54 @@
 										rendered="#{NavigationForm.workflowPlugin.selectedSource != null and NavigationForm.workflowPlugin.sourceMode == 'edition'}">
 
 										<div class="selected-source__fields">
-
 											<x:dataList
 												value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
 												var="field">
-
-												<!-- regular input field -->
-												<intranda:formInputText name="field"
-													label="#{field.label} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}"
-													field="#{field.value}" fieldStyle="form-control tinymce"
-													required="false"
-													displayAsRequired="#{field.definition.required}"
-													rendered="#{field.definition.type eq 'input'}" />
-												<!-- text area field -->
-												<intranda:formInputTextArea name="field2"
-													label="#{field.label} #{msgs[field.definition.language]}"
-													field="#{field.value}" fieldStyle="form-control tinymce"
-													required="false"
-													displayAsRequired="#{field.definition.required}"
-													rendered="#{field.definition.type eq 'textarea'}" />
-												<!-- select1 field -->
-												<intranda:formInputDropDown name="field3"
-													label="#{field.label} #{msgs[field.definition.language]}"
-													field="#{field.value}"
-													rendered="#{field.definition.type eq 'select1'}"
-													selectItems="#{field.definition.selecteableValues}"
-													required="false"
-													displayAsRequired="#{field.definition.required}"
-													fieldStyle="form-control" />
-												<!-- select field -->
-												<intranda:formInputSelectMany name="field4"
-													label="#{field.label} #{msgs[field.definition.language]}"
-													field="#{field.valueMultiSelect}"
-													rendered="#{field.definition.type eq 'select'}"
-													selectItems="#{field.definition.selectList}"
-													required="false"
-													displayAsRequired="#{field.definition.required}"
-													fieldStyle="form-control" />
-												<!-- html field -->
-												<intranda:formInputTextArea name="field2"
-													label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"
-													field="#{field.value}" fieldStyle="editor form-control"
-													required="false"
-													displayAsRequired="#{field.definition.required}"
-													rendered="#{field.definition.type eq 'html'}" />
-
-												<h:outputText styleClass="help-inline font-danger"
-													rendered="#{field.validationMessage!= null}"
-													value="#{msgs[field.validationMessage]}" />
+												<ui:fragment rendered="#{field.label != 'Source Type'}">
+													<!-- regular input field -->
+													<intranda:formInputText name="field"
+														label="#{field.label} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}"
+														field="#{field.value}" fieldStyle="form-control tinymce"
+														required="false"
+														displayAsRequired="#{field.definition.required}"
+														rendered="#{field.definition.type eq 'input'}" />
+													<!-- text area field -->
+													<intranda:formInputTextArea name="field2"
+														label="#{field.label} #{msgs[field.definition.language]}"
+														field="#{field.value}" fieldStyle="form-control tinymce"
+														required="false"
+														displayAsRequired="#{field.definition.required}"
+														rendered="#{field.definition.type eq 'textarea'}" />
+													<!-- select1 field -->
+													<intranda:formInputDropDown name="field3"
+														label="#{field.label} #{msgs[field.definition.language]}"
+														field="#{field.value}"
+														rendered="#{field.definition.type eq 'select1'}"
+														selectItems="#{field.definition.selecteableValues}"
+														required="false"
+														displayAsRequired="#{field.definition.required}"
+														fieldStyle="form-control" />
+													<!-- select field -->
+													<intranda:formInputSelectMany name="field4"
+														label="#{field.label} #{msgs[field.definition.language]}"
+														field="#{field.valueMultiSelect}"
+														rendered="#{field.definition.type eq 'select'}"
+														selectItems="#{field.definition.selectList}"
+														required="false"
+														displayAsRequired="#{field.definition.required}"
+														fieldStyle="form-control" />
+													<!-- html field -->
+													<intranda:formInputTextArea name="field2"
+														label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"
+														field="#{field.value}" fieldStyle="editor form-control"
+														required="false"
+														displayAsRequired="#{field.definition.required}"
+														rendered="#{field.definition.type eq 'html'}" />
+	
+													<h:outputText styleClass="help-inline font-danger"
+														rendered="#{field.validationMessage!= null}"
+														value="#{msgs[field.validationMessage]}" />
+												</ui:fragment>
 											</x:dataList>
 
 										</div>
@@ -208,6 +208,7 @@
 												<div class="row source-modal__card">
 													<div class="col-sm-11 vocabulary-searchfield">
 														<x:dataList value="#{record.fields}" var="field">
+															<ui:fragment rendered="#{field.label != 'Source Type'}">
 															<div class="row" style="margin: 0px;">
 																<div class="col-sm-3">
 																	<h:outputText
@@ -217,6 +218,7 @@
 																	<h:outputText value="#{field.value}" escape="false" />
 																</div>
 															</div>
+															</ui:fragment>
 														</x:dataList>
 
 													</div>
