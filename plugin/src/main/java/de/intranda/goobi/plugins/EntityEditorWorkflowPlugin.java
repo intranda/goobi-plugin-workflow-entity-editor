@@ -775,6 +775,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
         try {
+            exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
         } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
@@ -802,6 +803,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // run export plugin for current process
         IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
         try {
+            exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
             // run export for all linked entities with status published
             for (List<Relationship> relationships : entity.getLinkedRelationships().values()) {
