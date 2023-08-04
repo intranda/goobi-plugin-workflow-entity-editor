@@ -768,7 +768,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // mark process as published
             entity.getStatusProperty().setWert("Published");
         }
-        entity.generateBibliography();
+        //entity.generateBibliography();
         // save
         entity.saveEntity();
         // run export plugin for current process
@@ -797,7 +797,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // mark process as published
             entity.getStatusProperty().setWert("Published");
         }
-        entity.generateBibliography();
+        //entity.generateBibliography();
         // save
         entity.saveEntity();
         // run export plugin for current process
