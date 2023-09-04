@@ -53,7 +53,7 @@
                                     <h:outputFormat
                                         rendered="#{NavigationForm.workflowPlugin.entityType != null}"
                                         value="#{msgs.plugin_workflow_entity_searchTabsHeader}">
-                                        <f:param value="#{NavigationForm.workflowPlugin.entityType.name}" />
+                                        <f:param value="#{msgs[NavigationForm.workflowPlugin.entityType.name]}" />
                                     </h:outputFormat>
                                     <h:outputText
                                         rendered="#{NavigationForm.workflowPlugin.entityType == null}"
