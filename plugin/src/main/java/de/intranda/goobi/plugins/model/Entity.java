@@ -217,7 +217,7 @@ public class Entity {
                                         // generate metadata value
                                         if ("generated".equals(subfield.getFieldType())) {
                                             GenerationRule rule = subfield.getGenerationRule();
-                                            if(rule != null) {
+                                            if (rule != null) {
                                                 VariableReplacer replacer =
                                                         new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
                                                 String replacedValue = rule.generate(replacer);
@@ -261,7 +261,7 @@ public class Entity {
                         // generate metadata value
                         if ("generated".equals(mf.getFieldType())) {
                             GenerationRule rule = mf.getGenerationRule();
-                            if(rule != null) {
+                            if (rule != null) {
                                 VariableReplacer replacer = new VariableReplacer(currentFileformat.getDigitalDocument(), prefs, currentProcess, null);
                                 String value = rule.generate(replacer);
                                 if (StringUtils.isNotBlank(value)) {
@@ -584,11 +584,11 @@ public class Entity {
             }
         }
 
-        if(bibliography == null) {
+        if (bibliography == null) {
             //no bibliography entered. Nothing to generate
             return;
         }
-        
+
         // create bibliography from exported sources
         for (SourceField currentSource : allSources) {
             boolean sourceMatched = false;
@@ -667,7 +667,7 @@ public class Entity {
 
             // update link name in other entities
             if (updatedName) {
-                
+
                 for (EntityType type : linkedRelationships.keySet()) {
                     List<Relationship> relationships = linkedRelationships.get(type);
 
@@ -677,19 +677,21 @@ public class Entity {
                         other.read(metsFile);
 
                         DocStruct logical = other.getDigitalDocument().getLogicalDocStruct();
-                        for (MetadataGroup relationGroup : logical.getAllMetadataGroups()) {
-                            if (relationGroup.getType().getName().equals(configuration.getRelationshipMetadataName())) {
+                        if (logical.getAllMetadataGroups() != null) {
+                            for (MetadataGroup relationGroup : logical.getAllMetadataGroups()) {
+                                if (relationGroup.getType().getName().equals(configuration.getRelationshipMetadataName())) {
 
-                                List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
-                                if (mdl != null && !mdl.isEmpty()) {
-                                    String processId = mdl.get(0).getValue();
-                                    if (processId.equals(String.valueOf(currentProcess.getId()))) {
-                                        mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
-                                        if (mdl != null && !mdl.isEmpty()) {
-                                            mdl.get(0).setValue(entityName);
-                                            break;
+                                    List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
+                                    if (mdl != null && !mdl.isEmpty()) {
+                                        String processId = mdl.get(0).getValue();
+                                        if (processId.equals(String.valueOf(currentProcess.getId()))) {
+                                            mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
+                                            if (mdl != null && !mdl.isEmpty()) {
+                                                mdl.get(0).setValue(entityName);
+                                                break;
+                                            }
+
                                         }
-
                                     }
                                 }
                             }
@@ -705,26 +707,31 @@ public class Entity {
     }
 
     public void writeSourcePropertiesToMetadata() throws MetadataTypeNotAllowedException {
-        for(ConfiguredField configuredField : metadataFieldList) {
+        for (ConfiguredField configuredField : metadataFieldList) {
             for (MetadataField metadataField : configuredField.getMetadataList()) {
                 for (SourceField sourceField : metadataField.getSources()) {
                     int sourceIndex = metadataField.getSources().indexOf(sourceField);
-                    if(sourceIndex >= 0) {
-                        List<MetadataGroup> sourceGroups = metadataField.getGroup().getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName("Source"));
-                        if(sourceGroups != null && sourceIndex < sourceGroups.size()) {
+                    if (sourceIndex >= 0) {
+                        List<MetadataGroup> sourceGroups =
+                                metadataField.getGroup().getAllMetadataGroupsByType(prefs.getMetadataGroupTypeByName("Source"));
+                        if (sourceGroups != null && sourceIndex < sourceGroups.size()) {
                             MetadataGroup sourceGroup = sourceGroups.get(sourceIndex);
-                            
-                            Metadata sourceTypeMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourceType")).flatMap(list -> list.stream().findFirst()).orElse(null);
-                            if(sourceTypeMetadata == null) {
+
+                            Metadata sourceTypeMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourceType"))
+                                    .flatMap(list -> list.stream().findFirst())
+                                    .orElse(null);
+                            if (sourceTypeMetadata == null) {
                                 sourceTypeMetadata = new Metadata(prefs.getMetadataTypeByName("SourceType"));
-                                sourceGroup.addMetadata(sourceTypeMetadata);                                        
+                                sourceGroup.addMetadata(sourceTypeMetadata);
                             }
                             sourceTypeMetadata.setValue(sourceField.getSourceType());
-                            
-                            Metadata sourcePageMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourcePage")).flatMap(list -> list.stream().findFirst()).orElse(null);
-                            if(sourcePageMetadata == null) {
+
+                            Metadata sourcePageMetadata = Optional.ofNullable(sourceGroup.getMetadataByType("SourcePage"))
+                                    .flatMap(list -> list.stream().findFirst())
+                                    .orElse(null);
+                            if (sourcePageMetadata == null) {
                                 sourcePageMetadata = new Metadata(prefs.getMetadataTypeByName("SourcePage"));
-                                sourceGroup.addMetadata(sourcePageMetadata);                                        
+                                sourceGroup.addMetadata(sourcePageMetadata);
                             }
                             sourcePageMetadata.setValue(sourceField.getPageRange());
                         }

@@ -119,6 +119,22 @@
                                 <span> #{msgs[relationship.processStatus]} </span>
                             </div>
                             <div class="sources-row__item sources-row__item--actions">
+                                 <button
+                                    class="btn nobackground"
+                                    jsf:id="changeRelationship"
+                                   style="color:  #{type.key.color};"
+                                    jsf:action="#{NavigationForm.workflowPlugin.changeRelationship(relationship)}"
+                                    title="#{msgs.plugin_workflow_entity_editRelationship}"
+                                    jsf:onclick="$('#relationshipEditBox').modal('show');"
+                                    data-toggle="tooltip"
+                                    data-placement="top">
+                                    <i class="fa fa-pencil-square-o" />
+                                     <f:ajax
+                                execute="@this"
+                                render=":relationshipModalContent" />
+                                </button>
+                            
+                            
                                 <button
                                     type="button"
                                     class="btn nobackground"
@@ -139,7 +155,7 @@
                                     jsf:id="editRelationship"
                                     style="background-color: #{type.key.color}; color: #fff;"
                                     jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
-                                    title="#{msgs.plugin_workflow_entity_editRelationship}"
+                                    title="#{msgs.intranda_dashboard_entity_editEntity}"
                                     data-toggle="tooltip"
                                     data-placement="top">
                                     <i class="fa fa-pencil" />

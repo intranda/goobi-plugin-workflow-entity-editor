@@ -216,6 +216,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Setter
     private String imageName;
 
+    @Getter
+    private transient Entity changeRelationshipEntity;
+    private transient Relationship changeRelationship;
+
     /**
      * Constructor
      */
@@ -679,6 +683,88 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return selectedRelationship.getRelationshipNameEn();
     }
 
+    public void changeRelationship(Relationship relationship) {
+        changeRelationship = relationship;
+        // try to load other entity
+        Process currentProcess = ProcessManager.getProcessById(Integer.parseInt(relationship.getProcessId()));
+        prefs = currentProcess.getRegelsatz().getPreferences();
+
+        if (!LockingBean.lockObject(String.valueOf(currentProcess.getId()), Helper.getCurrentUser().getNachVorname())) {
+            Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            return;
+        }
+        relationshipStartDate = relationship.getBeginningDate();
+        relationshipEndDate = relationship.getEndDate();
+        relationshipData = relationship.getAdditionalData();
+        changeRelationshipEntity = new Entity(configuration, currentProcess);
+        addRelationship(changeRelationshipEntity.getCurrentType());
+        setRelationship(relationship.getType().getRelationshipNameEn());
+    }
+
+    public void changeRelationshipBetweenEntities() {
+        LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
+
+        if (LockingBean.isLocked(String.valueOf(changeRelationshipEntity.getCurrentProcess().getId()))
+                && !LockingBean.lockObject(String.valueOf(changeRelationshipEntity.getCurrentProcess().getId()),
+                        Helper.getCurrentUser().getNachVorname())) {
+            Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            return;
+        }
+
+        // find reverse relationship
+        List<Relationship> relationships = changeRelationshipEntity.getLinkedRelationships().get(entity.getCurrentType());
+        String processid = String.valueOf(entity.getCurrentProcess().getId());
+        Relationship otherRelationship = null;
+        for (Relationship r : relationships) {
+            if (r.getProcessId().equals(processid) && r.getVocabularyUrl().equals(changeRelationship.getVocabularyUrl())) {
+                otherRelationship = r;
+                break;
+            }
+        }
+        if (otherRelationship != null) {
+            // update other type
+            otherRelationship.setType(selectedRelationship);
+            if (selectedRelationship.isDisplayAdditionalData()) {
+                otherRelationship.setAdditionalData(relationshipData);
+            } else {
+                otherRelationship.setAdditionalData(null);
+            }
+            if (selectedRelationship.isDisplayStartDate()) {
+                otherRelationship.setBeginningDate(relationshipStartDate);
+            } else {
+                otherRelationship.setBeginningDate(null);
+            }
+            if (selectedRelationship.isDisplayEndDate()) {
+                otherRelationship.setEndDate(relationshipEndDate);
+            } else {
+                otherRelationship.setEndDate(null);
+            }
+
+            // save other process
+            changeRelationshipEntity.saveEntity();
+        }
+
+        // change relationship in current entity
+        changeRelationship.setType(selectedRelationship);
+        if (selectedRelationship.isDisplayAdditionalData()) {
+            changeRelationship.setAdditionalData(relationshipData);
+        } else {
+            changeRelationship.setAdditionalData(null);
+        }
+        if (selectedRelationship.isDisplayStartDate()) {
+            changeRelationship.setBeginningDate(relationshipStartDate);
+        } else {
+            changeRelationship.setBeginningDate(null);
+        }
+        if (selectedRelationship.isDisplayEndDate()) {
+            changeRelationship.setEndDate(relationshipEndDate);
+        } else {
+            changeRelationship.setEndDate(null);
+        }
+        // save current entity
+        entity.saveEntity();
+    }
+
     public void addRelationshipBetweenEntities() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
@@ -915,7 +1001,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             log.error(e);
         }
     }
-    
+
     public void setSourceType(String sourceType) {
         this.sourceType = sourceType;
     }

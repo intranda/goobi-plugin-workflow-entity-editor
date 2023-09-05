@@ -523,7 +523,7 @@ body,
 
 .entity-box .grid-container {
   display: grid;
-  grid-template-columns: 50px repeat(2, minmax(0, 1fr)) 50px;
+  grid-template-columns: 50px repeat(2, minmax(0, 1fr)) 75px;
 }
 
 .entity-box .flex-container {
