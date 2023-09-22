@@ -341,10 +341,11 @@ public class Entity {
                     relationship.setProcessId(processId);
 
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
-                        if (rel.getRelationshipNameEn().equals(type)) {
+                        if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
                             break;
-                        } else if (StringUtils.isNotBlank(rel.getReversedRelationshipNameEn()) && rel.getReversedRelationshipNameEn().equals(type)) {
+                        } else if (rel.getVocabularyName().equals(vocabularyName) && StringUtils.isNotBlank(rel.getReversedRelationshipNameEn())
+                                && rel.getReversedRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
                             rel.setReversed(true);
                             relationship.setReverse(true);
