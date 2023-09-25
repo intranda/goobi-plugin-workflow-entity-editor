@@ -125,13 +125,13 @@
                                    style="color:  #{type.key.color};"
                                     jsf:action="#{NavigationForm.workflowPlugin.changeRelationship(relationship)}"
                                     title="#{msgs.plugin_workflow_entity_editRelationship}"
-                                    jsf:onclick="$('#relationshipEditBox').modal('show');"
                                     data-toggle="tooltip"
                                     data-placement="top">
                                     <i class="fa fa-pencil-square-o" />
                                      <f:ajax
                                 execute="@this"
-                                render=":relationshipModalContent" />
+                                render=":relationshipModalContent"
+                                onevent="openEditRelationshipModal" />
                                 </button>
                             
                             

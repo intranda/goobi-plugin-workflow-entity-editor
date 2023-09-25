@@ -56,6 +56,12 @@
                                 prependId="false">
                                 <div class="modal-body">
 
+									<h:panelGroup
+                                        rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity == null}">
+                                        <div class="alert alert-danger">
+	                                        #{msgs.plugin_workflow_entity_locked}
+                                        </div>
+                                    </h:panelGroup>
 
                                     <h:panelGroup
                                         id="changeRelationshipEntity"
@@ -220,11 +226,12 @@
                                         <h:outputText value="#{msgs.save}" />
                                     </button>
                                     <!-- cancel/abort -->
-                                    <a
+                                    <button
                                         class="btn pull-left"
                                         title="#{msgs.cancel}"
-                                        data-dismiss="modal"> <h:outputText value="#{msgs.cancel}" />
-                                    </a>
+                                        jsf:action="#{NavigationForm.workflowPlugin.freeRelationshipLock()}"
+                                        > <h:outputText value="#{msgs.cancel}" />
+                                    </button>
 
                                 </div>
                             </h:form>

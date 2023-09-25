@@ -691,6 +691,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         if (!LockingBean.lockObject(String.valueOf(currentProcess.getId()), Helper.getCurrentUser().getNachVorname())) {
             Helper.setFehlerMeldung("plugin_workflow_entity_locked");
+            changeRelationshipEntity = null;
             return;
         }
         relationshipStartDate = relationship.getBeginningDate();
@@ -763,6 +764,13 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         // save current entity
         entity.saveEntity();
+        freeRelationshipLock();
+    }
+    
+    public void freeRelationshipLock() {
+        if(changeRelationshipEntity != null) {            
+            LockingBean.freeObject(String.valueOf(changeRelationshipEntity.getCurrentProcess().getId()));
+        }
     }
 
     public void addRelationshipBetweenEntities() {
