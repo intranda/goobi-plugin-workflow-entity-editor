@@ -1,6 +1,10 @@
 package de.intranda.goobi.plugins;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -363,7 +367,15 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         searchCriteria.setCountryCodes(languageCodes);
         try {
-            ToponymSearchResult searchResult = WebService.search(searchCriteria);
+            ToponymSearchResult searchResult = null;
+            if (ConfigurationHelper.getInstance().isUseProxy()) {
+                String proxyUrl = ConfigurationHelper.getInstance().getProxyUrl();
+                int port = ConfigurationHelper.getInstance().getProxyPort();
+                SocketAddress addr = new InetSocketAddress(proxyUrl, port);
+                Proxy proxy = new Proxy(Type.HTTP, addr);
+                WebService.setProxy(proxy);
+            }
+            searchResult = WebService.search(searchCriteria);
             resultList = searchResult.getToponyms();
             totalResults = searchResult.getTotalResultsCount();
         } catch (Exception e) {
@@ -766,9 +778,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
         freeRelationshipLock();
     }
-    
+
     public void freeRelationshipLock() {
-        if(changeRelationshipEntity != null) {            
+        if (changeRelationshipEntity != null) {
             LockingBean.freeObject(String.valueOf(changeRelationshipEntity.getCurrentProcess().getId()));
         }
     }
