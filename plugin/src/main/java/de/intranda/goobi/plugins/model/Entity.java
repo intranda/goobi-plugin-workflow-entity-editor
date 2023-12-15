@@ -339,7 +339,6 @@ public class Entity {
                     relationship.setEndDate(endDate);
                     relationship.setAdditionalData(additionalData);
                     relationship.setProcessId(processId);
-
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
