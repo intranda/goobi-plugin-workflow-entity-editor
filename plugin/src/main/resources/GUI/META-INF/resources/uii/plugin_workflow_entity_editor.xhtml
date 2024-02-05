@@ -270,7 +270,7 @@
                                     <li>
                                         <entity:entity_breadcrumb
                                             entityType="#{breadcrumb.entityType}"
-                                            entityName="#{breadcrumb.entityName}"
+                                            entityName="#{msgs.breadcrumb.entityName}"
                                             entityColor="#{breadcrumb.color}"
                                             entityIcon="#{breadcrumb.icon}" />
                                     </li>
@@ -294,7 +294,7 @@
 
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                         <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
-                                        <f:param value="#{NavigationForm.workflowPlugin.entity.entityName}" />
+                                        <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.entityName]}" />
                                     </h:outputFormat>
 
                                 </h3>
