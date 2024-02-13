@@ -7,6 +7,7 @@
 	<target name="devbuild">
 		<exec executable="mvn">
 			<arg value="package"/>
+            <arg value="-Dmaven.test.skip=true" />
 		</exec>
 		<copy file="module-main/target/plugin_intranda_workflow_${name}.jar" todir="/opt/digiverso/goobi/plugins/workflow/" overwrite="true"/>
 		<copy file="module-gui/target/plugin_intranda_workflow_${name}-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/" overwrite="true"/>

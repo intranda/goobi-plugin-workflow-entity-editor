@@ -647,6 +647,14 @@ public class Entity {
     public void saveEntity() {
         try {
 
+            // relationships
+            for (List<Relationship> rellist : linkedRelationships.values()) {
+                for (Relationship rel : rellist) {
+                    upateRelationshipGroup(rel, false);
+
+                }
+            }
+
             if ("New".equals(statusProperty.getWert())) {
                 statusProperty.setWert("In work");
             }
@@ -762,81 +770,9 @@ public class Entity {
 
         try {
             relationGroup = new MetadataGroup(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
-            List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipEntityType());
-            if (mdl != null && !mdl.isEmpty()) {
-                mdl.get(0).setValue(rel.getEntityName());
-            } else {
-                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEntityType()));
-                relationGroup.addMetadata(md);
-                md.setValue(rel.getEntityName());
-            }
-            if (StringUtils.isNotBlank(relationshipStartDate)) {
-                mdl = relationGroup.getMetadataByType(configuration.getRelationshipBeginningDate());
-                if (mdl != null && !mdl.isEmpty()) {
-                    mdl.get(0).setValue(relationshipStartDate);
-                } else {
-                    Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipBeginningDate()));
-                    relationGroup.addMetadata(md);
-                    md.setValue(relationshipStartDate);
-                }
-            }
-            if (StringUtils.isNotBlank(relationshipEndDate)) {
-                mdl = relationGroup.getMetadataByType(configuration.getRelationshipEndDate());
-                if (mdl != null && !mdl.isEmpty()) {
-                    mdl.get(0).setValue(relationshipEndDate);
-                } else {
-                    Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEndDate()));
-                    relationGroup.addMetadata(md);
-                    md.setValue(relationshipEndDate);
-                }
-            }
+            rel.setMetadataGroup(relationGroup);
 
-            mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
-            if (mdl != null && !mdl.isEmpty()) {
-                mdl.get(0).setValue(rel.getProcessId());
-            } else {
-                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipProcessId()));
-                relationGroup.addMetadata(md);
-                md.setValue(rel.getProcessId());
-            }
-
-            mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
-            if (mdl != null && !mdl.isEmpty()) {
-                mdl.get(0).setValue(rel.getDisplayName());
-            } else {
-                Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipDisplayName()));
-                relationGroup.addMetadata(md);
-                md.setValue(rel.getDisplayName());
-            }
-
-            mdl = relationGroup.getMetadataByType(configuration.getRelationshipType());
-            Metadata md = null;
-            if (mdl != null && !mdl.isEmpty()) {
-                md = mdl.get(0);
-            } else {
-                md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipType()));
-                relationGroup.addMetadata(md);
-            }
-
-            if (reversed && StringUtils.isNotBlank(selectedRelationship.getReversedRelationshipNameEn())) {
-                rel.setReverse(true);
-                md.setValue(selectedRelationship.getReversedRelationshipNameEn());
-            } else {
-                md.setValue(selectedRelationship.getRelationshipNameEn());
-            }
-            md.setAutorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
-
-            if (StringUtils.isNotBlank(relationshipData)) {
-
-                mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
-                if (mdl != null && !mdl.isEmpty()) {
-                    mdl.get(0).setValue(relationshipData);
-                } else {
-                    md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipAdditionalData()));
-                    relationGroup.addMetadata(md);
-                    md.setValue(relationshipData);
-                }
-            }
+            upateRelationshipGroup(rel, reversed);
 
             currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadataGroup(relationGroup);
 
@@ -844,8 +780,81 @@ public class Entity {
             log.error(e);
         }
 
-        rel.setMetadataGroup(relationGroup);
         relationships.add(rel);
 
+    }
+
+    private void upateRelationshipGroup(Relationship rel, boolean reversed) throws MetadataTypeNotAllowedException {
+        MetadataGroup relationGroup = rel.getMetadataGroup();
+        List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipEntityType());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getEntityName());
+        } else {
+            Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEntityType()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getEntityName());
+        }
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipBeginningDate());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getBeginningDate());
+        } else {
+            Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipBeginningDate()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getBeginningDate());
+        }
+
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipEndDate());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getEndDate());
+        } else {
+            Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipEndDate()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getEndDate());
+        }
+
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipProcessId());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getProcessId());
+        } else {
+            Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipProcessId()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getProcessId());
+        }
+
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipDisplayName());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getDisplayName());
+        } else {
+            Metadata md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipDisplayName()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getDisplayName());
+        }
+        Metadata md = null;
+
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipType());
+
+        if (mdl != null && !mdl.isEmpty()) {
+            md = mdl.get(0);
+        } else {
+            md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipType()));
+            relationGroup.addMetadata(md);
+        }
+
+        if (reversed && StringUtils.isNotBlank(rel.getType().getReversedRelationshipNameEn())) {
+            rel.setReverse(true);
+            md.setValue(rel.getType().getReversedRelationshipNameEn());
+        } else {
+            md.setValue(rel.getType().getRelationshipNameEn());
+        }
+        md.setAutorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
+
+        mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
+        if (mdl != null && !mdl.isEmpty()) {
+            mdl.get(0).setValue(rel.getAdditionalData());
+        } else {
+            md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipAdditionalData()));
+            relationGroup.addMetadata(md);
+            md.setValue(rel.getAdditionalData());
+        }
     }
 }
