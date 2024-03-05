@@ -233,6 +233,11 @@ public class MetadataField {
             }
             Path file = uploadDirectory.resolve(basename).toAbsolutePath();
 
+            boolean updatedFile = false;
+            if (StorageProvider.getInstance().isFileExists(file)) {
+                updatedFile = true;
+            }
+
             inputStream = this.uploadedFile.getInputStream();
             outputStream = new FileOutputStream(file.toString());
 
@@ -242,14 +247,16 @@ public class MetadataField {
                 outputStream.write(buf, 0, len);
             }
 
-            try {
-                Prefs prefs = configField.getEntity().getPrefs();
-                DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
-                addFileToDocument(file, dd, prefs);
-            } catch (UGHException e) {
-                log.error(e);
+            if (!updatedFile) {
+                try {
+                    Prefs prefs = configField.getEntity().getPrefs();
+                    DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
+                    addFileToDocument(file, dd, prefs);
+                } catch (UGHException e) {
+                    log.error(e);
+                }
             }
-            
+
             // optional: convert uploaded file to jpeg
             if (StringUtils.isNotBlank(conversionFolderName)) {
 
@@ -312,12 +319,12 @@ public class MetadataField {
         DocStruct physical = dd.getPhysicalDocStruct();
         int physPageNumber = physical.getAllChildren() == null ? 1 : physical.getAllChildren().size() + 1;
         DocStruct page = dd.createDocStruct(prefs.getDocStrctTypeByName("page"));
-        
+
         ContentFile cf = new ContentFile();
         cf.setMimetype(NIOFileUtils.getMimeTypeFromFile(file));
         cf.setLocation(file.toString());
         page.addContentFile(cf);
-        
+
         // phys + log page numbers
         Metadata mdLog = new Metadata(prefs.getMetadataTypeByName("logicalPageNumber"));
         mdLog.setValue("uncounted");
@@ -463,7 +470,7 @@ public class MetadataField {
         private MetadataField getEnclosingInstance() {
             return MetadataField.this;
         }
-        
+
         public void setSourceType(String sourceType) {
             this.sourceType = sourceType;
         }
