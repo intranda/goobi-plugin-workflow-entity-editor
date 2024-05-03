@@ -75,6 +75,7 @@ public class MetadataField {
     }
 
     public MetadataField(MetadataField mf) {
+        // do nothing
     }
 
     public void addSource(SourceField field, MetadataGroup grp) {
@@ -171,7 +172,7 @@ public class MetadataField {
         return false;
     }
 
-    public void dateValidator(FacesContext context, UIComponent component, Object value) {
+    public void dateValidator(FacesContext context, UIComponent component, Object value) { //NOSONAR
         valid = true;
         validationErrorMessage = null;
         if (configField.isRequired() && isEmpty(value)) {
@@ -187,7 +188,7 @@ public class MetadataField {
         }
     }
 
-    public void requiredValidator(FacesContext context, UIComponent component, Object value) {
+    public void requiredValidator(FacesContext context, UIComponent component, Object value) { //NOSONAR
         valid = true;
         validationErrorMessage = null;
         if (configField.isRequired() && isEmpty(value)) {
@@ -205,67 +206,71 @@ public class MetadataField {
      * File upload with binary copying.
      */
     public void uploadFile() {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+
+        if (this.uploadedFile == null) {
+            Helper.setFehlerMeldung("noFileSelected");
+            return;
+        }
+
+        String basename = getFileName(this.uploadedFile);
+        if (basename.startsWith(".")) {
+            basename = basename.substring(1);
+        }
+        if (basename.contains("/")) {
+            basename = basename.substring(basename.lastIndexOf("/") + 1);
+        }
+        if (basename.contains("\\")) {
+            basename = basename.substring(basename.lastIndexOf("\\") + 1);
+        }
+
+        String uploadFolderName = configField.getEntity().getConfiguration().getUploadFolderName();
+        String conversionFolderName = configField.getEntity().getConfiguration().getConversionFolderName();
+        boolean updatedFile = false;
+        Path file = null;
         try {
-            if (this.uploadedFile == null) {
-                Helper.setFehlerMeldung("noFileSelected");
-                return;
-            }
-
-            String basename = getFileName(this.uploadedFile);
-            if (basename.startsWith(".")) {
-                basename = basename.substring(1);
-            }
-            if (basename.contains("/")) {
-                basename = basename.substring(basename.lastIndexOf("/") + 1);
-            }
-            if (basename.contains("\\")) {
-                basename = basename.substring(basename.lastIndexOf("\\") + 1);
-            }
-
-            String uploadFolderName = configField.getEntity().getConfiguration().getUploadFolderName();
-            String conversionFolderName = configField.getEntity().getConfiguration().getConversionFolderName();
-
             Path uploadDirectory = Paths.get(configField.getEntity().getCurrentProcess().getConfiguredImageFolder(uploadFolderName));
             if (!Files.exists(uploadDirectory)) {
                 Files.createDirectory(uploadDirectory);
             }
-            Path file = uploadDirectory.resolve(basename).toAbsolutePath();
+            file = uploadDirectory.resolve(basename).toAbsolutePath();
 
-            boolean updatedFile = false;
             if (StorageProvider.getInstance().isFileExists(file)) {
                 updatedFile = true;
             }
 
-            inputStream = this.uploadedFile.getInputStream();
-            outputStream = new FileOutputStream(file.toString());
+            try (InputStream inputStream = this.uploadedFile.getInputStream();
+                    OutputStream outputStream = new FileOutputStream(file.toString())) {
 
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buf)) > 0) {
-                outputStream.write(buf, 0, len);
-            }
-
-            if (!updatedFile) {
-                try {
-                    Prefs prefs = configField.getEntity().getPrefs();
-                    DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
-                    addFileToDocument(file, dd, prefs);
-                } catch (UGHException e) {
-                    log.error(e);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = inputStream.read(buf)) > 0) {
+                    outputStream.write(buf, 0, len);
                 }
             }
+        } catch (IOException | SwapException | DAOException e1) {
+            log.error(e1);
+        }
+        if (!updatedFile) {
+            try {
+                Prefs prefs = configField.getEntity().getPrefs();
+                DigitalDocument dd = configField.getEntity().getCurrentFileformat().getDigitalDocument();
+                addFileToDocument(file, dd, prefs);
+            } catch (UGHException e) {
+                log.error(e);
+            }
+        }
 
-            // optional: convert uploaded file to jpeg
-            if (StringUtils.isNotBlank(conversionFolderName)) {
+        // optional: convert uploaded file to jpeg
+        if (StringUtils.isNotBlank(conversionFolderName)) {
 
-                // TODO only convert images, copy other file types instead
+            // TODO only convert images, copy other file types instead
 
+            try {
                 Path destinationDirectory = Paths.get(configField.getEntity().getCurrentProcess().getConfiguredImageFolder(conversionFolderName));
                 if (!Files.exists(destinationDirectory)) {
                     Files.createDirectory(destinationDirectory);
                 }
+
                 Path convertedFile = Paths.get(destinationDirectory.toString(),
                         file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".jpg");
 
@@ -276,42 +281,21 @@ public class MetadataField {
                         pi.setXResolution(ii.getXResolution());
                         pi.setYResolution(ii.getYResolution());
 
-                        OutputStream outputFileStream = StorageProvider.getInstance().newOutputStream(convertedFile);
-
-                        pi.writeToStream(null, outputFileStream);
-                        outputFileStream.close();
+                        try (OutputStream outputFileStream = StorageProvider.getInstance().newOutputStream(convertedFile)) {
+                            pi.writeToStream(null, outputFileStream);
+                        }
                     }
-                } catch (ContentLibException e) {
-                    log.error(e);
                 }
                 file = convertedFile;
-            }
-
-            metadata.setValue(file.toString());
-
-            createPage(file);
-
-        } catch (IOException | SwapException |
-
-                DAOException e) {
-            log.error(e.getMessage(), e);
-            Helper.setFehlerMeldung("uploadFailed");
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                }
+            } catch (ContentLibException | IOException | SwapException | DAOException e) {
+                log.error(e);
             }
         }
+
+        metadata.setValue(file.toString());
+
+        createPage(file);
+
     }
 
     private void addFileToDocument(Path file, DigitalDocument dd, Prefs prefs)

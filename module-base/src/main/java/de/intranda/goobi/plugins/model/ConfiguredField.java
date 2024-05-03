@@ -216,6 +216,7 @@ public class ConfiguredField {
                                         ve.setLabelFr(f.getValue());
                                         break;
                                     case "ger":
+                                    default:
                                         ve.setLabelDe(f.getValue());
                                         break;
 
@@ -242,11 +243,11 @@ public class ConfiguredField {
             try {
                 MetadataGroup other = metadataList.get(0).getGroup();
 
-                MetadataGroup group = new MetadataGroup(other.getType());
-                other.getParent().addMetadataGroup(group);
+                MetadataGroup grp = new MetadataGroup(other.getType());
+                other.getParent().addMetadataGroup(grp);
                 MetadataField field = new MetadataField();
                 field.setConfigField(this);
-                field.setGroup(group);
+                field.setGroup(grp);
                 adMetadataField(field);
                 for (ConfiguredField subfield : subfieldList) {
                     if (!subfield.isGroup()) {
@@ -257,7 +258,7 @@ public class ConfiguredField {
                         if (StringUtils.isNotBlank(subfield.getDefaultValue())) {
                             metadata.setValue(subfield.getDefaultValue());
                         }
-                        group.addMetadata(metadata);
+                        grp.addMetadata(metadata);
                         MetadataField sub = new MetadataField();
                         sub.setConfigField(subfield);
                         sub.setMetadata(metadata);
