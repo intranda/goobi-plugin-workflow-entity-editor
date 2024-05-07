@@ -1,10 +1,9 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.Locale;
-
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 
-import lombok.Data;
+import java.util.Locale;
 
 @Data
 public class VocabularyEntry {
