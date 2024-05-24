@@ -25,7 +25,7 @@
     <dependency>
       <groupId>io.goobi.workflow</groupId>
       <artifactId>workflow-core</artifactId>
-      <version>24.04.2</version>
+      <version>${project.version}</version>
       <classifier>classes</classifier>
     </dependency>
   </dependencies>
