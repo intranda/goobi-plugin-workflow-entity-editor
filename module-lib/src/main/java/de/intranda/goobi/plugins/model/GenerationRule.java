@@ -1,5 +1,10 @@
 package de.intranda.goobi.plugins.model;
 
+import de.sub.goobi.helper.VariableReplacer;
+import lombok.Data;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -7,12 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-
-import de.sub.goobi.helper.VariableReplacer;
-import lombok.Data;
-import lombok.Getter;
 
 @Data
 public class GenerationRule {

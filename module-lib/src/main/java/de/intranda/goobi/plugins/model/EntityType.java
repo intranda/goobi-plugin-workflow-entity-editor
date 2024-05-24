@@ -1,11 +1,11 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor

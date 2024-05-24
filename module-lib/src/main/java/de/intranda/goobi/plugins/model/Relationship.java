@@ -1,11 +1,10 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
-
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import ugh.dl.MetadataGroup;
+
+import java.util.Locale;
 
 @Data
 public class Relationship {

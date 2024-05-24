@@ -5,14 +5,6 @@
     <artifactId>plugin-workflow-entity-editor</artifactId>
     <version>24.04.26</version>
   </parent>
-  <artifactId>plugin-workflow-entity-editor-gui</artifactId>
+  <artifactId>plugin-workflow-entity-editor-lib</artifactId>
   <packaging>jar</packaging>
-  <build>
-    <resources>
-      <resource>
-        <targetPath>META-INF/resources</targetPath>
-        <directory>src/main/webapp/resources</directory>
-      </resource>
-    </resources>
-  </build>
 </project>

@@ -1,22 +1,5 @@
 package de.intranda.goobi.plugins.model;
 
-import java.awt.image.RenderedImage;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.Part;
-
-import org.apache.commons.lang.StringUtils;
-
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.NIOFileUtils;
 import de.sub.goobi.helper.StorageProvider;
@@ -32,6 +15,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
@@ -43,6 +27,20 @@ import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.TypeNotAllowedAsChildException;
 import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.Part;
+import java.awt.image.RenderedImage;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Log4j2
