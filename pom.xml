@@ -3,15 +3,17 @@
   <parent>
     <groupId>io.goobi.workflow</groupId>
     <artifactId>workflow-base</artifactId>
-    <version>24.04.2</version>
+    <version>24.05-SNAPSHOT</version>
     <relativePath />
   </parent>
   <groupId>io.goobi.workflow.plugin</groupId>
   <artifactId>plugin-workflow-entity-editor</artifactId>
+  <!-- REMOVE THIS NEXT RELEASE -->
   <packaging>pom</packaging>
   <modules>
     <module>module-base</module>
     <module>module-gui</module>
+    <module>module-lib</module>
   </modules>
   <repositories>
     <repository>
@@ -23,7 +25,7 @@
     <dependency>
       <groupId>io.goobi.workflow</groupId>
       <artifactId>workflow-core</artifactId>
-      <version>${project.version}</version>
+      <version>24.04.2</version>
       <classifier>classes</classifier>
     </dependency>
   </dependencies>

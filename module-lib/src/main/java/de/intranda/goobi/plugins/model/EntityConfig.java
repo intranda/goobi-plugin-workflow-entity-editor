@@ -1,9 +1,8 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import de.sub.goobi.persistence.managers.VocabularyManager;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
@@ -11,9 +10,9 @@ import org.goobi.vocabulary.Field;
 import org.goobi.vocabulary.VocabRecord;
 import org.goobi.vocabulary.Vocabulary;
 
-import de.sub.goobi.persistence.managers.VocabularyManager;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EntityConfig {
 
