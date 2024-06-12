@@ -1,5 +1,18 @@
 package de.intranda.goobi.plugins.model;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
+import org.goobi.beans.Process;
+import org.goobi.beans.Processproperty;
+
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.StorageProvider;
@@ -11,9 +24,6 @@ import de.sub.goobi.persistence.managers.PropertyManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang.StringUtils;
-import org.goobi.beans.Process;
-import org.goobi.beans.Processproperty;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
 import ugh.dl.Metadata;
@@ -26,15 +36,6 @@ import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.PreferencesException;
 import ugh.exceptions.UGHException;
 import ugh.fileformats.mets.MetsMods;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Getter
 @Log4j2
@@ -623,7 +624,7 @@ public class Entity {
                     } else if ("SourceID".equals(subfield.getConfigField().getLabel())) {
                         Metadata md = subfield.getMetadata();
                         md.setValue(currentSource.getSourceId());
-                        md.setAutorityFile("Source", currentSource.getSourceId(), currentSource.getSourceUri());
+                        md.setAuthorityFile("Source", currentSource.getSourceId(), currentSource.getSourceUri());
                     }
 
                 }
@@ -845,7 +846,7 @@ public class Entity {
         } else {
             md.setValue(rel.getType().getRelationshipNameEn());
         }
-        md.setAutorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
+        md.setAuthorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
 
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
         if (mdl != null && !mdl.isEmpty()) {

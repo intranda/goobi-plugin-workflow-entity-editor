@@ -1,5 +1,22 @@
 package de.intranda.goobi.plugins.model;
 
+import java.awt.image.RenderedImage;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.Part;
+
+import org.apache.commons.lang.StringUtils;
+
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.NIOFileUtils;
 import de.sub.goobi.helper.StorageProvider;
@@ -15,7 +32,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang.StringUtils;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
@@ -27,20 +43,6 @@ import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.TypeNotAllowedAsChildException;
 import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
-
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.Part;
-import java.awt.image.RenderedImage;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Log4j2
@@ -131,7 +133,7 @@ public class MetadataField {
             for (VocabularyEntry item : configField.getVocabularyList()) {
                 if (value.equals(item.getMainValue())) {
                     metadata.setValue(item.getMainValue());
-                    metadata.setAutorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
+                    metadata.setAuthorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
                             configField.getVocabularyUrl() + "/" + item.getId());
                 }
             }
@@ -361,7 +363,19 @@ public class MetadataField {
         if (image == null && "fileupload".equals(configField.getFieldType()) && StringUtils.isNotBlank(metadata.getValue())) {
             Path file = Paths.get(metadata.getValue());
             try {
-                image = new Image(configField.getEntity().getCurrentProcess(), file.getParent().toString(), file.getFileName().toString(), 1, 200);
+
+                String foldername = null;
+                if (StringUtils.isNotBlank(configField.getEntity().getConfiguration().getConversionFolderName())) {
+                    foldername = configField.getEntity()
+                            .getCurrentProcess()
+                            .getConfiguredImageFolder(configField.getEntity().getConfiguration().getConversionFolderName());
+                } else {
+                    foldername = configField.getEntity()
+                            .getCurrentProcess()
+                            .getConfiguredImageFolder(configField.getEntity().getConfiguration().getUploadFolderName());
+                }
+
+                image = new Image(configField.getEntity().getCurrentProcess(), foldername, file.getFileName().toString(), 1, 200);
             } catch (IOException | SwapException | DAOException e) {
                 log.error(e);
             }

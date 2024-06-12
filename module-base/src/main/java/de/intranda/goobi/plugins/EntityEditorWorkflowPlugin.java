@@ -342,11 +342,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
+            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
                     ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
                             + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
         } else {
-            md.setAutorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
+            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
                     searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
                             + selectedVocabularyRecord.getId());
         }
@@ -394,7 +394,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         Metadata md = searchField.getMetadata();
         md.setValue(currentToponym.getName());
-        md.setAutorityFile("geonames", "http://www.geonames.org/", "" + currentToponym.getGeoNameId());
+        md.setAuthorityFile("geonames", "http://www.geonames.org/", "" + currentToponym.getGeoNameId());
         resultList = new ArrayList<>();
     }
 
@@ -456,7 +456,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             mg = new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
             Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
             sourceIdMetadata.setValue(sourceId);
-            sourceIdMetadata.setAutorityFile(sourceName, sourceUri, sourceLink);
+            sourceIdMetadata.setAuthorityFile(sourceName, sourceUri, sourceLink);
             mg.addMetadata(sourceIdMetadata);
 
             Metadata sourceNameMetadata = new Metadata(prefs.getMetadataTypeByName("SourceName"));
@@ -873,7 +873,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // mark process as published
             entity.getStatusProperty().setWert("Published");
         }
-        //entity.generateBibliography();
         // save
         entity.saveEntity();
         // run export plugin for current process
