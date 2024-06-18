@@ -1,7 +1,7 @@
 <project default="devbuild">
 
 	<!-- Simply set the name of the plugin here, e.g. "fileUpload" or "file_upload") instead of "sample" -->
-	<property name="name" value="entity_editor" />
+	<property name="name" value="entity-editor" />
 
 	<!-- Use this task to let ant copy the compiled jar files to the target folders for development  -->
 	<target name="devbuild">
@@ -9,8 +9,9 @@
 			<arg value="package"/>
             <arg value="-Dmaven.test.skip=true" />
 		</exec>
-		<copy file="module-main/target/plugin_intranda_workflow_${name}.jar" todir="/opt/digiverso/goobi/plugins/workflow/" overwrite="true"/>
-		<copy file="module-gui/target/plugin_intranda_workflow_${name}-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/" overwrite="true"/>
+		<copy file="module-base/target/plugin-workflow-${name}-base.jar" todir="/opt/digiverso/goobi/plugins/workflow/" overwrite="true"/>
+		<copy file="module-gui/target/plugin-workflow-${name}-gui.jar" todir="/opt/digiverso/goobi/plugins/GUI/" overwrite="true"/>
+        <copy file="module-lib/target/plugin-workflow-${name}-lib.jar" todir="/opt/digiverso/goobi/plugins/GUI/" overwrite="true"/>		
 	</target>
 
 </project>
