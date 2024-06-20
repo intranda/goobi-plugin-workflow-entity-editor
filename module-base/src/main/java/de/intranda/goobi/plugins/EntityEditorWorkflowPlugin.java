@@ -15,6 +15,9 @@ import java.util.UUID;
 
 import javax.faces.event.AjaxBehaviorEvent;
 
+import io.goobi.vocabulary.exchange.Vocabulary;
+import io.goobi.vocabulary.exchange.VocabularyRecord;
+import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
@@ -31,10 +34,6 @@ import org.goobi.production.plugin.PluginLoader;
 import org.goobi.production.plugin.interfaces.IExportPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
-import org.goobi.vocabulary.Definition;
-import org.goobi.vocabulary.Field;
-import org.goobi.vocabulary.VocabRecord;
-import org.goobi.vocabulary.Vocabulary;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.Entity;
@@ -59,6 +58,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import org.goobi.vocabulary.VocabRecord;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -127,27 +127,28 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<VocabRecord> records;
+    private List<VocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private VocabRecord selectedVocabularyRecord;
+    private VocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
     @Setter
     private transient MetadataField currentField;
+    private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
     // list of all sources
     @Getter
-    private List<VocabRecord> sources;
+    private List<VocabularyRecord> sources;
 
     private Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private VocabRecord selectedSource;
+    private VocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -233,17 +234,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         configuration = new EntityConfig(config);
 
-        sourceVocabulary = VocabularyManager.getVocabularyById(configuration.getSourceVocabularyId());
+        sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
     }
 
     /**
      * Close the current element and open the selected breadcrumb
      * 
-     * {@link selectedBreadcrumb} must be set first
-     * 
      * @return
      */
-
     public String loadSelectedBreadcrumb() {
         // save current entity
         if (entity != null) {
@@ -302,10 +300,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Search within a vocabulary
-     * 
-     * {@link searchField} must be set first
      */
-
     public void searchVocabulary() {
         if (entity != null) {
             LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
