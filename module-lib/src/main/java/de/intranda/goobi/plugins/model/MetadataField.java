@@ -134,7 +134,7 @@ public class MetadataField {
                 if (value.equals(item.getMainValue())) {
                     metadata.setValue(item.getMainValue());
                     metadata.setAuthorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
-                            configField.getVocabularyUrl() + "/" + item.getId());
+                            item.getEntryUrl());
                 }
             }
         }
