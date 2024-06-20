@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import de.sub.goobi.helper.Helper;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
@@ -350,6 +351,11 @@ public class Entity {
                             relationship.setReverse(true);
                             break;
                         }
+                    }
+                    if (relationship.getType() == null) {
+                        String errorMessage = "Relationtype \"" + type + "\" is not present in the configured vocabulary \"" + vocabularyName + "\".";
+                        log.error(errorMessage);
+                        Helper.setFehlerMeldung(errorMessage);
                     }
 
                     relationship.setDisplayName(displayName);
@@ -844,6 +850,9 @@ public class Entity {
             rel.setReverse(true);
             md.setValue(rel.getType().getReversedRelationshipNameEn());
         } else {
+            if (rel.getType() == null) {
+                throw new IllegalStateException("The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
+            }
             md.setValue(rel.getType().getRelationshipNameEn());
         }
         md.setAuthorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
