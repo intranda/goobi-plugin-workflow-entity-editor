@@ -283,7 +283,7 @@ public class EntityConfig {
                 .filter(d -> fieldName.equals(d.getName()))
                 .map(FieldDefinition::getId)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabulary.getName() + "\" does not contain required field \"" + fieldName + "\""));
+                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabulary.getName() + "\" [" + vocabulary.getId() + "] does not contain required field \"" + fieldName + "\""));
     }
 
     private ConfiguredField extractField(HierarchicalConfiguration field) {
