@@ -14,7 +14,8 @@ public class VocabularyEntry {
     private String labelEn;
     private String labelFr;
 
-    private int id;
+    private long id;
+    private String entryUrl;
 
     public String getLabel(Locale lang) {
         String label;
