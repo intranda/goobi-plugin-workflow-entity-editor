@@ -1,40 +1,5 @@
 package de.intranda.goobi.plugins;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.faces.event.AjaxBehaviorEvent;
-
-import io.goobi.vocabulary.exchange.Vocabulary;
-import io.goobi.vocabulary.exchange.VocabularyRecord;
-import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang.StringUtils;
-import org.geonames.Style;
-import org.geonames.Toponym;
-import org.geonames.ToponymSearchCriteria;
-import org.geonames.ToponymSearchResult;
-import org.geonames.WebService;
-import org.goobi.beans.Process;
-import org.goobi.production.cli.helper.StringPair;
-import org.goobi.production.enums.PluginGuiType;
-import org.goobi.production.enums.PluginType;
-import org.goobi.production.plugin.PluginLoader;
-import org.goobi.production.plugin.interfaces.IExportPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
-
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.Entity;
 import de.intranda.goobi.plugins.model.EntityConfig;
@@ -52,13 +17,36 @@ import de.sub.goobi.helper.exceptions.ExportFileException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
-import de.sub.goobi.persistence.managers.VocabularyManager;
+import io.goobi.vocabulary.exchange.FieldDefinition;
+import io.goobi.vocabulary.exchange.FieldInstance;
+import io.goobi.vocabulary.exchange.FieldType;
+import io.goobi.vocabulary.exchange.FieldValue;
+import io.goobi.vocabulary.exchange.TranslationInstance;
+import io.goobi.vocabulary.exchange.Vocabulary;
+import io.goobi.vocabulary.exchange.VocabularySchema;
+import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
+import io.goobi.workflow.api.vocabulary.jsfwrapper.JSFVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import org.goobi.vocabulary.VocabRecord;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringUtils;
+import org.geonames.Style;
+import org.geonames.Toponym;
+import org.geonames.ToponymSearchCriteria;
+import org.geonames.ToponymSearchResult;
+import org.geonames.WebService;
+import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
+import org.goobi.production.enums.PluginGuiType;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.PluginLoader;
+import org.goobi.production.plugin.interfaces.IExportPlugin;
+import org.goobi.production.plugin.interfaces.IPlugin;
+import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -73,6 +61,23 @@ import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
+
+import javax.faces.event.AjaxBehaviorEvent;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @PluginImplementation
 @Log4j2
@@ -127,28 +132,31 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<VocabularyRecord> records;
+    private List<JSFVocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private VocabularyRecord selectedVocabularyRecord;
+    private JSFVocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
     @Setter
     private transient MetadataField currentField;
     private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
+
+    private Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
+    private Map<Long, FieldType> typeIdMap = new HashMap<>();
     // list of all sources
     @Getter
-    private List<VocabularyRecord> sources;
+    private List<JSFVocabularyRecord> sources;
 
     private Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private VocabularyRecord selectedSource;
+    private JSFVocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -307,18 +315,25 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         List<StringPair> data = new ArrayList<>();
 
+        if (searchValue.isBlank()) {
+            return;
+        }
+
         for (String field : searchField.getConfigField().getSearchFields()) {
             data.add(new StringPair(field, sourceSearchValue));
         }
 
-        records = VocabularyManager.findRecords(searchField.getConfigField().getVocabularyName(), data);
-
-        if (records == null || records.isEmpty()) {
-            showNotHits = true;
-        } else {
-            showNotHits = false;
+        if (data.size() > 1) {
+            throw new IllegalArgumentException("Multiple search fields are not supported right now");
         }
-        Collections.sort(records);
+
+        if (data.isEmpty()) {
+            return;
+        }
+
+        Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
+        records = findRecords(searchField.getConfigField().getVocabularyName(), searchParameter);
+        showNotHits = records == null || records.isEmpty();
     }
 
     /**
@@ -329,21 +344,15 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         Metadata md = searchField.getMetadata();
-        for (Field field : selectedVocabularyRecord.getFields()) {
-            if (field.getDefinition().isMainEntry()) {
-                md.setValue(field.getValue());
-            }
-        }
+        md.setValue(selectedVocabularyRecord.getMainValue());
 
         if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
             md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
-                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
+                    selectedVocabularyRecord.get_links().get("self").getHref());
         } else {
             md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
-                    searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
-                            + selectedVocabularyRecord.getId());
+                    selectedVocabularyRecord.get_links().get("self").getHref());
         }
 
     }
@@ -403,18 +412,52 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         List<StringPair> data = new ArrayList<>();
 
+        if (searchValue.isBlank()) {
+            return;
+        }
+
         for (String field : configuration.getSourceSearchFields()) {
             data.add(new StringPair(field, searchValue));
         }
 
-        sources = VocabularyManager.findRecords(configuration.getSourceVocabularyName(), data);
-
-        if (sources == null || sources.isEmpty()) {
-            showNotHits = true;
-        } else {
-            showNotHits = false;
+        if (data.size() > 1) {
+            throw new IllegalArgumentException("Multiple search fields are not supported right now");
         }
-        Collections.sort(sources);
+
+        if (data.isEmpty()) {
+            return;
+        }
+
+        Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
+        sources = findRecords(configuration.getSourceVocabularyName(), searchParameter);
+        showNotHits = sources == null || sources.isEmpty();
+    }
+
+    private List<JSFVocabularyRecord> findRecords(String vocabularyName, Optional<StringPair> searchParameter) {
+        Vocabulary vocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
+        VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(vocabulary.getSchemaId());
+        List<FieldDefinition> definitions = schema.getDefinitions();
+        for (FieldDefinition definition : definitions) {
+            definitionsIdMap.putIfAbsent(definition.getId(), definition);
+        }
+        Optional<Long> searchFieldId = searchParameter.isEmpty() ? Optional.empty() : definitions.stream()
+                .filter(d -> d.getName().equals(searchParameter.get().getOne()))
+                .map(FieldDefinition::getId)
+                .findFirst();
+        List<JSFVocabularyRecord> result;
+        if (searchFieldId.isPresent()) {
+            result = vocabularyAPIManager.vocabularyRecords().search(vocabulary.getId(), searchFieldId.get() + ":" + searchParameter.get().getTwo()).getContent();
+        } else {
+            result = vocabularyAPIManager.vocabularyRecords().all(vocabulary.getId());
+        }
+        result.forEach(r -> {
+            r.load(schema);
+            r.getJsfFields().forEach(f -> {
+                FieldDefinition d = definitionsIdMap.get(f.getDefinitionId());
+                f.load(d, loadType(d.getTypeId()));
+            });
+        });
+        return result;
     }
 
     /**
@@ -485,16 +528,30 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             } else {
                 fieldname = configuredFieldName;
             }
-            for (Field field : selectedSource.getFields()) {
-                if (StringUtils.isBlank(lang) && StringUtils.isBlank(field.getDefinition().getLanguage())) {
-                    if (field.getDefinition().getLabel().equals(fieldname)) {
-                        return field.getValue();
-                    }
-                } else if (StringUtils.isNotBlank(lang) && StringUtils.isNotBlank(field.getDefinition().getLanguage())
-                        && field.getDefinition().getLabel().equals(fieldname) && field.getDefinition().getLanguage().equals(lang)) {
-                    return field.getValue();
-                }
+
+            Optional<Long> configuredFieldDefinitionId = definitionsIdMap.values().stream()
+                    .filter(d -> d.getName().equals(configuredFieldName))
+                    .map(FieldDefinition::getId)
+                    .findFirst();
+            if (configuredFieldDefinitionId.isEmpty()) {
+//                throw new IllegalStateException("Cannot find configured field id \"" + configuredFieldName + "\"");
+                return "";
             }
+            Optional<FieldInstance> field =  selectedSource.getFields().stream()
+                    .filter(f -> f.getDefinitionId().equals(configuredFieldDefinitionId.get()))
+                    .findFirst();
+            if (field.isEmpty()) {
+//                throw new IllegalStateException("Cannot find configured field \"" + configuredFieldName + "\"");
+                return "";
+            }
+
+            String finalLang = lang.isBlank() ? null : lang;
+            return field.get().getValues().get(0).getTranslations().stream()
+                    .filter(t -> Objects.equals(t.getLanguage(), finalLang))
+                    .map(TranslationInstance::getValue)
+                    .findFirst()
+//                    .orElseThrow(() -> new IllegalStateException("Cannot find requested translation \"" + finalLang + "\" of configured field \"" + configuredFieldName + "\""));
+                    .orElse("");
         }
         return "";
     }
@@ -506,19 +563,80 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void createNewSource() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
-        selectedSource = new VocabRecord();
+        selectedSource = new JSFVocabularyRecord();
         selectedSource.setVocabularyId(sourceVocabulary.getId());
-        List<Field> fieldList = new ArrayList<>();
-        for (Definition definition : sourceVocabulary.getStruct()) {
-            Field field = new Field(definition.getLabel(), definition.getLanguage(), "", definition);
-            fieldList.add(field);
+        selectedSource.setFields(new HashSet<>());
+        VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(sourceVocabulary.getSchemaId());
+        for (FieldDefinition definition : schema.getDefinitions()) {
+            definitionsIdMap.putIfAbsent(definition.getId(), definition);
         }
-        selectedSource.setFields(fieldList);
+        prepareEmptyFieldsForEditing(selectedSource, schema.getDefinitions());
+        selectedSource = new JSFVocabularyRecord(selectedSource);
+        selectedSource.load(schema);
+        selectedSource.getJsfFields().forEach(f -> {
+            FieldDefinition definition = definitionsIdMap.get(f.getDefinitionId());
+            f.load(definition, loadType(definition.getTypeId()));
+        });
+    }
+
+    private FieldType loadType(long typeId) {
+        return typeIdMap.putIfAbsent(typeId, vocabularyAPIManager.fieldTypes().get(typeId));
+    }
+
+    private void prepareEmptyFieldsForEditing(JSFVocabularyRecord record, List<FieldDefinition> fieldsToCreate) {
+        fieldsToCreate.forEach(d -> {
+            FieldInstance field = new FieldInstance();
+            field.setDefinitionId(d.getId());
+            record.getFields().add(field);
+        });
+        record.getFields().forEach(f -> {
+            f.getValues().add(new FieldValue());
+            FieldDefinition definition = definitionsIdMap.get(f.getDefinitionId());
+            f.getValues().forEach(v -> {
+                if (!definition.getTranslationDefinitions().isEmpty()) {
+                    definition.getTranslationDefinitions().stream()
+                            .filter(t -> v.getTranslations().stream().noneMatch(t2 -> t2.getLanguage().equals(t.getLanguage())))
+                            .forEach(t -> {
+                                TranslationInstance translation = new TranslationInstance();
+                                translation.setLanguage(t.getLanguage());
+                                translation.setValue("");
+                                v.getTranslations().add(translation);
+                            });
+                } else if (v.getTranslations().isEmpty()) {
+                    TranslationInstance translation = new TranslationInstance();
+                    translation.setValue("");
+                    v.getTranslations().add(translation);
+                }
+            });
+        });
     }
 
     public void saveAndAddSource() {
-        VocabularyManager.saveRecord(selectedSource.getVocabularyId(), selectedSource);
+        cleanUpRecord(selectedSource);
+        vocabularyAPIManager.vocabularyRecords().create(selectedSource);
         addSource();
+    }
+
+    private void cleanUpRecord(JSFVocabularyRecord currentRecord) {
+        for (FieldInstance field : currentRecord.getFields()) {
+            for (FieldValue value : field.getValues()) {
+                value.getTranslations().removeIf(this::translationIsEmpty);
+            }
+            field.getValues().removeIf(this::valueIsEmpty);
+        }
+        currentRecord.getFields().removeIf(this::fieldIsEmpty);
+    }
+
+    private boolean translationIsEmpty(TranslationInstance translationInstance) {
+        return translationInstance.getValue().isEmpty();
+    }
+
+    private boolean valueIsEmpty(FieldValue fieldValue) {
+        return fieldValue.getTranslations().isEmpty();
+    }
+
+    private boolean fieldIsEmpty(FieldInstance fieldInstance) {
+        return fieldInstance.getValues().isEmpty();
     }
 
     public void addRelationship(EntityType type) {

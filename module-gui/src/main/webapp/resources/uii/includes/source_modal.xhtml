@@ -36,7 +36,7 @@
 								<h4 class="modal-title" style="width: 90%">#{msgs.NORM_vocabularySearch}:
 									#{msgs.sources}</h4>
 							</div>
-							<div jsf:id="modal-body" class="modal-body">
+							<div jsf:id="modalBody" class="modal-body">
 
 								<h:panelGroup layout="block"
 									styleClass="form-group vocabulary-searcharea"
@@ -50,8 +50,8 @@
 											value="#{NavigationForm.workflowPlugin.searchValue}" />
 
 										<button class="btn btn-primary searchSources"
-											jsf:action="#{NavigationForm.workflowPlugin.searchSource}"
-											jsf:id="searchSource" type="button">
+												jsf:action="#{NavigationForm.workflowPlugin.searchSource}"
+												jsf:id="searchSource" type="button">
 											<i class="fa fa-search" aria-hidden="true"></i>
 											#{msgs.search}
 											<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -61,13 +61,13 @@
 
 										<!-- ADD new source-->
 										<button type="button" class="btn btn-lightgrey"
-											jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
+												jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
 											<i class="fa fa-plus" aria-hidden="true"></i> #{msgs.add}
 											<f:passThroughAttribute name="data-toggle" value="tooltip" />
 
 											<f:setPropertyActionListener value="edition"
-												target="#{NavigationForm.workflowPlugin.sourceMode}" />
-											<f:ajax execute="@form" render="modal-body" />
+																		 target="#{NavigationForm.workflowPlugin.sourceMode}" />
+											<f:ajax execute="@form" render="modalBody" />
 
 										</button>
 									</div>
@@ -126,56 +126,69 @@
 										rendered="#{NavigationForm.workflowPlugin.selectedSource != null and NavigationForm.workflowPlugin.sourceMode == 'edition'}">
 
 										<div class="selected-source__fields">
-											<x:dataList
-												value="#{NavigationForm.workflowPlugin.selectedSource.fields}"
-												var="field">
-												<ui:fragment rendered="#{field.label != 'Source Type'}">
-													<!-- regular input field -->
-													<intranda:formInputText name="field"
-														label="#{field.label} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}"
-														field="#{field.value}" fieldStyle="form-control tinymce"
-														required="false"
-														displayAsRequired="#{field.definition.required}"
-														rendered="#{field.definition.type eq 'input'}" />
-													<!-- text area field -->
-													<intranda:formInputTextArea name="field2"
-														label="#{field.label} #{msgs[field.definition.language]}"
-														field="#{field.value}" fieldStyle="form-control tinymce"
-														required="false"
-														displayAsRequired="#{field.definition.required}"
-														rendered="#{field.definition.type eq 'textarea'}" />
-													<!-- select1 field -->
-													<intranda:formInputDropDown name="field3"
-														label="#{field.label} #{msgs[field.definition.language]}"
-														field="#{field.value}"
-														rendered="#{field.definition.type eq 'select1'}"
-														selectItems="#{field.definition.selecteableValues}"
-														required="false"
-														displayAsRequired="#{field.definition.required}"
-														fieldStyle="form-control" />
-													<!-- select field -->
-													<intranda:formInputSelectMany name="field4"
-														label="#{field.label} #{msgs[field.definition.language]}"
-														field="#{field.valueMultiSelect}"
-														rendered="#{field.definition.type eq 'select'}"
-														selectItems="#{field.definition.selectList}"
-														required="false"
-														displayAsRequired="#{field.definition.required}"
-														fieldStyle="form-control" />
-													<!-- html field -->
-													<intranda:formInputTextArea name="field2"
-														label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"
-														field="#{field.value}" fieldStyle="editor form-control"
-														required="false"
-														displayAsRequired="#{field.definition.required}"
-														rendered="#{field.definition.type eq 'html'}" />
-	
-													<h:outputText styleClass="help-inline font-danger"
-														rendered="#{field.validationMessage!= null}"
-														value="#{msgs[field.validationMessage]}" />
-												</ui:fragment>
-											</x:dataList>
+											<ui:repeat
+													value="#{NavigationForm.workflowPlugin.selectedSource.sortedFields()}"
+													var="field">
+												<ui:repeat
+														value="#{field.values}"
+														var="value">
+													<ui:repeat
+															value="#{value.translations}"
+															var="translation">
+														<ui:fragment rendered="#{field.definition.name != 'Source Type'}">
+<!--															<h:outputText value="#{field.selectableItems.size() == 0 and field.type.large == false} "/>-->
+<!--															<h:outputText value="#{field.selectableItems.size()} "/>-->
+<!--															<h:outputText value="#{field.selectableItems} "/>-->
+<!--															<h:outputText value="#{field.type.large} "/>-->
+<!--															<h:outputText value="#{field.type} "/>-->
+<!--															<h:outputText value="#{field} "/>-->
+															<!-- regular input field -->
+															<intranda:formInputText name="field"
+																label="#{field.definition.name} #{translation.language != null ? msgs[translation.language] : ''}"
+																field="#{translation.value}" fieldStyle="form-control tinymce"
+																required="false"
+																displayAsRequired="#{field.definition.required}"
+																rendered="#{field.selectableItems.size() == 0 and field.type.large == false}" />
+															<!-- text area field -->
+															<intranda:formInputTextArea name="field2"
+																label="#{field.definition.name} #{translation.language != null ? msgs[translation.language] : ''}"
+																field="#{translation.value}" fieldStyle="form-control tinymce"
+																required="false"
+																displayAsRequired="#{field.definition.required}"
+																rendered="#{field.selectableItems.size() == 0 and field.type.large == true}" />
+															<!-- select1 field -->
+															<intranda:formInputDropDown name="field3"
+																label="#{field.definition.name} #{translation.language != null ? msgs[translation.language] : ''}"
+																field="#{field.currentValue}"
+																rendered="#{field.selectableItems.size() > 0 and field.definition.multiValued == false}"
+																selectItems="#{field.selectableItems}"
+																required="false"
+																displayAsRequired="#{field.definition.required}"
+																fieldStyle="form-control" />
+															<!-- select field -->
+<!--															<intranda:formInputSelectMany name="field4"-->
+<!--																label="#{field.label} #{msgs[field.definition.language]}"-->
+<!--																field="#{field.valueMultiSelect}"-->
+<!--																rendered="#{field.definition.type eq 'select'}"-->
+<!--																selectItems="#{field.definition.selectList}"-->
+<!--																required="false"-->
+<!--																displayAsRequired="#{field.definition.required}"-->
+<!--																fieldStyle="form-control" />-->
+															<!-- html field -->
+<!--															<intranda:formInputTextArea name="field2"-->
+<!--																label="#{field.label} #{field.definition.language != '' ? msgs[field.definition.language] : ''}"-->
+<!--																field="#{field.value}" fieldStyle="editor form-control"-->
+<!--																required="false"-->
+<!--																displayAsRequired="#{field.definition.required}"-->
+<!--																rendered="#{field.definition.type eq 'html'}" />-->
 
+<!--															<h:outputText styleClass="help-inline font-danger"-->
+<!--																rendered="#{field.validationMessage!= null}"-->
+<!--																value="#{msgs[field.validationMessage]}" />-->
+														</ui:fragment>
+													</ui:repeat>
+												</ui:repeat>
+											</ui:repeat>
 										</div>
 
 
@@ -186,7 +199,7 @@
 												<f:passThroughAttribute name="data-toggle" value="tooltip" />
 												<f:setPropertyActionListener value=""
 													target="#{NavigationForm.workflowPlugin.sourceMode}" />
-												<f:ajax execute="@form" render="modal-body" />
+												<f:ajax execute="@form" render="modalBody" />
 											</button>
 
 											<button jsf:id="check" class="btn btn-green"
@@ -207,20 +220,20 @@
 												var="record">
 												<div class="row source-modal__card">
 													<div class="col-sm-11 vocabulary-searchfield">
-														<x:dataList value="#{record.fields}" var="field">
-															<ui:fragment rendered="#{field.label != 'Source Type'}">
-															<div class="row" style="margin: 0px;">
+														<x:dataList
+																value="#{record.sortedFields()}"
+																var="field">
+															<div
+																	class="row"
+																	style="margin: 0px;">
 																<div class="col-sm-3">
-																	<h:outputText
-																		value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
+																	<h:outputText value="#{msgs[field.definition.name]}" />
 																</div>
 																<div class="col-sm-9">
-																	<h:outputText value="#{field.value}" escape="false" />
+																	<h:outputText value="#{record.getFieldValue(field.definition)}" />
 																</div>
 															</div>
-															</ui:fragment>
 														</x:dataList>
-
 													</div>
 
 													<div class="col-sm-1 vocabulary-searchfield">

@@ -96,16 +96,16 @@
                                             <div class="row vocab-search-modal__card">
                                                 <div class="col-sm-11 vocabulary-searchfield">
                                                     <x:dataList
-                                                        value="#{record.fields}"
+                                                        value="#{record.sortedFields()}"
                                                         var="field">
                                                         <div
                                                             class="row"
                                                             style="margin: 0px;">
                                                             <div class="col-sm-3">
-                                                                <h:outputText value="#{msgs[field.label]} #{field.definition.language != '' ? msgs[field.displayLanguageKey] : ''}" />
+                                                                <h:outputText value="#{msgs[field.definition.name]}}" />
                                                             </div>
                                                             <div class="col-sm-9">
-                                                                <h:outputText value="#{field.value}" />
+                                                                <h:outputText value="#{record.getFieldValue(field.definition)}" />
                                                             </div>
                                                         </div>
                                                     </x:dataList>
