@@ -3,16 +3,24 @@
   <parent>
     <groupId>io.goobi.workflow.plugin</groupId>
     <artifactId>plugin-workflow-entity-editor</artifactId>
-    <version>24.05</version>
+    <version>24.06</version>
   </parent>
   <artifactId>plugin-workflow-entity-editor-gui</artifactId>
   <packaging>jar</packaging>
   <build>
-    <resources>
-      <resource>
-        <targetPath>META-INF/resources</targetPath>
-        <directory>src/main/webapp/resources</directory>
-      </resource>
-    </resources>
-  </build>
+        <resources>
+            <resource>
+                <targetPath>META-INF/resources</targetPath>
+                <directory>src/main/webapp/resources</directory>
+            </resource>
+            <resource>
+                <targetPath>META-INF/tags</targetPath>
+                <directory>src/main/webapp/tags</directory>
+            </resource>
+            <resource>
+                <targetPath>META-INF</targetPath>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 </project>
