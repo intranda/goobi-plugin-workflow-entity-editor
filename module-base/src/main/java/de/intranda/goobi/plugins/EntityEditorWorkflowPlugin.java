@@ -440,12 +440,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 .map(FieldDefinition::getId)
                 .findFirst();
         Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
-        List<ExtendedVocabularyRecord> result = vocabularyAPIManager.vocabularyRecords().list(vocabulary.getId())
+        return vocabularyAPIManager.vocabularyRecords().list(vocabulary.getId())
                 .search(searchQuery)
                 .all()
                 .request()
                 .getContent();
-        return result;
     }
 
     /**
