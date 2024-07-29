@@ -3,7 +3,7 @@ package de.intranda.goobi.plugins.model;
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
-import io.goobi.workflow.api.vocabulary.jsfwrapper.JSFVocabularyRecord;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -141,8 +141,12 @@ public class EntityConfig {
                     long additionalTextFieldAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Additional text field allowed");
 
 
-                    List<JSFVocabularyRecord> records = vocabularyAPIManager.vocabularyRecords().all(vocabulary.getId());
-                    for (JSFVocabularyRecord record : records) {
+                    List<ExtendedVocabularyRecord> records = vocabularyAPIManager.vocabularyRecords()
+                            .list(vocabulary.getId())
+                            .all()
+                            .request()
+                            .getContent();
+                    for (ExtendedVocabularyRecord record : records) {
                         RelationshipType relationType = new RelationshipType();
                         relationType.setReversed(reverse);
                         relationType.setSourceType(sourceEntity);

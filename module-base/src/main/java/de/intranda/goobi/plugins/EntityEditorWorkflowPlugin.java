@@ -19,13 +19,11 @@ import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.FieldInstance;
-import io.goobi.vocabulary.exchange.FieldType;
-import io.goobi.vocabulary.exchange.FieldValue;
 import io.goobi.vocabulary.exchange.TranslationInstance;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
-import io.goobi.workflow.api.vocabulary.jsfwrapper.JSFVocabularyRecord;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
 import lombok.Getter;
 import lombok.Setter;
@@ -132,12 +130,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<JSFVocabularyRecord> records;
+    private List<ExtendedVocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private JSFVocabularyRecord selectedVocabularyRecord;
+    private ExtendedVocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
@@ -146,17 +144,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
 
     private Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
-    private Map<Long, FieldType> typeIdMap = new HashMap<>();
     // list of all sources
     @Getter
-    private List<JSFVocabularyRecord> sources;
+    private List<ExtendedVocabularyRecord> sources;
 
     private Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private JSFVocabularyRecord selectedSource;
+    private ExtendedVocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -247,7 +244,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Close the current element and open the selected breadcrumb
-     * 
+     *
      * @return
      */
     public String loadSelectedBreadcrumb() {
@@ -338,7 +335,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Import data from selected vocabulary record
-     * 
      */
     public void importVocabularyData() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
@@ -404,7 +400,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Search within sources
-     * 
      */
 
     public void searchSource() {
@@ -433,7 +428,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         showNotHits = sources == null || sources.isEmpty();
     }
 
-    private List<JSFVocabularyRecord> findRecords(String vocabularyName, Optional<StringPair> searchParameter) {
+    private List<ExtendedVocabularyRecord> findRecords(String vocabularyName, Optional<StringPair> searchParameter) {
         Vocabulary vocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
         VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(vocabulary.getSchemaId());
         List<FieldDefinition> definitions = schema.getDefinitions();
@@ -444,26 +439,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 .filter(d -> d.getName().equals(searchParameter.get().getOne()))
                 .map(FieldDefinition::getId)
                 .findFirst();
-        List<JSFVocabularyRecord> result;
-        if (searchFieldId.isPresent()) {
-            result = vocabularyAPIManager.vocabularyRecords().search(vocabulary.getId(), searchFieldId.get() + ":" + searchParameter.get().getTwo()).getContent();
-        } else {
-            result = vocabularyAPIManager.vocabularyRecords().all(vocabulary.getId());
-        }
-        result.forEach(r -> {
-            r.load(schema);
-            r.getJsfFields().forEach(f -> {
-                FieldDefinition d = definitionsIdMap.get(f.getDefinitionId());
-                f.load(d, loadType(d.getTypeId()));
-            });
-        });
+        Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
+        List<ExtendedVocabularyRecord> result = vocabularyAPIManager.vocabularyRecords().list(vocabulary.getId())
+                .search(searchQuery)
+                .all()
+                .request()
+                .getContent();
         return result;
     }
 
     /**
      * Add selected source to the current metadata field
-     * 
-     * 
      */
 
     public void addSource() {
@@ -537,7 +523,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 //                throw new IllegalStateException("Cannot find configured field id \"" + configuredFieldName + "\"");
                 return "";
             }
-            Optional<FieldInstance> field =  selectedSource.getFields().stream()
+            Optional<FieldInstance> field = selectedSource.getFields().stream()
                     .filter(f -> f.getDefinitionId().equals(configuredFieldDefinitionId.get()))
                     .findFirst();
             if (field.isEmpty()) {
@@ -563,80 +549,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void createNewSource() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
-        selectedSource = new JSFVocabularyRecord();
-        selectedSource.setVocabularyId(sourceVocabulary.getId());
-        selectedSource.setFields(new HashSet<>());
+        selectedSource = vocabularyAPIManager.vocabularyRecords().createEmptyRecord(sourceVocabulary.getId(), null, false);
         VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(sourceVocabulary.getSchemaId());
         for (FieldDefinition definition : schema.getDefinitions()) {
             definitionsIdMap.putIfAbsent(definition.getId(), definition);
         }
-        prepareEmptyFieldsForEditing(selectedSource, schema.getDefinitions());
-        selectedSource = new JSFVocabularyRecord(selectedSource);
-        selectedSource.load(schema);
-        selectedSource.getJsfFields().forEach(f -> {
-            FieldDefinition definition = definitionsIdMap.get(f.getDefinitionId());
-            f.load(definition, loadType(definition.getTypeId()));
-        });
     }
 
-    private FieldType loadType(long typeId) {
-        return typeIdMap.putIfAbsent(typeId, vocabularyAPIManager.fieldTypes().get(typeId));
-    }
-
-    private void prepareEmptyFieldsForEditing(JSFVocabularyRecord record, List<FieldDefinition> fieldsToCreate) {
-        fieldsToCreate.forEach(d -> {
-            FieldInstance field = new FieldInstance();
-            field.setDefinitionId(d.getId());
-            record.getFields().add(field);
-        });
-        record.getFields().forEach(f -> {
-            f.getValues().add(new FieldValue());
-            FieldDefinition definition = definitionsIdMap.get(f.getDefinitionId());
-            f.getValues().forEach(v -> {
-                if (!definition.getTranslationDefinitions().isEmpty()) {
-                    definition.getTranslationDefinitions().stream()
-                            .filter(t -> v.getTranslations().stream().noneMatch(t2 -> t2.getLanguage().equals(t.getLanguage())))
-                            .forEach(t -> {
-                                TranslationInstance translation = new TranslationInstance();
-                                translation.setLanguage(t.getLanguage());
-                                translation.setValue("");
-                                v.getTranslations().add(translation);
-                            });
-                } else if (v.getTranslations().isEmpty()) {
-                    TranslationInstance translation = new TranslationInstance();
-                    translation.setValue("");
-                    v.getTranslations().add(translation);
-                }
-            });
-        });
-    }
 
     public void saveAndAddSource() {
-        cleanUpRecord(selectedSource);
-        vocabularyAPIManager.vocabularyRecords().create(selectedSource);
+        vocabularyAPIManager.vocabularyRecords().save(selectedSource);
         addSource();
-    }
-
-    private void cleanUpRecord(JSFVocabularyRecord currentRecord) {
-        for (FieldInstance field : currentRecord.getFields()) {
-            for (FieldValue value : field.getValues()) {
-                value.getTranslations().removeIf(this::translationIsEmpty);
-            }
-            field.getValues().removeIf(this::valueIsEmpty);
-        }
-        currentRecord.getFields().removeIf(this::fieldIsEmpty);
-    }
-
-    private boolean translationIsEmpty(TranslationInstance translationInstance) {
-        return translationInstance.getValue().isEmpty();
-    }
-
-    private boolean valueIsEmpty(FieldValue fieldValue) {
-        return fieldValue.getTranslations().isEmpty();
-    }
-
-    private boolean fieldIsEmpty(FieldInstance fieldInstance) {
-        return fieldInstance.getValues().isEmpty();
     }
 
     public void addRelationship(EntityType type) {
@@ -994,9 +917,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
-                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
-                | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
+                 ReadException
+                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
+                 UghHelperException | SwapException
+                 | DAOException e) {
             log.error(e);
             return;
         }
@@ -1033,9 +958,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
 
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
-                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
-                | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
+                 ReadException
+                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
+                 UghHelperException | SwapException
+                 | DAOException e) {
             log.error(e);
         }
         Helper.setMeldung("ExportFinished");

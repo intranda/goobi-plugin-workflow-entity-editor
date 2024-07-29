@@ -3,7 +3,7 @@ package de.intranda.goobi.plugins.model;
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
-import io.goobi.workflow.api.vocabulary.jsfwrapper.JSFVocabularyRecord;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -190,12 +190,16 @@ public class ConfiguredField {
 
         if ("vocabularyList".equals(fieldType)) {
 
-            List<JSFVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords().all(currentVocabulary.getId());
+            List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
+                    .list(currentVocabulary.getId())
+                    .all()
+                    .request()
+                    .getContent();
             recordList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
 
             vocabularyList = new ArrayList<>(recordList.size());
 
-            for (JSFVocabularyRecord vr : recordList) {
+            for (ExtendedVocabularyRecord vr : recordList) {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
                 ve.setMainValue(vr.getMainValue());
