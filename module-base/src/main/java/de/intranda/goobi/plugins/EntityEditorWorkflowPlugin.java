@@ -1,41 +1,5 @@
 package de.intranda.goobi.plugins;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.faces.event.AjaxBehaviorEvent;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang.StringUtils;
-import org.geonames.Style;
-import org.geonames.Toponym;
-import org.geonames.ToponymSearchCriteria;
-import org.geonames.ToponymSearchResult;
-import org.geonames.WebService;
-import org.goobi.beans.Process;
-import org.goobi.production.cli.helper.StringPair;
-import org.goobi.production.enums.PluginGuiType;
-import org.goobi.production.enums.PluginType;
-import org.goobi.production.plugin.PluginLoader;
-import org.goobi.production.plugin.interfaces.IExportPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
-import org.goobi.vocabulary.Definition;
-import org.goobi.vocabulary.Field;
-import org.goobi.vocabulary.VocabRecord;
-import org.goobi.vocabulary.Vocabulary;
-
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.Entity;
 import de.intranda.goobi.plugins.model.EntityConfig;
@@ -53,12 +17,34 @@ import de.sub.goobi.helper.exceptions.ExportFileException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
-import de.sub.goobi.persistence.managers.VocabularyManager;
+import io.goobi.vocabulary.exchange.FieldDefinition;
+import io.goobi.vocabulary.exchange.FieldInstance;
+import io.goobi.vocabulary.exchange.TranslationInstance;
+import io.goobi.vocabulary.exchange.Vocabulary;
+import io.goobi.vocabulary.exchange.VocabularySchema;
+import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringUtils;
+import org.geonames.Style;
+import org.geonames.Toponym;
+import org.geonames.ToponymSearchCriteria;
+import org.geonames.ToponymSearchResult;
+import org.geonames.WebService;
+import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
+import org.goobi.production.enums.PluginGuiType;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.PluginLoader;
+import org.goobi.production.plugin.interfaces.IExportPlugin;
+import org.goobi.production.plugin.interfaces.IPlugin;
+import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -73,6 +59,23 @@ import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
+
+import javax.faces.event.AjaxBehaviorEvent;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @PluginImplementation
 @Log4j2
@@ -127,27 +130,30 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<VocabRecord> records;
+    private List<ExtendedVocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private VocabRecord selectedVocabularyRecord;
+    private ExtendedVocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
     @Setter
     private transient MetadataField currentField;
+    private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
+
+    private Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
     // list of all sources
     @Getter
-    private List<VocabRecord> sources;
+    private List<ExtendedVocabularyRecord> sources;
 
     private Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private VocabRecord selectedSource;
+    private ExtendedVocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -233,17 +239,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         configuration = new EntityConfig(config);
 
-        sourceVocabulary = VocabularyManager.getVocabularyById(configuration.getSourceVocabularyId());
+        sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
     }
 
     /**
      * Close the current element and open the selected breadcrumb
-     * 
-     * {@link selectedBreadcrumb} must be set first
-     * 
+     *
      * @return
      */
-
     public String loadSelectedBreadcrumb() {
         // save current entity
         if (entity != null) {
@@ -302,53 +305,50 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Search within a vocabulary
-     * 
-     * {@link searchField} must be set first
      */
-
     public void searchVocabulary() {
         if (entity != null) {
             LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         }
         List<StringPair> data = new ArrayList<>();
 
+        if (searchValue.isBlank()) {
+            return;
+        }
+
         for (String field : searchField.getConfigField().getSearchFields()) {
             data.add(new StringPair(field, sourceSearchValue));
         }
 
-        records = VocabularyManager.findRecords(searchField.getConfigField().getVocabularyName(), data);
-
-        if (records == null || records.isEmpty()) {
-            showNotHits = true;
-        } else {
-            showNotHits = false;
+        if (data.size() > 1) {
+            throw new IllegalArgumentException("Multiple search fields are not supported right now");
         }
-        Collections.sort(records);
+
+        if (data.isEmpty()) {
+            return;
+        }
+
+        Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
+        records = findRecords(searchField.getConfigField().getVocabularyName(), searchParameter);
+        showNotHits = records == null || records.isEmpty();
     }
 
     /**
      * Import data from selected vocabulary record
-     * 
      */
     public void importVocabularyData() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         Metadata md = searchField.getMetadata();
-        for (Field field : selectedVocabularyRecord.getFields()) {
-            if (field.getDefinition().isMainEntry()) {
-                md.setValue(field.getValue());
-            }
-        }
+        md.setValue(selectedVocabularyRecord.getMainValue());
 
         if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
             md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
-                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/records/" + selectedVocabularyRecord.getId());
+                    selectedVocabularyRecord.getURI());
         } else {
             md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
-                    searchField.getConfigField().getVocabularyUrl() + "/vocabularies/" + selectedVocabularyRecord.getVocabularyId() + "/"
-                            + selectedVocabularyRecord.getId());
+                    selectedVocabularyRecord.getURI());
         }
 
     }
@@ -400,7 +400,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     /**
      * Search within sources
-     * 
      */
 
     public void searchSource() {
@@ -408,24 +407,49 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         List<StringPair> data = new ArrayList<>();
 
+        if (searchValue.isBlank()) {
+            return;
+        }
+
         for (String field : configuration.getSourceSearchFields()) {
             data.add(new StringPair(field, searchValue));
         }
 
-        sources = VocabularyManager.findRecords(configuration.getSourceVocabularyName(), data);
-
-        if (sources == null || sources.isEmpty()) {
-            showNotHits = true;
-        } else {
-            showNotHits = false;
+        if (data.size() > 1) {
+            throw new IllegalArgumentException("Multiple search fields are not supported right now");
         }
-        Collections.sort(sources);
+
+        if (data.isEmpty()) {
+            return;
+        }
+
+        Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
+        sources = findRecords(configuration.getSourceVocabularyName(), searchParameter);
+        showNotHits = sources == null || sources.isEmpty();
+    }
+
+    private List<ExtendedVocabularyRecord> findRecords(String vocabularyName, Optional<StringPair> searchParameter) {
+        Vocabulary vocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
+        VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(vocabulary.getSchemaId());
+        List<FieldDefinition> definitions = schema.getDefinitions();
+        for (FieldDefinition definition : definitions) {
+            definitionsIdMap.putIfAbsent(definition.getId(), definition);
+        }
+        Optional<Long> searchFieldId = searchParameter.isEmpty() ? Optional.empty() : definitions.stream()
+                .filter(d -> d.getName().equals(searchParameter.get().getOne()))
+                .map(FieldDefinition::getId)
+                .findFirst();
+        Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
+        return vocabularyAPIManager.vocabularyRecords()
+                .list(vocabulary.getId())
+                .search(searchQuery)
+                .all()
+                .request()
+                .getContent();
     }
 
     /**
      * Add selected source to the current metadata field
-     * 
-     * 
      */
 
     public void addSource() {
@@ -490,15 +514,15 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             } else {
                 fieldname = configuredFieldName;
             }
-            for (Field field : selectedSource.getFields()) {
-                if (StringUtils.isBlank(lang) && StringUtils.isBlank(field.getDefinition().getLanguage())) {
-                    if (field.getDefinition().getLabel().equals(fieldname)) {
-                        return field.getValue();
-                    }
-                } else if (StringUtils.isNotBlank(lang) && StringUtils.isNotBlank(field.getDefinition().getLanguage())
-                        && field.getDefinition().getLabel().equals(fieldname) && field.getDefinition().getLanguage().equals(lang)) {
-                    return field.getValue();
-                }
+            Optional<String> fieldValue;
+
+            if (lang == null || lang.isBlank()) {
+                fieldValue = selectedSource.getFieldValueForDefinitionName(fieldname);
+            } else {
+                fieldValue = selectedSource.getFieldValueForDefinitionName(fieldname, lang);
+            }
+            if (fieldValue.isPresent()) {
+                return fieldValue.get();
             }
         }
         return "";
@@ -511,18 +535,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     public void createNewSource() {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
-        selectedSource = new VocabRecord();
-        selectedSource.setVocabularyId(sourceVocabulary.getId());
-        List<Field> fieldList = new ArrayList<>();
-        for (Definition definition : sourceVocabulary.getStruct()) {
-            Field field = new Field(definition.getLabel(), definition.getLanguage(), "", definition);
-            fieldList.add(field);
+        selectedSource = vocabularyAPIManager.vocabularyRecords().createEmptyRecord(sourceVocabulary.getId(), null, false);
+        VocabularySchema schema = vocabularyAPIManager.vocabularySchemas().get(sourceVocabulary.getSchemaId());
+        for (FieldDefinition definition : schema.getDefinitions()) {
+            definitionsIdMap.putIfAbsent(definition.getId(), definition);
         }
-        selectedSource.setFields(fieldList);
     }
 
+
     public void saveAndAddSource() {
-        VocabularyManager.saveRecord(selectedSource.getVocabularyId(), selectedSource);
+        vocabularyAPIManager.vocabularyRecords().save(selectedSource);
         addSource();
     }
 
@@ -881,9 +903,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
-                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
-                | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
+                 ReadException
+                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
+                 UghHelperException | SwapException
+                 | DAOException e) {
             log.error(e);
             return;
         }
@@ -920,9 +944,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
 
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
-                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
-                | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
+                 ReadException
+                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
+                 UghHelperException | SwapException
+                 | DAOException e) {
             log.error(e);
         }
         Helper.setMeldung("ExportFinished");
