@@ -3,6 +3,7 @@ package de.intranda.goobi.plugins.model;
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.Setter;
@@ -131,7 +132,7 @@ public class EntityConfig {
                 String destinationEntity = field.getString("@destinationEntity");
                 String sourceEntity = entityName;
                 if (id != 0) {
-                    Vocabulary vocabulary = vocabularyAPIManager.vocabularies().get(id);
+                    ExtendedVocabulary vocabulary = vocabularyAPIManager.vocabularies().get(id);
                     List<FieldDefinition> fieldDefinitions = vocabularyAPIManager.vocabularySchemas().get(vocabulary.getSchemaId()).getDefinitions();
 
                     long relationshipTypeId = extractFieldId(vocabulary, fieldDefinitions, "Relationship type");
@@ -153,7 +154,7 @@ public class EntityConfig {
                         relationType.setDestinationType(destinationEntity);
 
                         relationType.setVocabularyName(vocabulary.getName());
-                        relationType.setVocabularyUrl(vocabulary.get_links().get("self").getHref());
+                        relationType.setVocabularyUrl(vocabulary.getURI());
 
                         // Ignore multi-values
                         record.getFields().stream()

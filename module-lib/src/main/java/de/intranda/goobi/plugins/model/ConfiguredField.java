@@ -3,6 +3,7 @@ package de.intranda.goobi.plugins.model;
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.NonNull;
@@ -179,8 +180,8 @@ public class ConfiguredField {
     public void setVocabulary(String name, String id) {
         vocabularyName = name;
         vocabularyId = id;
-        Vocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
-        vocabularyUrl = currentVocabulary.get_links().get("self").getHref();
+        ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
+        vocabularyUrl = currentVocabulary.getURI();
         List<FieldDefinition> fieldDefinitions = vocabularyAPIManager.vocabularySchemas().get(currentVocabulary.getSchemaId()).getDefinitions();
         long mainFieldId = fieldDefinitions.stream()
                 .filter(d -> Boolean.TRUE.equals(d.getMainEntry()))
