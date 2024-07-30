@@ -86,7 +86,6 @@
 
                             </div>
 
-
                             <h:panelGroup id="vocabularySearchlist">
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
                                     <div class="modal__gnd-list scrollable vocab-search-modal__search-results">
@@ -96,7 +95,7 @@
                                             <div class="row vocab-search-modal__card">
                                                 <div class="col-sm-11 vocabulary-searchfield">
                                                     <x:dataList
-                                                        value="#{record.sortedFields()}"
+                                                        value="#{record.extendedFields}"
                                                         var="field">
                                                         <div
                                                             class="row"

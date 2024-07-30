@@ -440,7 +440,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 .map(FieldDefinition::getId)
                 .findFirst();
         Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
-        return vocabularyAPIManager.vocabularyRecords().list(vocabulary.getId())
+        return vocabularyAPIManager.vocabularyRecords()
+                .list(vocabulary.getId())
                 .search(searchQuery)
                 .all()
                 .request()
@@ -513,30 +514,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             } else {
                 fieldname = configuredFieldName;
             }
+            Optional<String> fieldValue;
 
-            Optional<Long> configuredFieldDefinitionId = definitionsIdMap.values().stream()
-                    .filter(d -> d.getName().equals(configuredFieldName))
-                    .map(FieldDefinition::getId)
-                    .findFirst();
-            if (configuredFieldDefinitionId.isEmpty()) {
-//                throw new IllegalStateException("Cannot find configured field id \"" + configuredFieldName + "\"");
-                return "";
+            if (lang == null || lang.isBlank()) {
+                fieldValue = selectedSource.getFieldValueForDefinitionName(fieldname);
+            } else {
+                fieldValue = selectedSource.getFieldValueForDefinitionName(fieldname, lang);
             }
-            Optional<FieldInstance> field = selectedSource.getFields().stream()
-                    .filter(f -> f.getDefinitionId().equals(configuredFieldDefinitionId.get()))
-                    .findFirst();
-            if (field.isEmpty()) {
-//                throw new IllegalStateException("Cannot find configured field \"" + configuredFieldName + "\"");
-                return "";
+            if (fieldValue.isPresent()) {
+                return fieldValue.get();
             }
-
-            String finalLang = lang.isBlank() ? null : lang;
-            return field.get().getValues().get(0).getTranslations().stream()
-                    .filter(t -> Objects.equals(t.getLanguage(), finalLang))
-                    .map(TranslationInstance::getValue)
-                    .findFirst()
-//                    .orElseThrow(() -> new IllegalStateException("Cannot find requested translation \"" + finalLang + "\" of configured field \"" + configuredFieldName + "\""));
-                    .orElse("");
         }
         return "";
     }
