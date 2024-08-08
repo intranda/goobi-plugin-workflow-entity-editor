@@ -204,6 +204,7 @@ public class ConfiguredField {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
                 ve.setMainValue(vr.getMainValue());
+                ve.setEntryUrl(vr.getURI());
                 vr.getFields().stream()
                         .filter(f -> f.getDefinitionId().equals(mainFieldId)) // Should be a single one
                         .flatMap(f -> f.getValues().stream()) // TODO: Ignore multi-values (for now)
