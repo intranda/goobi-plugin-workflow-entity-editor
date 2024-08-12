@@ -237,9 +237,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
         config.setExpressionEngine(new XPathExpressionEngine());
 
-        configuration = new EntityConfig(config);
-
-        sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
+        try {
+            configuration = new EntityConfig(config);
+            sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
+        } catch (RuntimeException e) {
+            Helper.setFehlerMeldung(e.getMessage());
+        }
     }
 
     /**
