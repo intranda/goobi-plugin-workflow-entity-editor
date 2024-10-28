@@ -656,7 +656,7 @@ public class Entity {
             // relationships
             for (List<Relationship> rellist : linkedRelationships.values()) {
                 for (Relationship rel : rellist) {
-                    upateRelationshipGroup(rel, false);
+                    upateRelationshipGroup(rel, rel.isReverse());
 
                 }
             }
