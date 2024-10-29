@@ -1,5 +1,39 @@
 package de.intranda.goobi.plugins;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.faces.event.AjaxBehaviorEvent;
+
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringUtils;
+import org.geonames.Style;
+import org.geonames.Toponym;
+import org.geonames.ToponymSearchCriteria;
+import org.geonames.ToponymSearchResult;
+import org.geonames.WebService;
+import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
+import org.goobi.production.enums.PluginGuiType;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.PluginLoader;
+import org.goobi.production.plugin.interfaces.IExportPlugin;
+import org.goobi.production.plugin.interfaces.IPlugin;
+import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
+
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.Entity;
 import de.intranda.goobi.plugins.model.EntityConfig;
@@ -18,8 +52,6 @@ import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import io.goobi.vocabulary.exchange.FieldDefinition;
-import io.goobi.vocabulary.exchange.FieldInstance;
-import io.goobi.vocabulary.exchange.TranslationInstance;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
@@ -29,22 +61,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang.StringUtils;
-import org.geonames.Style;
-import org.geonames.Toponym;
-import org.geonames.ToponymSearchCriteria;
-import org.geonames.ToponymSearchResult;
-import org.geonames.WebService;
-import org.goobi.beans.Process;
-import org.goobi.production.cli.helper.StringPair;
-import org.goobi.production.enums.PluginGuiType;
-import org.goobi.production.enums.PluginType;
-import org.goobi.production.plugin.PluginLoader;
-import org.goobi.production.plugin.interfaces.IExportPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -59,23 +75,6 @@ import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
-
-import javax.faces.event.AjaxBehaviorEvent;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 @PluginImplementation
 @Log4j2
@@ -238,7 +237,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         config.setExpressionEngine(new XPathExpressionEngine());
 
         try {
-            configuration = new EntityConfig(config);
+            configuration = new EntityConfig(config, true);
             sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
         } catch (RuntimeException e) {
             Helper.setFehlerMeldung(e.getMessage());
@@ -442,7 +441,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 .filter(d -> d.getName().equals(searchParameter.get().getOne()))
                 .map(FieldDefinition::getId)
                 .findFirst();
-        Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
+        Optional<String> searchQuery =
+                searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
         return vocabularyAPIManager.vocabularyRecords()
                 .list(vocabulary.getId())
                 .search(searchQuery)
@@ -544,7 +544,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             definitionsIdMap.putIfAbsent(definition.getId(), definition);
         }
     }
-
 
     public void saveAndAddSource() {
         vocabularyAPIManager.vocabularyRecords().save(selectedSource);
@@ -906,11 +905,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
-                 ReadException
-                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
-                 UghHelperException | SwapException
-                 | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
             log.error(e);
             return;
         }
@@ -947,11 +944,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
 
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
-                 ReadException
-                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
-                 UghHelperException | SwapException
-                 | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
             log.error(e);
         }
         Helper.setMeldung("ExportFinished");
