@@ -208,6 +208,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     @Getter
     @Setter
+    private String relationshipSourceType; //TODO
+
+    @Getter
+    @Setter
     private Prefs prefs;
 
     @Getter
@@ -735,7 +739,11 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipData = relationship.getAdditionalData();
         changeRelationshipEntity = new Entity(configuration, currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
-        setRelationship(relationship.getType().getRelationshipNameEn());
+        if (relationship.isReverse()) {
+            setRelationship(relationship.getType().getReversedRelationshipNameEn());
+        } else {
+            setRelationship(relationship.getType().getRelationshipNameEn());
+        }
     }
 
     public void changeRelationshipBetweenEntities() {

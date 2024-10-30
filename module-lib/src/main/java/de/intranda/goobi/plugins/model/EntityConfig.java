@@ -63,6 +63,8 @@ public class EntityConfig {
 
     @Getter
     private String relationshipType;
+    @Getter
+    private String relationshipSourceType;
 
     @Getter
     private int processTemplateId;
@@ -108,6 +110,7 @@ public class EntityConfig {
         relationshipProcessId = config.getString("/global/relations/processId", "");
         relationshipDisplayName = config.getString("/global/relations/displayName", "");
         relationshipType = config.getString("/global/relations/type", "");
+        relationshipSourceType = config.getString("/global/relations/sourceType", null);
 
         List<HierarchicalConfiguration> configuredTypes = config.configurationsAt("/type");
         for (HierarchicalConfiguration type : configuredTypes) {
