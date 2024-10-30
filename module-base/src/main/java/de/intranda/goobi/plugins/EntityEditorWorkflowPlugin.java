@@ -343,16 +343,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         Metadata md = searchField.getMetadata();
         md.setValue(selectedVocabularyRecord.getMainValue());
-
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
-                    selectedVocabularyRecord.getURI());
-        } else {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
-                    selectedVocabularyRecord.getURI());
-        }
-
+        md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
+                selectedVocabularyRecord.getURI());
     }
 
     public void searchGeonames() {
@@ -463,19 +455,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         String sourceName = "";
         String sourceLink = "";
 
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            sourceUri =
-                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
-        } else {
-            sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
-        }
-
         sourceName = getSourceFieldValue(configuration.getSourceNameFields());
         sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
 
-        SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
+        SourceField source = currentField.new SourceField(sourceId, selectedSource.getURI(), sourceName, sourceType, sourceLink, pages);
 
         MetadataGroup mg = null;
 
@@ -483,7 +466,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             mg = new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
             Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
             sourceIdMetadata.setValue(sourceId);
-            sourceIdMetadata.setAuthorityFile(sourceName, sourceUri, sourceLink);
+            selectedSource.writeReferenceMetadata(sourceIdMetadata);
             mg.addMetadata(sourceIdMetadata);
 
             Metadata sourceNameMetadata = new Metadata(prefs.getMetadataTypeByName("SourceName"));

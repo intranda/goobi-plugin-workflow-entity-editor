@@ -16,9 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EntityConfig {
-
-    public static String vocabularyUrl;
-
     @Getter
     @Setter
     private List<String> sourceSearchFields;
@@ -87,7 +84,6 @@ public class EntityConfig {
         conversionFolderName = config.getString("/global/conversionFolderName", null);
 
         // data for vocabulary search
-        vocabularyUrl = config.getString("/global/vocabularyServerUrl");
         sourceVocabularyId = config.getInt("/global/sources/vocabulary/@id", 0);
         sourceVocabularyName = config.getString("/global/sources/vocabulary/@name", "");
 
