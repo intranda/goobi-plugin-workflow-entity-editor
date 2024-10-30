@@ -21,6 +21,7 @@ public class Relationship {
     private RelationshipType type;
     private String vocabularyName;
     private String vocabularyUrl;
+    private String valueUrl;
 
     private String processStatus = "New";
 

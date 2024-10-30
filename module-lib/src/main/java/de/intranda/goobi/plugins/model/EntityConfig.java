@@ -1,13 +1,5 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.lang.StringUtils;
-
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
@@ -15,6 +7,13 @@ import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EntityConfig {
 
@@ -158,6 +157,7 @@ public class EntityConfig {
 
                             relationType.setVocabularyName(vocabulary.getName());
                             relationType.setVocabularyUrl(vocabulary.getURI());
+                            relationType.setValueUrl(rec.getURI());
 
                             // Ignore multi-values
                             rec.getFields()
@@ -285,6 +285,7 @@ public class EntityConfig {
 
                     }
                 }
+
             }
 
         }
@@ -295,8 +296,7 @@ public class EntityConfig {
                 .filter(d -> fieldName.equals(d.getName()))
                 .map(FieldDefinition::getId)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabulary.getName() + "\" [" + vocabulary.getId()
-                        + "] does not contain required field \"" + fieldName + "\""));
+                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabulary.getName() + "\" [" + vocabulary.getId() + "] does not contain required field \"" + fieldName + "\""));
     }
 
     private ConfiguredField extractField(HierarchicalConfiguration field) {

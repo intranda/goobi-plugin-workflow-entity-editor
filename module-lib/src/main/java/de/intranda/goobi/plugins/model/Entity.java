@@ -306,6 +306,7 @@ public class Entity {
                     String type = null;
                     String vocabularyName = null;
                     String vocabularyUrl = null;
+                    String valueUrl = null;
 
                     for (Metadata md : group.getMetadataList()) {
                         String metadataType = md.getType().getName();
@@ -330,7 +331,8 @@ public class Entity {
                         } else if (metadataType.equals(configuration.getRelationshipType())) {
                             type = md.getValue();
                             vocabularyName = md.getAuthorityID();
-                            vocabularyUrl = md.getAuthorityValue();
+                            vocabularyUrl = md.getAuthorityURI();
+                            valueUrl = md.getAuthorityValue();
                         }
 
                     }
@@ -361,6 +363,7 @@ public class Entity {
                     relationship.setDisplayName(displayName);
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
+                    relationship.setValueUrl(valueUrl);
                     relationship.setMetadataGroup(group);
                     for (EntityType et : linkedRelationships.keySet()) {
                         if (et.getName().equals(relationship.getEntityName())) {
@@ -771,6 +774,7 @@ public class Entity {
         rel.setType(selectedRelationship);
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+        rel.setValueUrl(selectedRelationship.getValueUrl());
 
         MetadataGroup relationGroup = null;
 
@@ -855,7 +859,7 @@ public class Entity {
             }
             md.setValue(rel.getType().getRelationshipNameEn());
         }
-        md.setAuthorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
+        md.setAuthorityFile(rel.getVocabularyName(), rel.getVocabularyUrl(), rel.getValueUrl());
 
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
         if (mdl != null && !mdl.isEmpty()) {

@@ -346,10 +346,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
                 && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
+            md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
                     selectedVocabularyRecord.getURI());
         } else {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
+            md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
                     selectedVocabularyRecord.getURI());
         }
 

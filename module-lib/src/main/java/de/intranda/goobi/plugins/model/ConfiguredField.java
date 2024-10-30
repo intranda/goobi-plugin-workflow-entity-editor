@@ -72,6 +72,8 @@ public class ConfiguredField {
     private String vocabularyId;
     @Getter
     private String vocabularyUrl;
+    @Getter
+    private String valueUrl;
 
     @Getter
     private List<VocabularyEntry> vocabularyList;
@@ -144,6 +146,7 @@ public class ConfiguredField {
         vocabularyName = other.getVocabularyName();
         vocabularyId = other.getVocabularyId();
         vocabularyUrl = other.getVocabularyUrl();
+        valueUrl = other.getValueUrl();
         vocabularyList = other.getVocabularyList();
 
         searchFields = other.getSearchFields();
