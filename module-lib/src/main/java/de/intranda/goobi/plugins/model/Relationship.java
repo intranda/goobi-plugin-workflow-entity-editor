@@ -30,6 +30,18 @@ public class Relationship {
 
     private MetadataGroup metadataGroup;
 
+    // Makes sure that the vocabulary references are updated when the type changes
+    public void setType(RelationshipType type) {
+        this.type = type;
+        if (type == null) {
+            return;
+        }
+
+        this.vocabularyName = type.getVocabularyName();
+        this.vocabularyUrl = type.getVocabularyUrl();
+        this.valueUrl = type.getValueUrl();
+    }
+
     public String getLabel(Locale lang) {
         String label;
         switch (lang.getLanguage()) {
