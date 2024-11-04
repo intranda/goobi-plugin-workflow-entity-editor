@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import io.goobi.vocabulary.exchange.FieldDefinition;
+import io.goobi.vocabulary.exchange.VocabularyRecord;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
-import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -192,20 +192,19 @@ public class ConfiguredField {
 
         if ("vocabularyList".equals(fieldType)) {
 
-            List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
-                    .list(currentVocabulary.getId())
-                    .all()
-                    .request()
+            List<VocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
+                    .listPlain(currentVocabulary.getId())
                     .getContent();
-            recordList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
+
+            //
 
             vocabularyList = new ArrayList<>(recordList.size());
 
-            for (ExtendedVocabularyRecord vr : recordList) {
+            for (VocabularyRecord vr : recordList) {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
-                ve.setMainValue(vr.getMainValue());
-                ve.setEntryUrl(vr.getURI());
+
+                ve.setEntryUrl(vr.get_links().get("self").getHref());
                 vr.getFields()
                         .stream()
                         .filter(f -> f.getDefinitionId().equals(mainFieldId)) // Should be a single one
@@ -230,6 +229,8 @@ public class ConfiguredField {
                         });
                 vocabularyList.add(ve);
             }
+
+            vocabularyList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
         }
     }
 
