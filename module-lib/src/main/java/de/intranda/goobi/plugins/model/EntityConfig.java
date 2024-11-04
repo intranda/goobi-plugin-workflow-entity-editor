@@ -108,7 +108,7 @@ public class EntityConfig {
         relationshipProcessId = config.getString("/global/relations/processId", "");
         relationshipDisplayName = config.getString("/global/relations/displayName", "");
         relationshipType = config.getString("/global/relations/type", "");
-        relationshipSourceType = config.getString("/global/relations/sourceType", null);
+        relationshipSourceType = config.getString("/global/relations/sourceType", "");
 
         List<HierarchicalConfiguration> configuredTypes = config.configurationsAt("/type");
 
@@ -306,6 +306,7 @@ public class EntityConfig {
         processTemplateId = other.processTemplateId;
 
         updateProcessTitle = other.updateProcessTitle;
+        relationshipSourceType = other.relationshipSourceType;
 
         exportPluginName = other.exportPluginName;
         uploadFolderName = other.uploadFolderName;

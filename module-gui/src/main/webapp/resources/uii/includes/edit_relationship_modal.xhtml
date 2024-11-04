@@ -208,8 +208,8 @@
                                                         value="#{NavigationForm.workflowPlugin.relationshipData}" />
                                                 </div>
 
-                                                <!--   //TODO
-                                                <ui:fragment rendered="false">
+                                            
+                                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.configuration.relationshipSourceType != ''}">
                                                     <div class="col-sm-3 noborder">
                                                         <h:outputLabel
                                                             value="#{msgs.plugin_workflow_entity_editor_sourceType}"
@@ -235,7 +235,7 @@
                                                                 itemValue="Tertiary" />
                                                         </h:selectOneMenu>
                                                     </div>
-                                                </ui:fragment> -->
+                                                </ui:fragment>
                                             </h:panelGroup>
                                         </h:panelGroup>
                                     </h:panelGroup>

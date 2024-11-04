@@ -208,7 +208,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     @Getter
     @Setter
-    private String relationshipSourceType; //TODO
+    private String relationshipSourceType;
 
     @Getter
     @Setter
@@ -232,13 +232,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private transient Entity changeRelationshipEntity;
     private transient Relationship changeRelationship;
-
-    /**
-     * Constructor
-     */
-    public EntityEditorWorkflowPlugin() {
-
-    }
 
     /**
      * Close the current element and open the selected breadcrumb
@@ -729,6 +722,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipStartDate = relationship.getBeginningDate();
         relationshipEndDate = relationship.getEndDate();
         relationshipData = relationship.getAdditionalData();
+        relationshipSourceType = relationship.getSourceType();
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
         if (relationship.isReverse()) {
@@ -739,6 +733,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void changeRelationshipBetweenEntities() {
+
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         if (LockingBean.isLocked(String.valueOf(changeRelationshipEntity.getCurrentProcess().getId())) && !LockingBean
@@ -762,9 +757,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             otherRelationship.setType(selectedRelationship);
             if (selectedRelationship.isDisplayAdditionalData()) {
                 otherRelationship.setAdditionalData(relationshipData);
+                otherRelationship.setSourceType(relationshipSourceType);
             } else {
                 otherRelationship.setAdditionalData(null);
+                otherRelationship.setSourceType(null);
             }
+
             if (selectedRelationship.isDisplayStartDate()) {
                 otherRelationship.setBeginningDate(relationshipStartDate);
             } else {
@@ -784,8 +782,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         changeRelationship.setType(selectedRelationship);
         if (selectedRelationship.isDisplayAdditionalData()) {
             changeRelationship.setAdditionalData(relationshipData);
+            changeRelationship.setSourceType(relationshipSourceType);
         } else {
             changeRelationship.setAdditionalData(null);
+            changeRelationship.setSourceType(relationshipSourceType);
         }
         if (selectedRelationship.isDisplayStartDate()) {
             changeRelationship.setBeginningDate(relationshipStartDate);
@@ -817,10 +817,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false);
+        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false,
+                relationshipSourceType);
 
         // reverse relationship in other entity
-        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true);
+        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true,
+                relationshipSourceType);
 
         // save both entities
         entity.saveEntity();
@@ -1059,5 +1061,4 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         return configuration;
     }
-
 }

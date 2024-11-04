@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import de.sub.goobi.helper.Helper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
@@ -306,6 +306,7 @@ public class Entity {
                     String type = null;
                     String vocabularyName = null;
                     String vocabularyUrl = null;
+                    String sourceType = null;
 
                     for (Metadata md : group.getMetadataList()) {
                         String metadataType = md.getType().getName();
@@ -331,6 +332,9 @@ public class Entity {
                             type = md.getValue();
                             vocabularyName = md.getAuthorityID();
                             vocabularyUrl = md.getAuthorityValue();
+                        } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
+                                && metadataType.equals(configuration.getRelationshipSourceType())) {
+                            sourceType = md.getValue();
                         }
 
                     }
@@ -339,6 +343,7 @@ public class Entity {
                     relationship.setBeginningDate(beginningDate);
                     relationship.setEndDate(endDate);
                     relationship.setAdditionalData(additionalData);
+                    relationship.setSourceType(sourceType);
                     relationship.setProcessId(processId);
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
@@ -437,13 +442,11 @@ public class Entity {
                                 }
                             } else {
                                 for (Metadata md : mg.getMetadataList()) {
-                                    if (StringUtils.isNotBlank(md.getValue())) {
-                                        if (md.getType().getName().equals(parts[1])) {
-                                            if (sb.length() > 0) {
-                                                sb.append(" ");
-                                            }
-                                            sb.append(md.getValue());
+                                    if (StringUtils.isNotBlank(md.getValue()) && md.getType().getName().equals(parts[1])) {
+                                        if (sb.length() > 0) {
+                                            sb.append(" ");
                                         }
+                                        sb.append(md.getValue());
                                     }
                                 }
                             }
@@ -454,13 +457,11 @@ public class Entity {
 
             } else {
                 for (Metadata md : logical.getAllMetadata()) {
-                    if (StringUtils.isNotBlank(md.getValue())) {
-                        if (md.getType().getName().equals(metadata)) {
-                            if (sb.length() > 0) {
-                                sb.append(" ");
-                            }
-                            sb.append(md.getValue());
+                    if (StringUtils.isNotBlank(md.getValue()) && md.getType().getName().equals(metadata)) {
+                        if (sb.length() > 0) {
+                            sb.append(" ");
                         }
+                        sb.append(md.getValue());
                     }
                 }
             }
@@ -622,7 +623,6 @@ public class Entity {
                 for (MetadataField subfield : field.getSubfields()) {
                     if ("Citation".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceName());
-                        // TODO distinct between source type and bibliography type
                     } else if ("Type".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceType());
                     } else if ("Link".equals(subfield.getConfigField().getLabel())) {
@@ -756,7 +756,7 @@ public class Entity {
     }
 
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
-            RelationshipType selectedRelationship, boolean reversed) {
+            RelationshipType selectedRelationship, boolean reversed, String relationshipSourceType) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
         String relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
@@ -769,6 +769,7 @@ public class Entity {
         rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
         rel.setProcessStatus(relationshipStatus);
         rel.setType(selectedRelationship);
+        rel.setSourceType(relationshipSourceType);
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
 
@@ -851,7 +852,8 @@ public class Entity {
             md.setValue(rel.getType().getReversedRelationshipNameEn());
         } else {
             if (rel.getType() == null) {
-                throw new IllegalStateException("The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
+                throw new IllegalStateException(
+                        "The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
             }
             md.setValue(rel.getType().getRelationshipNameEn());
         }
@@ -864,6 +866,17 @@ public class Entity {
             md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipAdditionalData()));
             relationGroup.addMetadata(md);
             md.setValue(rel.getAdditionalData());
+        }
+
+        if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())) {
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipSourceType());
+            if (mdl != null && !mdl.isEmpty()) {
+                mdl.get(0).setValue(rel.getSourceType());
+            } else {
+                md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipSourceType()));
+                relationGroup.addMetadata(md);
+                md.setValue(rel.getSourceType());
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
 package de.intranda.goobi.plugins.model;
 
-import lombok.Data;
-import org.apache.commons.lang.StringUtils;
-import ugh.dl.MetadataGroup;
-
 import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
+
+import lombok.Data;
+import ugh.dl.MetadataGroup;
 
 @Data
 public class Relationship {
@@ -15,6 +16,7 @@ public class Relationship {
     private String endDate;
 
     private String additionalData;
+    private String sourceType;
     private String processId;
     private String displayName;
 
