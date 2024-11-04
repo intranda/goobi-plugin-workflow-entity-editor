@@ -8,10 +8,8 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 
-import io.goobi.vocabulary.exchange.FieldDefinition;
-import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
-import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedFieldInstance;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.Setter;
@@ -127,35 +125,21 @@ public class EntityConfig {
             this.allTypes.add(newType);
 
             if (extendedConfiguration) {
-                System.out.println("Type: " + entityName);
-                long start = System.currentTimeMillis();
 
                 for (HierarchicalConfiguration field : type.configurationsAt("/displayMetadata/field")) {
                     ConfiguredField metadataField = extractField(field);
                     newType.addMetadataField(metadataField);
                 }
-                System.out.println("fields: " + (System.currentTimeMillis() - start));
 
                 for (HierarchicalConfiguration field : type.configurationsAt("/relations/relation")) {
                     long id = field.getLong("@id", 0L);
+                    String name = field.getString("@name");
                     boolean reverse = field.getBoolean("@reverse", false);
                     String destinationEntity = field.getString("@destinationEntity");
                     String sourceEntity = entityName;
                     if (id != 0) {
-                        ExtendedVocabulary vocabulary = vocabularyAPIManager.vocabularies().get(id);
-                        List<FieldDefinition> fieldDefinitions =
-                                vocabularyAPIManager.vocabularySchemas().get(vocabulary.getSchemaId()).getDefinitions();
-
-                        long relationshipTypeId = extractFieldId(vocabulary, fieldDefinitions, "Relationship type");
-                        long reverseRelationshipTypeId = extractFieldId(vocabulary, fieldDefinitions, "Reverse relationship");
-                        long dateBeginningAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Date beginning allowed");
-                        long dateEndAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Date end allowed");
-                        long additionalTextFieldAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Additional text field allowed");
-
-                        long recStart = System.currentTimeMillis();
-
                         List<ExtendedVocabularyRecord> records = vocabularyAPIManager.vocabularyRecords()
-                                .list(vocabulary.getId())
+                                .list(id)
                                 .all()
                                 .request()
                                 .getContent();
@@ -165,149 +149,65 @@ public class EntityConfig {
                             relationType.setSourceType(sourceEntity);
                             relationType.setDestinationType(destinationEntity);
 
-                            relationType.setVocabularyName(vocabulary.getName());
-                            relationType.setVocabularyUrl(vocabulary.getURI());
+                            relationType.setVocabularyName(name);
 
-                            // Ignore multi-values
-                            rec.getFields()
-                                    .stream()
-                                    .filter(f -> f.getDefinitionId().equals(relationshipTypeId))
-                                    .flatMap(f -> f.getValues().stream())
-                                    .flatMap(v -> v.getTranslations().stream())
-                                    .forEach(t -> {
-                                        if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
-                                        }
-                                        if (!reverse) {
-                                            switch (t.getLanguage()) {
-                                                case "eng":
-                                                    relationType.setRelationshipNameEn(t.getValue());
-                                                    break;
-                                                case "ger":
-                                                    relationType.setRelationshipNameDe(t.getValue());
-                                                    break;
-                                                case "fre":
-                                                    relationType.setRelationshipNameFr(t.getValue());
-                                                    break;
-                                                default:
-                                                    throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                            }
-                                        } else {
-                                            switch (t.getLanguage()) {
-                                                case "eng":
-                                                    relationType.setReversedRelationshipNameEn(t.getValue());
-                                                    break;
-                                                case "ger":
-                                                    relationType.setReversedRelationshipNameDe(t.getValue());
-                                                    break;
-                                                case "fre":
-                                                    relationType.setReversedRelationshipNameFr(t.getValue());
-                                                    break;
-                                                default:
-                                                    throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                            }
-                                        }
-                                    });
-                            rec.getFields()
-                                    .stream()
-                                    .filter(f -> f.getDefinitionId().equals(reverseRelationshipTypeId))
-                                    .flatMap(f -> f.getValues().stream())
-                                    .flatMap(v -> v.getTranslations().stream())
-                                    .forEach(t -> {
-                                        if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
-                                        }
+                            relationType.setVocabularyUrl(rec.get_links().get("vocabulary").getHref());
+                            for (ExtendedFieldInstance efi : rec.getExtendedFields()) {
+                                switch (efi.getDefinition().getName()) {
+                                    case "Relationship type":
                                         if (reverse) {
-                                            switch (t.getLanguage()) {
-                                                case "eng":
-                                                    relationType.setRelationshipNameEn(t.getValue());
-                                                    break;
-                                                case "ger":
-                                                    relationType.setRelationshipNameDe(t.getValue());
-                                                    break;
-                                                case "fre":
-                                                    relationType.setRelationshipNameFr(t.getValue());
-                                                    break;
-                                                default:
-                                                    throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                            }
+                                            relationType.setReversedRelationshipNameEn(efi.getFieldValue("eng"));
+                                            relationType.setReversedRelationshipNameDe(efi.getFieldValue("ger"));
+                                            relationType.setReversedRelationshipNameFr(efi.getFieldValue("fre"));
                                         } else {
-                                            switch (t.getLanguage()) {
-                                                case "eng":
-                                                    relationType.setReversedRelationshipNameEn(t.getValue());
-                                                    break;
-                                                case "ger":
-                                                    relationType.setReversedRelationshipNameDe(t.getValue());
-                                                    break;
-                                                case "fre":
-                                                    relationType.setReversedRelationshipNameFr(t.getValue());
-                                                    break;
-                                                default:
-                                                    throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                            }
+                                            relationType.setRelationshipNameEn(efi.getFieldValue("eng"));
+                                            relationType.setRelationshipNameDe(efi.getFieldValue("ger"));
+                                            relationType.setRelationshipNameFr(efi.getFieldValue("fre"));
                                         }
-                                    });
-                            rec.getFields()
-                                    .stream()
-                                    .filter(f -> f.getDefinitionId().equals(dateBeginningAllowedId))
-                                    .flatMap(f -> f.getValues().stream())
-                                    .flatMap(v -> v.getTranslations().stream())
-                                    .forEach(t -> {
-                                        if (t.getLanguage() != null) {
-                                            throw new IllegalStateException("Language specification not allowed here, this should never happen!");
+
+                                        break;
+                                    case "Reverse relationship":
+                                        if (reverse) {
+                                            relationType.setRelationshipNameEn(efi.getFieldValue("eng"));
+                                            relationType.setRelationshipNameDe(efi.getFieldValue("ger"));
+                                            relationType.setRelationshipNameFr(efi.getFieldValue("fre"));
+                                        } else {
+                                            relationType.setReversedRelationshipNameEn(efi.getFieldValue("eng"));
+                                            relationType.setReversedRelationshipNameDe(efi.getFieldValue("ger"));
+                                            relationType.setReversedRelationshipNameFr(efi.getFieldValue("fre"));
                                         }
-                                        if ("yes".equals(t.getValue())) {
+
+                                        break;
+                                    case "Date beginning allowed":
+                                        if ("yes".equals(efi.getFieldValue())) {
                                             relationType.setDisplayStartDate(true);
                                         }
-                                    });
-                            rec.getFields()
-                                    .stream()
-                                    .filter(f -> f.getDefinitionId().equals(dateEndAllowedId))
-                                    .flatMap(f -> f.getValues().stream())
-                                    .flatMap(v -> v.getTranslations().stream())
-                                    .forEach(t -> {
-                                        if (t.getLanguage() != null) {
-                                            throw new IllegalStateException("Language specification not allowed here, this should never happen!");
-                                        }
-                                        if ("yes".equals(t.getValue())) {
+                                        break;
+                                    case "Date end allowed":
+                                        if ("yes".equals(efi.getFieldValue())) {
                                             relationType.setDisplayEndDate(true);
                                         }
-                                    });
-                            rec.getFields()
-                                    .stream()
-                                    .filter(f -> f.getDefinitionId().equals(additionalTextFieldAllowedId))
-                                    .flatMap(f -> f.getValues().stream())
-                                    .flatMap(v -> v.getTranslations().stream())
-                                    .forEach(t -> {
-                                        if (t.getLanguage() != null) {
-                                            throw new IllegalStateException("Language specification not allowed here, this should never happen!");
-                                        }
-                                        if ("yes".equals(t.getValue())) {
+                                        break;
+                                    case "Additional text field allowed":
+                                        if ("yes".equals(efi.getFieldValue())) {
                                             relationType.setDisplayAdditionalData(true);
                                         }
-                                    });
+                                        break;
+                                    default:
+
+                                }
+
+                            }
 
                             if (StringUtils.isNotBlank(relationType.getRelationshipNameEn())) {
                                 newType.addRelationshipType(relationType);
                             }
                         }
-                        System.out.println("Relation " + id + ": " + (System.currentTimeMillis() - recStart));
-
                     }
                 }
-                System.out.println("All relations: " + (System.currentTimeMillis() - start));
             }
 
         }
-    }
-
-    private long extractFieldId(Vocabulary vocabulary, List<FieldDefinition> fieldDefinitions, String fieldName) {
-        return fieldDefinitions.stream()
-                .filter(d -> fieldName.equals(d.getName()))
-                .map(FieldDefinition::getId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabulary.getName() + "\" [" + vocabulary.getId()
-                        + "] does not contain required field \"" + fieldName + "\""));
     }
 
     private ConfiguredField extractField(HierarchicalConfiguration field) {
@@ -337,10 +237,7 @@ public class EntityConfig {
         if ("vocabularyList".equals(fieldType)) {
             String vocabularyName = field.getString("/vocabulary/@name");
             String vocabularyId = field.getString("/vocabulary/@id");
-            long start = System.currentTimeMillis();
             metadataField.setVocabulary(vocabularyName, vocabularyId);
-            long end = System.currentTimeMillis();
-            System.out.println("Vocabulary for field " + label + ": " + (end - start));
 
         } else if ("select".equals(fieldType)) {
             metadataField.setValueList(Arrays.asList(field.getStringArray("/value")));
