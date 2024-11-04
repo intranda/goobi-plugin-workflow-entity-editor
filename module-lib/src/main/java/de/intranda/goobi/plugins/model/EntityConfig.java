@@ -113,6 +113,7 @@ public class EntityConfig {
         relationshipSourceType = config.getString("/global/relations/sourceType", null);
 
         List<HierarchicalConfiguration> configuredTypes = config.configurationsAt("/type");
+
         for (HierarchicalConfiguration type : configuredTypes) {
             String entityName = type.getString("@name");
             String namePlural = type.getString("@plural");
@@ -126,11 +127,14 @@ public class EntityConfig {
             this.allTypes.add(newType);
 
             if (extendedConfiguration) {
+                System.out.println("Type: " + entityName);
+                long start = System.currentTimeMillis();
 
                 for (HierarchicalConfiguration field : type.configurationsAt("/displayMetadata/field")) {
                     ConfiguredField metadataField = extractField(field);
                     newType.addMetadataField(metadataField);
                 }
+                System.out.println("fields: " + (System.currentTimeMillis() - start));
 
                 for (HierarchicalConfiguration field : type.configurationsAt("/relations/relation")) {
                     long id = field.getLong("@id", 0L);
@@ -147,6 +151,8 @@ public class EntityConfig {
                         long dateBeginningAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Date beginning allowed");
                         long dateEndAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Date end allowed");
                         long additionalTextFieldAllowedId = extractFieldId(vocabulary, fieldDefinitions, "Additional text field allowed");
+
+                        long recStart = System.currentTimeMillis();
 
                         List<ExtendedVocabularyRecord> records = vocabularyAPIManager.vocabularyRecords()
                                 .list(vocabulary.getId())
@@ -285,9 +291,11 @@ public class EntityConfig {
                                 newType.addRelationshipType(relationType);
                             }
                         }
+                        System.out.println("Relation " + id + ": " + (System.currentTimeMillis() - recStart));
 
                     }
                 }
+                System.out.println("All relations: " + (System.currentTimeMillis() - start));
             }
 
         }
@@ -329,7 +337,11 @@ public class EntityConfig {
         if ("vocabularyList".equals(fieldType)) {
             String vocabularyName = field.getString("/vocabulary/@name");
             String vocabularyId = field.getString("/vocabulary/@id");
+            long start = System.currentTimeMillis();
             metadataField.setVocabulary(vocabularyName, vocabularyId);
+            long end = System.currentTimeMillis();
+            System.out.println("Vocabulary for field " + label + ": " + (end - start));
+
         } else if ("select".equals(fieldType)) {
             metadataField.setValueList(Arrays.asList(field.getStringArray("/value")));
         } else if ("vocabularySearch".equals(fieldType)) {

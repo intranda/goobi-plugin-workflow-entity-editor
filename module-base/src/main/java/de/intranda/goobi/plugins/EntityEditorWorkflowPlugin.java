@@ -129,30 +129,30 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<ExtendedVocabularyRecord> records;
+    private transient List<ExtendedVocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private ExtendedVocabularyRecord selectedVocabularyRecord;
+    private transient ExtendedVocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
     @Setter
     private transient MetadataField currentField;
-    private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
+    private transient VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
 
-    private Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
+    private transient Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
     // list of all sources
     @Getter
-    private List<ExtendedVocabularyRecord> sources;
+    private transient List<ExtendedVocabularyRecord> sources;
 
-    private Vocabulary sourceVocabulary;
+    private transient Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private ExtendedVocabularyRecord selectedSource;
+    private transient ExtendedVocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -237,15 +237,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
      * Constructor
      */
     public EntityEditorWorkflowPlugin() {
-        XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
-        config.setExpressionEngine(new XPathExpressionEngine());
 
-        try {
-            configuration = new EntityConfig(config, true);
-            sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
-        } catch (RuntimeException e) {
-            Helper.setFehlerMeldung(e.getMessage());
-        }
     }
 
     /**
@@ -274,7 +266,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return "";
         }
 
-        entity = new Entity(configuration, currentProcess);
+        entity = new Entity(getConfiguration(), currentProcess);
 
         // create breadcrumb item for new entity
         boolean isAdded = false;
@@ -417,7 +409,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        for (String field : configuration.getSourceSearchFields()) {
+        for (String field : getConfiguration().getSourceSearchFields()) {
             data.add(new StringPair(field, searchValue));
         }
 
@@ -430,7 +422,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
         Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
-        sources = findRecords(configuration.getSourceVocabularyName(), searchParameter);
+        sources = findRecords(getConfiguration().getSourceVocabularyName(), searchParameter);
         showNotHits = sources == null || sources.isEmpty();
     }
 
@@ -476,8 +468,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
         }
 
-        sourceName = getSourceFieldValue(configuration.getSourceNameFields());
-        sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
+        sourceName = getSourceFieldValue(getConfiguration().getSourceNameFields());
+        sourceLink = getSourceFieldValue(getConfiguration().getSourceUrlFields());
 
         SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
 
@@ -648,7 +640,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             String processid = (String) objArr[0];
             Process process = ProcessManager.getProcessById(Integer.parseInt(processid));
             try {
-                Entity e = new Entity(configuration, process);
+                Entity e = new Entity(getConfiguration(), process);
                 entities.add(e);
             } catch (IllegalArgumentException e) {
                 // ignore this error, it is already logged
@@ -663,7 +655,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // unlock
             LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
         }
-        Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
+        Process template = ProcessManager.getProcessById(getConfiguration().getProcessTemplateId());
         prefs = template.getRegelsatz().getPreferences();
         String processname = UUID.randomUUID().toString();
 
@@ -691,7 +683,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // create process
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
-        entity = new Entity(configuration, newProcess);
+        entity = new Entity(getConfiguration(), newProcess);
         entity.getDisplayNameProperty().setWert(processname);
         entity.saveEntity();
         LockingBean.lockObject(String.valueOf(entity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname());
@@ -737,7 +729,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipStartDate = relationship.getBeginningDate();
         relationshipEndDate = relationship.getEndDate();
         relationshipData = relationship.getAdditionalData();
-        changeRelationshipEntity = new Entity(configuration, currentProcess);
+        changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
         if (relationship.isReverse()) {
             setRelationship(relationship.getType().getReversedRelationshipNameEn());
@@ -866,7 +858,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         entity.saveEntity();
 
-        Entity other = new Entity(configuration, otherProcess);
+        Entity other = new Entity(getConfiguration(), otherProcess);
         List<Relationship> relationships = other.getLinkedRelationships().get(entity.getCurrentType());
         String processid = String.valueOf(entity.getCurrentProcess().getId());
         Relationship otherRleationship = null;
@@ -909,7 +901,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
         // run export plugin for current process
 
-        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, getConfiguration().getExportPluginName());
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
@@ -936,7 +928,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // save
         entity.saveEntity();
         // run export plugin for current process
-        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, getConfiguration().getExportPluginName());
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
@@ -966,7 +958,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public List<EntityType> getAllEntityTypes() {
-        return configuration.getAllTypes();
+        return getConfiguration().getAllTypes();
     }
 
     public void setTypeAsString(String type) {
@@ -1038,7 +1030,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return false;
     }
 
-    public void updateDisplayName(AjaxBehaviorEvent event) {
+    public void updateDisplayName(AjaxBehaviorEvent event) { //NOSONAR parameter must exist, otherwise jsf cannot find the method
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         try {
@@ -1054,59 +1046,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         this.sourceType = sourceType;
     }
 
-    /*
-     * SQL statements to generate display name for each type
-    
-    clear old data: delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, concat(m1.value, " ", m2.value) as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'FirstnameEn'
-    left join metadata m2 on t.ProzesseID = m2.processid and m2.name = 'LastnameEn'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'where t.WERT is null  and m3.value = 'Person') x;
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Event') x;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Work') x;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Agent') x;
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Award') x;
-    
-     */
+    public EntityConfig getConfiguration() {
+        if (configuration == null) {
+            try {
+                XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
+                config.setExpressionEngine(new XPathExpressionEngine());
+                configuration = new EntityConfig(config, true);
+                sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
+            } catch (RuntimeException e) {
+                Helper.setFehlerMeldung(e.getMessage());
+            }
+        }
+        return configuration;
+    }
 
 }
