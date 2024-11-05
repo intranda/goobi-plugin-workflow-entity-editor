@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import io.goobi.vocabulary.exchange.FieldDefinition;
+import io.goobi.vocabulary.exchange.FieldInstance;
+import io.goobi.vocabulary.exchange.TranslationInstance;
 import io.goobi.vocabulary.exchange.VocabularyRecord;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
@@ -196,8 +198,6 @@ public class ConfiguredField {
                     .listPlain(currentVocabulary.getId())
                     .getContent();
 
-            //
-
             vocabularyList = new ArrayList<>(recordList.size());
 
             for (VocabularyRecord vr : recordList) {
@@ -205,33 +205,28 @@ public class ConfiguredField {
                 ve.setId(vr.getId());
 
                 ve.setEntryUrl(vr.get_links().get("self").getHref());
-                vr.getFields()
-                        .stream()
-                        .filter(f -> f.getDefinitionId().equals(mainFieldId)) // Should be a single one
-                        .flatMap(f -> f.getValues().stream()) // TODO: Ignore multi-values (for now)
-                        .flatMap(v -> v.getTranslations().stream())
-                        .forEach(t -> {
-                            if (t.getLanguage() != null) { // In case a switch on null leads to errors
-                                switch (t.getLanguage()) {
-                                    case "eng":
-                                        ve.setLabelEn(t.getValue());
-                                        break;
-                                    case "fre":
-                                        ve.setLabelFr(t.getValue());
-                                        break;
-                                    case "ger":
-                                        ve.setLabelDe(t.getValue());
-                                        break;
-                                    default:
-                                        throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                }
+
+                for (FieldInstance efi : vr.getFields()) {
+                    if (efi.getDefinitionId().equals(mainFieldId)) {
+                        List<TranslationInstance> translations = efi.getValues().get(0).getTranslations();
+
+                        for (TranslationInstance ti : translations) {
+                            if ("eng".equals(ti.getLanguage())) {
+                                ve.setLabelEn(ti.getValue());
+                            } else if ("ger".equals(ti.getLanguage())) {
+                                ve.setLabelDe(ti.getValue());
+                            } else if ("fre".equals(ti.getLanguage())) {
+                                ve.setLabelFr(ti.getValue());
                             }
-                        });
+                        }
+                    }
+                }
                 vocabularyList.add(ve);
             }
 
-            vocabularyList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
+            vocabularyList.sort((r1, r2) -> r1.getLabelEn().compareToIgnoreCase(r2.getLabelEn()));
         }
+
     }
 
     public void adMetadataField(MetadataField metadataField) {

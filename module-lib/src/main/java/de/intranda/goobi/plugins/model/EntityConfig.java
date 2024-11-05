@@ -134,7 +134,6 @@ public class EntityConfig {
                     ConfiguredField metadataField = extractField(field);
                     newType.addMetadataField(metadataField);
                 }
-                long start = System.currentTimeMillis();
                 for (HierarchicalConfiguration field : type.configurationsAt("/relations/relation")) {
                     long id = field.getLong("@id", 0L);
                     String name = field.getString("@name");
@@ -214,20 +213,17 @@ public class EntityConfig {
                                         }
                                     }
 
-                                } else if (efi.getDefinitionId().equals(dateBeginningAllowedId)) {
-                                    if ("yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
-                                        relationType.setDisplayStartDate(true);
-                                    }
+                                } else if (efi.getDefinitionId().equals(dateBeginningAllowedId)
+                                        && "yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
+                                    relationType.setDisplayStartDate(true);
 
-                                } else if (efi.getDefinitionId().equals(dateEndAllowedId)) {
-                                    if ("yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
-                                        relationType.setDisplayEndDate(true);
-                                    }
+                                } else if (efi.getDefinitionId().equals(dateEndAllowedId)
+                                        && "yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
+                                    relationType.setDisplayEndDate(true);
 
-                                } else if (efi.getDefinitionId().equals(additionalTextFieldAllowedId)) {
-                                    if ("yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
-                                        relationType.setDisplayAdditionalData(true);
-                                    }
+                                } else if (efi.getDefinitionId().equals(additionalTextFieldAllowedId)
+                                        && "yes".equals(efi.getValues().get(0).getTranslations().get(0).getValue())) {
+                                    relationType.setDisplayAdditionalData(true);
                                 }
 
                             }
@@ -238,7 +234,6 @@ public class EntityConfig {
                         }
                     }
                 }
-                System.out.println("Duration : " + (System.currentTimeMillis() - start));
             }
 
         }
