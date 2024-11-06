@@ -6,9 +6,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import io.goobi.vocabulary.exchange.FieldDefinition;
+import io.goobi.vocabulary.exchange.FieldInstance;
+import io.goobi.vocabulary.exchange.TranslationInstance;
+import io.goobi.vocabulary.exchange.VocabularyRecord;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
-import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -192,45 +194,39 @@ public class ConfiguredField {
 
         if ("vocabularyList".equals(fieldType)) {
 
-            List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
-                    .list(currentVocabulary.getId())
-                    .all()
-                    .request()
+            List<VocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
+                    .listPlain(currentVocabulary.getId())
                     .getContent();
-            recordList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
 
             vocabularyList = new ArrayList<>(recordList.size());
 
-            for (ExtendedVocabularyRecord vr : recordList) {
+            for (VocabularyRecord vr : recordList) {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
-                ve.setMainValue(vr.getMainValue());
-                ve.setEntryUrl(vr.getURI());
-                vr.getFields()
-                        .stream()
-                        .filter(f -> f.getDefinitionId().equals(mainFieldId)) // Should be a single one
-                        .flatMap(f -> f.getValues().stream()) // TODO: Ignore multi-values (for now)
-                        .flatMap(v -> v.getTranslations().stream())
-                        .forEach(t -> {
-                            if (t.getLanguage() != null) { // In case a switch on null leads to errors
-                                switch (t.getLanguage()) {
-                                    case "eng":
-                                        ve.setLabelEn(t.getValue());
-                                        break;
-                                    case "fre":
-                                        ve.setLabelFr(t.getValue());
-                                        break;
-                                    case "ger":
-                                        ve.setLabelDe(t.getValue());
-                                        break;
-                                    default:
-                                        throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                }
+
+                ve.setEntryUrl(vr.get_links().get("self").getHref());
+
+                for (FieldInstance efi : vr.getFields()) {
+                    if (efi.getDefinitionId().equals(mainFieldId)) {
+                        List<TranslationInstance> translations = efi.getValues().get(0).getTranslations();
+
+                        for (TranslationInstance ti : translations) {
+                            if ("eng".equals(ti.getLanguage())) {
+                                ve.setLabelEn(ti.getValue());
+                            } else if ("ger".equals(ti.getLanguage())) {
+                                ve.setLabelDe(ti.getValue());
+                            } else if ("fre".equals(ti.getLanguage())) {
+                                ve.setLabelFr(ti.getValue());
                             }
-                        });
+                        }
+                    }
+                }
                 vocabularyList.add(ve);
             }
+
+            vocabularyList.sort((r1, r2) -> r1.getLabelEn().compareToIgnoreCase(r2.getLabelEn()));
         }
+
     }
 
     public void adMetadataField(MetadataField metadataField) {
