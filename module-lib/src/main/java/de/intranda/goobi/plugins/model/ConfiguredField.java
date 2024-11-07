@@ -213,6 +213,7 @@ public class ConfiguredField {
                         for (TranslationInstance ti : translations) {
                             if ("eng".equals(ti.getLanguage())) {
                                 ve.setLabelEn(ti.getValue());
+                                ve.setMainValue(ti.getValue());
                             } else if ("ger".equals(ti.getLanguage())) {
                                 ve.setLabelDe(ti.getValue());
                             } else if ("fre".equals(ti.getLanguage())) {
