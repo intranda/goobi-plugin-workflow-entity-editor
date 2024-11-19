@@ -1,25 +1,21 @@
 package de.intranda.goobi.plugins.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
-import io.goobi.vocabulary.exchange.FieldDefinition;
-import io.goobi.vocabulary.exchange.FieldInstance;
-import io.goobi.vocabulary.exchange.TranslationInstance;
-import io.goobi.vocabulary.exchange.VocabularyRecord;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
 import ugh.dl.MetadataType;
 import ugh.exceptions.UGHException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -74,6 +70,8 @@ public class ConfiguredField {
     private String vocabularyId;
     @Getter
     private String vocabularyUrl;
+    @Getter
+    private String valueUrl;
 
     @Getter
     private List<VocabularyEntry> vocabularyList;
@@ -146,6 +144,7 @@ public class ConfiguredField {
         vocabularyName = other.getVocabularyName();
         vocabularyId = other.getVocabularyId();
         vocabularyUrl = other.getVocabularyUrl();
+        valueUrl = other.getValueUrl();
         vocabularyList = other.getVocabularyList();
 
         searchFields = other.getSearchFields();
@@ -184,50 +183,31 @@ public class ConfiguredField {
         vocabularyId = id;
         ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
         vocabularyUrl = currentVocabulary.getURI();
-        List<FieldDefinition> fieldDefinitions = vocabularyAPIManager.vocabularySchemas().get(currentVocabulary.getSchemaId()).getDefinitions();
-        long mainFieldId = fieldDefinitions.stream()
-                .filter(d -> Boolean.TRUE.equals(d.getMainEntry()))
-                .findFirst()
-                .map(FieldDefinition::getId)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Vocabulary \"" + vocabularyName + "\" has no main field specififed. This should not be possible..."));
 
         if ("vocabularyList".equals(fieldType)) {
 
-            List<VocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
-                    .listPlain(currentVocabulary.getId())
+            List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
+                    .list(currentVocabulary.getId())
+                    .all()
+                    .request()
                     .getContent();
+            recordList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
 
             vocabularyList = new ArrayList<>(recordList.size());
 
-            for (VocabularyRecord vr : recordList) {
+            for (ExtendedVocabularyRecord vr : recordList) {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
-
-                ve.setEntryUrl(vr.get_links().get("self").getHref());
-
-                for (FieldInstance efi : vr.getFields()) {
-                    if (efi.getDefinitionId().equals(mainFieldId)) {
-                        List<TranslationInstance> translations = efi.getValues().get(0).getTranslations();
-
-                        for (TranslationInstance ti : translations) {
-                            if ("eng".equals(ti.getLanguage())) {
-                                ve.setLabelEn(ti.getValue());
-                                ve.setMainValue(ti.getValue());
-                            } else if ("ger".equals(ti.getLanguage())) {
-                                ve.setLabelDe(ti.getValue());
-                            } else if ("fre".equals(ti.getLanguage())) {
-                                ve.setLabelFr(ti.getValue());
-                            }
-                        }
-                    }
-                }
+                ve.setMainValue(vr.getMainValue());
+                ve.setEntryUrl(vr.getURI());
+                vr.getMainField().ifPresent(mainField -> {
+                    ve.setLabelEn(mainField.getFieldValue("eng"));
+                    ve.setLabelFr(mainField.getFieldValue("ger"));
+                    ve.setLabelDe(mainField.getFieldValue("fre"));
+                });
                 vocabularyList.add(ve);
             }
-
-            vocabularyList.sort((r1, r2) -> r1.getLabelEn().compareToIgnoreCase(r2.getLabelEn()));
         }
-
     }
 
     public void adMetadataField(MetadataField metadataField) {

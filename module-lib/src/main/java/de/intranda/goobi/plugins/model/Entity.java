@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import de.sub.goobi.helper.Helper;
+import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
-import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
@@ -306,6 +306,7 @@ public class Entity {
                     String type = null;
                     String vocabularyName = null;
                     String vocabularyUrl = null;
+                    String valueUrl = null;
                     String sourceType = null;
 
                     for (Metadata md : group.getMetadataList()) {
@@ -332,9 +333,12 @@ public class Entity {
                             type = md.getValue();
                             vocabularyName = md.getAuthorityID();
                             vocabularyUrl = md.getAuthorityValue();
+                            valueUrl = md.getAuthorityValue();
                         } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
                                 && metadataType.equals(configuration.getRelationshipSourceType())) {
                             sourceType = md.getValue();
+                            vocabularyUrl = md.getAuthorityURI();
+                            valueUrl = md.getAuthorityValue();
                         }
 
                     }
@@ -366,6 +370,7 @@ public class Entity {
                     relationship.setDisplayName(displayName);
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
+                    relationship.setValueUrl(valueUrl);
                     relationship.setMetadataGroup(group);
                     for (EntityType et : linkedRelationships.keySet()) {
                         if (et.getName().equals(relationship.getEntityName())) {
@@ -623,6 +628,7 @@ public class Entity {
                 for (MetadataField subfield : field.getSubfields()) {
                     if ("Citation".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceName());
+                        // TODO distinct between source type and bibliography type
                     } else if ("Type".equals(subfield.getConfigField().getLabel())) {
                         subfield.getMetadata().setValue(currentSource.getSourceType());
                     } else if ("Link".equals(subfield.getConfigField().getLabel())) {
@@ -772,6 +778,7 @@ public class Entity {
         rel.setSourceType(relationshipSourceType);
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+        rel.setValueUrl(selectedRelationship.getValueUrl());
 
         MetadataGroup relationGroup = null;
 
@@ -857,7 +864,7 @@ public class Entity {
             }
             md.setValue(rel.getType().getRelationshipNameEn());
         }
-        md.setAuthorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
+        md.setAuthorityFile(rel.getVocabularyName(), rel.getVocabularyUrl(), rel.getValueUrl());
 
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
         if (mdl != null && !mdl.isEmpty()) {

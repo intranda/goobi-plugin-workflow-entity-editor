@@ -23,6 +23,7 @@ public class Relationship {
     private RelationshipType type;
     private String vocabularyName;
     private String vocabularyUrl;
+    private String valueUrl;
 
     private String processStatus = "New";
 
@@ -30,6 +31,18 @@ public class Relationship {
     private boolean reverse;
 
     private MetadataGroup metadataGroup;
+
+    // Makes sure that the vocabulary references are updated when the type changes
+    public void setType(RelationshipType type) {
+        this.type = type;
+        if (type == null) {
+            return;
+        }
+
+        this.vocabularyName = type.getVocabularyName();
+        this.vocabularyUrl = type.getVocabularyUrl();
+        this.valueUrl = type.getValueUrl();
+    }
 
     public String getLabel(Locale lang) {
         String label;

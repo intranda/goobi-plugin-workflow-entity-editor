@@ -17,6 +17,7 @@ public class RelationshipType {
 
     private String vocabularyName;
     private String vocabularyUrl;
+    private String valueUrl;
 
     private boolean displayStartDate = false;
     private boolean displayEndDate = false;
