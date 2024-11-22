@@ -332,16 +332,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         Metadata md = searchField.getMetadata();
         md.setValue(selectedVocabularyRecord.getMainValue());
-
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
-                    selectedVocabularyRecord.getURI());
-        } else {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
-                    selectedVocabularyRecord.getURI());
-        }
-
+        md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
+                selectedVocabularyRecord.getURI());
     }
 
     public void searchGeonames() {
@@ -448,7 +440,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         String sourceId = String.valueOf(selectedSource.getId());
-        String sourceUri;
         String sourceName = getSourceFieldValue(getConfiguration().getSourceNameFields());
         String sourceLink = getSourceFieldValue(getConfiguration().getSourceUrlFields());
 

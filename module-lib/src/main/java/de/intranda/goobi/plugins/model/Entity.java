@@ -332,7 +332,7 @@ public class Entity {
                         } else if (metadataType.equals(configuration.getRelationshipType())) {
                             type = md.getValue();
                             vocabularyName = md.getAuthorityID();
-                            vocabularyUrl = md.getAuthorityValue();
+                            vocabularyUrl = md.getAuthorityURI();
                             valueUrl = md.getAuthorityValue();
                         } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
                                 && metadataType.equals(configuration.getRelationshipSourceType())) {
