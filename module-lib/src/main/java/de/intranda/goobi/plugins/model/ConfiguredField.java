@@ -1,7 +1,5 @@
 package de.intranda.goobi.plugins.model;
 
-import io.goobi.vocabulary.exchange.FieldDefinition;
-import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
@@ -72,6 +70,8 @@ public class ConfiguredField {
     private String vocabularyId;
     @Getter
     private String vocabularyUrl;
+    @Getter
+    private String valueUrl;
 
     @Getter
     private List<VocabularyEntry> vocabularyList;
@@ -144,6 +144,7 @@ public class ConfiguredField {
         vocabularyName = other.getVocabularyName();
         vocabularyId = other.getVocabularyId();
         vocabularyUrl = other.getVocabularyUrl();
+        valueUrl = other.getValueUrl();
         vocabularyList = other.getVocabularyList();
 
         searchFields = other.getSearchFields();
@@ -182,12 +183,6 @@ public class ConfiguredField {
         vocabularyId = id;
         ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(vocabularyName);
         vocabularyUrl = currentVocabulary.getURI();
-        List<FieldDefinition> fieldDefinitions = vocabularyAPIManager.vocabularySchemas().get(currentVocabulary.getSchemaId()).getDefinitions();
-        long mainFieldId = fieldDefinitions.stream()
-                .filter(d -> Boolean.TRUE.equals(d.getMainEntry()))
-                .findFirst()
-                .map(FieldDefinition::getId)
-                .orElseThrow(() -> new IllegalStateException("Vocabulary \"" + vocabularyName + "\" has no main field specififed. This should not be possible..."));
 
         if ("vocabularyList".equals(fieldType)) {
 
@@ -205,27 +200,11 @@ public class ConfiguredField {
                 ve.setId(vr.getId());
                 ve.setMainValue(vr.getMainValue());
                 ve.setEntryUrl(vr.getURI());
-                vr.getFields().stream()
-                        .filter(f -> f.getDefinitionId().equals(mainFieldId)) // Should be a single one
-                        .flatMap(f -> f.getValues().stream()) // TODO: Ignore multi-values (for now)
-                        .flatMap(v -> v.getTranslations().stream())
-                        .forEach(t -> {
-                            if (t.getLanguage() != null) { // In case a switch on null leads to errors
-                                switch (t.getLanguage()) {
-                                    case "eng":
-                                        ve.setLabelEn(t.getValue());
-                                        break;
-                                    case "fre":
-                                        ve.setLabelFr(t.getValue());
-                                        break;
-                                    case "ger":
-                                        ve.setLabelDe(t.getValue());
-                                        break;
-                                    default:
-                                        throw new IllegalArgumentException("Unknown language \"" + t.getLanguage() + "\"");
-                                }
-                            }
-                        });
+                vr.getMainField().ifPresent(mainField -> {
+                    ve.setLabelEn(mainField.getFieldValue("eng"));
+                    ve.setLabelFr(mainField.getFieldValue("ger"));
+                    ve.setLabelDe(mainField.getFieldValue("fre"));
+                });
                 vocabularyList.add(ve);
             }
         }

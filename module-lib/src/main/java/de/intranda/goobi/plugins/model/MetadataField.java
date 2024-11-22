@@ -459,6 +459,9 @@ public class MetadataField {
         @Override
         public boolean equals(Object obj) {
             SourceField other = (SourceField) obj;
+            if (other == null) {
+                return false;
+            }
 
             return sourceId.equals(other.sourceId);
         }

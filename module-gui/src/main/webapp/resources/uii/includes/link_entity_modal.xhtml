@@ -49,7 +49,8 @@
                                 </button>
                                 <h4
                                     class="modal-title"
-                                    style="width: 90%">#{msgs.plugin_workflow_entity_linkType} #{msgs[NavigationForm.workflowPlugin.entityType.name]}</h4>
+                                    style="width: 90%">#{msgs.plugin_workflow_entity_linkType}
+                                    #{msgs[NavigationForm.workflowPlugin.entityType.name]}</h4>
                             </div>
                             <div
                                 jsf:id="entity-modal-body"
@@ -90,7 +91,8 @@
                                     layout="block"
                                     id="createEntity"
                                     styleClass="row form-group vocabulary-searcharea">
-                                    <ui:fragment rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                    <ui:fragment
+                                        rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
                                         <div class="create-new-entity__hits">#{msgs.NORM_noHits}</div>
                                         <div class="create-new-entity__actions">
                                             <button
@@ -110,7 +112,8 @@
                                 <h:panelGroup
                                     id="entityList"
                                     rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
-                                    <ui:fragment rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
+                                    <ui:fragment
+                                        rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
 
                                         <div class="modal__gnd-list link-entity-modal__search-results">
                                             <x:dataList
@@ -137,7 +140,7 @@
                                                                             value="#{msgs[configuredField.label]}" />
                                                                     </h:panelGroup>
 
-<h:panelGroup
+                                                                    <h:panelGroup
                                                                         layout="block"
                                                                         rendered="#{!field.configField.group and field.metadata.value != null}"
                                                                         styleClass="col-sm-9">
@@ -154,7 +157,7 @@
                                                                         <ui:repeat
                                                                             var="subfield"
                                                                             value="#{field.subfields}">
-                                                               <h:panelGroup
+                                                                            <h:panelGroup
                                                                                 layout="block"
                                                                                 styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
                                                                                 rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
@@ -228,7 +231,9 @@
                                                     value="#{configuredField.metadataList}"
                                                     rendered="#{configuredField.showInSearch}">
 
-                                                    <h:panelGroup styleClass="form-group noborder" rendered="#{field.showFieldInSearchResult}">
+                                                    <h:panelGroup
+                                                        styleClass="form-group noborder"
+                                                        rendered="#{field.showFieldInSearchResult}">
                                                         <h:panelGroup
                                                             styleClass="col-sm-3 control-label"
                                                             rendered="#{field.configField.group or field.metadata.value != null}">
@@ -345,48 +350,75 @@
                                                     for="additionalData" />
                                             </div>
                                             <div class="col-sm-9">
-                                            
+
                                                 <h:inputText
                                                     id="additionalData"
                                                     styleClass="form-control tinymce"
                                                     value="#{NavigationForm.workflowPlugin.relationshipData}" />
                                             </div>
+                                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.configuration.relationshipSourceType != ''}">
+                                                <div class="col-sm-3 noborder">
+                                                    <h:outputLabel
+                                                        value="#{msgs.plugin_workflow_entity_editor_sourceType}"
+                                                        for="addRelationshipSourceType" />
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <h:selectOneMenu
+                                                        id="addRelationshipSourceType"
+                                                        styleClass="form-control"
+                                                        value="#{NavigationForm.workflowPlugin.relationshipSourceType}">
+                                                        <f:selectItem
+                                                            itemValue=""
+                                                            itemLabel="#{msgs.bitteAuswaehlen}" />
+                                                        <f:selectItem
+                                                            itemLabel="#{msgs.plugin_workflow_entity_editor_primary}"
+                                                            itemValue="Primary" />
+                                                        <f:selectItem
+                                                            itemLabel="#{msgs.plugin_workflow_entity_editor_secondary}"
+                                                            itemValue="Secondary" />
+                                                        <f:selectItem
+                                                            itemLabel="#{msgs.plugin_workflow_entity_editor_tertiary}"
+                                                            itemValue="Tertiary" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </ui:fragment>
+
                                         </h:panelGroup>
                                     </h:panelGroup>
                                 </h:panelGroup>
 
                                 <!-- back to search list -->
                                 <div class="link-entity-modal__actions">
-                                <button
-                                    class="btn btn-lightgrey"
-                                    jsf:id="back"
-                                    jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
-                                    <i
-                                        class="fa fa-undo margin-right-10"
-                                        aria-hidden="true"></i>
-                                    <h:outputText value="#{msgs.zurueck}" />
-                                    <f:passThroughAttribute
-                                        name="data-toggle"
-                                        value="tooltip" />
-                                    <f:setPropertyActionListener
-                                        value=""
-                                        target="#{NavigationForm.workflowPlugin.selectedEntity}" />
-                                    <f:ajax
-                                        execute="@this"
-                                        render="entityModalContent" />
-                                </button>
+                                    <button
+                                        class="btn btn-lightgrey"
+                                        jsf:id="back"
+                                        jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
+                                        <i
+                                            class="fa fa-undo margin-right-10"
+                                            aria-hidden="true"></i>
+                                        <h:outputText value="#{msgs.zurueck}" />
+                                        <f:passThroughAttribute
+                                            name="data-toggle"
+                                            value="tooltip" />
+                                        <f:setPropertyActionListener
+                                            value=""
+                                            target="#{NavigationForm.workflowPlugin.selectedEntity}" />
+                                        <f:ajax
+                                            execute="@this"
+                                            render="entityModalContent" />
+                                    </button>
 
 
-                                <!-- add/save buttons -->
+                                    <!-- add/save buttons -->
 
-                                <button
-                                    jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
-                                    jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
-                                    title="#{msgs.save}"
-                                    class="btn btn-green">
-                                    <i class="fa fa-floppy-o margin-right-10"></i>
-                                    <h:outputText value="#{msgs.save}" />
-                                </button>
+                                    <button
+                                        jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
+                                        jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
+                                        title="#{msgs.save}"
+                                        class="btn btn-green">
+                                        <i class="fa fa-floppy-o margin-right-10"></i>
+                                        <h:outputText value="#{msgs.save}" />
+                                    </button>
                                 </div>
 
                             </div>

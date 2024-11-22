@@ -1,5 +1,39 @@
 package de.intranda.goobi.plugins;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.faces.event.AjaxBehaviorEvent;
+
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.apache.commons.lang.StringUtils;
+import org.geonames.Style;
+import org.geonames.Toponym;
+import org.geonames.ToponymSearchCriteria;
+import org.geonames.ToponymSearchResult;
+import org.geonames.WebService;
+import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
+import org.goobi.production.enums.PluginGuiType;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.PluginLoader;
+import org.goobi.production.plugin.interfaces.IExportPlugin;
+import org.goobi.production.plugin.interfaces.IPlugin;
+import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
+
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
 import de.intranda.goobi.plugins.model.Entity;
 import de.intranda.goobi.plugins.model.EntityConfig;
@@ -18,8 +52,6 @@ import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.helper.exceptions.UghHelperException;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import io.goobi.vocabulary.exchange.FieldDefinition;
-import io.goobi.vocabulary.exchange.FieldInstance;
-import io.goobi.vocabulary.exchange.TranslationInstance;
 import io.goobi.vocabulary.exchange.Vocabulary;
 import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
@@ -29,22 +61,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.apache.commons.lang.StringUtils;
-import org.geonames.Style;
-import org.geonames.Toponym;
-import org.geonames.ToponymSearchCriteria;
-import org.geonames.ToponymSearchResult;
-import org.geonames.WebService;
-import org.goobi.beans.Process;
-import org.goobi.production.cli.helper.StringPair;
-import org.goobi.production.enums.PluginGuiType;
-import org.goobi.production.enums.PluginType;
-import org.goobi.production.plugin.PluginLoader;
-import org.goobi.production.plugin.interfaces.IExportPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 import ugh.dl.DigitalDocument;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
@@ -59,23 +75,6 @@ import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
-
-import javax.faces.event.AjaxBehaviorEvent;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Proxy.Type;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 @PluginImplementation
 @Log4j2
@@ -130,30 +129,30 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     // records found in vocabulary search
     @Getter
-    private List<ExtendedVocabularyRecord> records;
+    private transient List<ExtendedVocabularyRecord> records;
 
     // selected record to import
     @Getter
     @Setter
-    private ExtendedVocabularyRecord selectedVocabularyRecord;
+    private transient ExtendedVocabularyRecord selectedVocabularyRecord;
 
     // selected field to add sources
     @Getter
     @Setter
     private transient MetadataField currentField;
-    private VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
+    private transient VocabularyAPIManager vocabularyAPIManager = VocabularyAPIManager.getInstance();
 
-    private Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
+    private transient Map<Long, FieldDefinition> definitionsIdMap = new HashMap<>();
     // list of all sources
     @Getter
-    private List<ExtendedVocabularyRecord> sources;
+    private transient List<ExtendedVocabularyRecord> sources;
 
-    private Vocabulary sourceVocabulary;
+    private transient Vocabulary sourceVocabulary;
 
     // selected sources to add
     @Getter
     @Setter
-    private ExtendedVocabularyRecord selectedSource;
+    private transient ExtendedVocabularyRecord selectedSource;
 
     // page range within the source
     @Getter
@@ -209,6 +208,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
     @Getter
     @Setter
+    private String relationshipSourceType;
+
+    @Getter
+    @Setter
     private Prefs prefs;
 
     @Getter
@@ -229,21 +232,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     private transient Entity changeRelationshipEntity;
     private transient Relationship changeRelationship;
-
-    /**
-     * Constructor
-     */
-    public EntityEditorWorkflowPlugin() {
-        XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
-        config.setExpressionEngine(new XPathExpressionEngine());
-
-        try {
-            configuration = new EntityConfig(config);
-            sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
-        } catch (RuntimeException e) {
-            Helper.setFehlerMeldung(e.getMessage());
-        }
-    }
 
     /**
      * Close the current element and open the selected breadcrumb
@@ -271,7 +259,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return "";
         }
 
-        entity = new Entity(configuration, currentProcess);
+        entity = new Entity(getConfiguration(), currentProcess);
 
         // create breadcrumb item for new entity
         boolean isAdded = false;
@@ -344,16 +332,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         Metadata md = searchField.getMetadata();
         md.setValue(selectedVocabularyRecord.getMainValue());
-
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl(),
-                    selectedVocabularyRecord.getURI());
-        } else {
-            md.setAuthorityFile(searchField.getConfigField().getVocabularyUrl(), searchField.getConfigField().getVocabularyUrl(),
-                    selectedVocabularyRecord.getURI());
-        }
-
+        md.setAuthorityFile(searchField.getConfigField().getVocabularyName(), searchField.getConfigField().getVocabularyUrl(),
+                selectedVocabularyRecord.getURI());
     }
 
     public void searchGeonames() {
@@ -414,7 +394,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        for (String field : configuration.getSourceSearchFields()) {
+        for (String field : getConfiguration().getSourceSearchFields()) {
             data.add(new StringPair(field, searchValue));
         }
 
@@ -427,7 +407,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
         Optional<StringPair> searchParameter = data.isEmpty() ? Optional.empty() : Optional.of(data.get(0));
-        sources = findRecords(configuration.getSourceVocabularyName(), searchParameter);
+        sources = findRecords(getConfiguration().getSourceVocabularyName(), searchParameter);
         showNotHits = sources == null || sources.isEmpty();
     }
 
@@ -442,7 +422,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 .filter(d -> d.getName().equals(searchParameter.get().getOne()))
                 .map(FieldDefinition::getId)
                 .findFirst();
-        Optional<String> searchQuery = searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
+        Optional<String> searchQuery =
+                searchFieldId.isEmpty() ? Optional.empty() : Optional.of(searchFieldId.get() + ":" + searchParameter.get().getTwo());
         return vocabularyAPIManager.vocabularyRecords()
                 .list(vocabulary.getId())
                 .search(searchQuery)
@@ -459,23 +440,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         String sourceId = String.valueOf(selectedSource.getId());
-        String sourceUri;
-        String sourceName = "";
-        String sourceLink = "";
+        String sourceName = getSourceFieldValue(getConfiguration().getSourceNameFields());
+        String sourceLink = getSourceFieldValue(getConfiguration().getSourceUrlFields());
 
-        if (StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUser())
-                && StringUtils.isNotBlank(ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl())) {
-            sourceUri =
-                    ConfigurationHelper.getInstance().getGoobiAuthorityServerUrl() + ConfigurationHelper.getInstance().getGoobiAuthorityServerUser()
-                            + "/vocabularies/" + selectedSource.getVocabularyId() + "/records/" + selectedSource.getId();
-        } else {
-            sourceUri = EntityConfig.vocabularyUrl + "/vocabularies/" + selectedSource.getVocabularyId() + "/" + selectedSource.getId();
-        }
-
-        sourceName = getSourceFieldValue(configuration.getSourceNameFields());
-        sourceLink = getSourceFieldValue(configuration.getSourceUrlFields());
-
-        SourceField source = currentField.new SourceField(sourceId, sourceUri, sourceName, sourceType, sourceLink, pages);
+        SourceField source = currentField.new SourceField(sourceId, selectedSource.getURI(), sourceName, sourceType, sourceLink, pages);
 
         MetadataGroup mg = null;
 
@@ -483,7 +451,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             mg = new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
             Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
             sourceIdMetadata.setValue(sourceId);
-            sourceIdMetadata.setAuthorityFile(sourceName, sourceUri, sourceLink);
+            selectedSource.writeReferenceMetadata(sourceIdMetadata);
             mg.addMetadata(sourceIdMetadata);
 
             Metadata sourceNameMetadata = new Metadata(prefs.getMetadataTypeByName("SourceName"));
@@ -544,7 +512,6 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             definitionsIdMap.putIfAbsent(definition.getId(), definition);
         }
     }
-
 
     public void saveAndAddSource() {
         vocabularyAPIManager.vocabularyRecords().save(selectedSource);
@@ -645,7 +612,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             String processid = (String) objArr[0];
             Process process = ProcessManager.getProcessById(Integer.parseInt(processid));
             try {
-                Entity e = new Entity(configuration, process);
+                Entity e = new Entity(getConfiguration(), process);
                 entities.add(e);
             } catch (IllegalArgumentException e) {
                 // ignore this error, it is already logged
@@ -660,7 +627,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             // unlock
             LockingBean.freeObject(String.valueOf(entity.getCurrentProcess().getId()));
         }
-        Process template = ProcessManager.getProcessById(configuration.getProcessTemplateId());
+        Process template = ProcessManager.getProcessById(getConfiguration().getProcessTemplateId());
         prefs = template.getRegelsatz().getPreferences();
         String processname = UUID.randomUUID().toString();
 
@@ -688,7 +655,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // create process
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
-        entity = new Entity(configuration, newProcess);
+        entity = new Entity(getConfiguration(), newProcess);
         entity.getDisplayNameProperty().setWert(processname);
         entity.saveEntity();
         LockingBean.lockObject(String.valueOf(entity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname());
@@ -734,9 +701,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipStartDate = relationship.getBeginningDate();
         relationshipEndDate = relationship.getEndDate();
         relationshipData = relationship.getAdditionalData();
-        changeRelationshipEntity = new Entity(configuration, currentProcess);
+        relationshipSourceType = relationship.getSourceType();
+        changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
-        setRelationship(relationship.getType().getRelationshipNameEn());
+        if (relationship.isReverse()) {
+            setRelationship(relationship.getType().getReversedRelationshipNameEn());
+        } else {
+            setRelationship(relationship.getType().getRelationshipNameEn());
+        }
     }
 
     public void changeRelationshipBetweenEntities() {
@@ -763,9 +735,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             otherRelationship.setType(selectedRelationship);
             if (selectedRelationship.isDisplayAdditionalData()) {
                 otherRelationship.setAdditionalData(relationshipData);
+                otherRelationship.setSourceType(relationshipSourceType);
             } else {
                 otherRelationship.setAdditionalData(null);
+                otherRelationship.setSourceType(null);
             }
+
             if (selectedRelationship.isDisplayStartDate()) {
                 otherRelationship.setBeginningDate(relationshipStartDate);
             } else {
@@ -785,8 +760,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         changeRelationship.setType(selectedRelationship);
         if (selectedRelationship.isDisplayAdditionalData()) {
             changeRelationship.setAdditionalData(relationshipData);
+            changeRelationship.setSourceType(relationshipSourceType);
         } else {
             changeRelationship.setAdditionalData(null);
+            changeRelationship.setSourceType(relationshipSourceType);
         }
         if (selectedRelationship.isDisplayStartDate()) {
             changeRelationship.setBeginningDate(relationshipStartDate);
@@ -818,10 +795,12 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false);
+        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false,
+                relationshipSourceType);
 
         // reverse relationship in other entity
-        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true);
+        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true,
+                relationshipSourceType);
 
         // save both entities
         entity.saveEntity();
@@ -859,7 +838,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         entity.saveEntity();
 
-        Entity other = new Entity(configuration, otherProcess);
+        Entity other = new Entity(getConfiguration(), otherProcess);
         List<Relationship> relationships = other.getLinkedRelationships().get(entity.getCurrentType());
         String processid = String.valueOf(entity.getCurrentProcess().getId());
         Relationship otherRleationship = null;
@@ -902,15 +881,13 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entity.saveEntity();
         // run export plugin for current process
 
-        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, getConfiguration().getExportPluginName());
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
-                 ReadException
-                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
-                 UghHelperException | SwapException
-                 | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
             log.error(e);
             return;
         }
@@ -931,7 +908,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         // save
         entity.saveEntity();
         // run export plugin for current process
-        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, configuration.getExportPluginName());
+        IExportPlugin exportPlugin = (IExportPlugin) PluginLoader.getPluginByTitle(PluginType.Export, getConfiguration().getExportPluginName());
         try {
             exportPlugin.setExportImages(true);
             exportPlugin.startExport(p);
@@ -947,11 +924,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 }
             }
 
-        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException |
-                 ReadException
-                 | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException |
-                 UghHelperException | SwapException
-                 | DAOException e) {
+        } catch (DocStructHasNoTypeException | PreferencesException | WriteException | MetadataTypeNotAllowedException | ReadException
+                | TypeNotAllowedForParentException | IOException | InterruptedException | ExportFileException | UghHelperException | SwapException
+                | DAOException e) {
             log.error(e);
         }
         Helper.setMeldung("ExportFinished");
@@ -963,7 +938,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public List<EntityType> getAllEntityTypes() {
-        return configuration.getAllTypes();
+        return getConfiguration().getAllTypes();
     }
 
     public void setTypeAsString(String type) {
@@ -1035,7 +1010,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return false;
     }
 
-    public void updateDisplayName(AjaxBehaviorEvent event) {
+    public void updateDisplayName(AjaxBehaviorEvent event) { //NOSONAR parameter must exist, otherwise jsf cannot find the method
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         try {
@@ -1051,59 +1026,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         this.sourceType = sourceType;
     }
 
-    /*
-     * SQL statements to generate display name for each type
-    
-    clear old data: delete from prozesseeigenschaften where titel = 'DisplayName' and wert is null;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, concat(m1.value, " ", m2.value) as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'FirstnameEn'
-    left join metadata m2 on t.ProzesseID = m2.processid and m2.name = 'LastnameEn'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'where t.WERT is null  and m3.value = 'Person') x;
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Event') x;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Work') x;
-    
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'NameEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Agent') x;
-    
-    insert into prozesseeigenschaften (titel,WERT,prozesseID,creationDate)
-    select 'DisplayName', title, ProzesseID, '2022-10-11 12:00:00'
-    from (select ProzesseID, m1.value as title from (
-    select prozesse.ProzesseID, Wert from prozesse left join prozesseeigenschaften on prozesse.ProzesseID = prozesseeigenschaften.prozesseID
-    and prozesseeigenschaften.titel = 'DisplayName') t
-    left join metadata m1 on t.ProzesseID = m1.processid and m1.name = 'TitleEN'
-    left join metadata m3 on t.ProzesseID = m3.processid and m3.name = 'DocStruct'
-     where t.WERT is null  and m3.value = 'Award') x;
-    
-     */
-
+    public EntityConfig getConfiguration() {
+        if (configuration == null) {
+            try {
+                XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
+                config.setExpressionEngine(new XPathExpressionEngine());
+                configuration = new EntityConfig(config, true);
+                sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
+            } catch (RuntimeException e) {
+                Helper.setFehlerMeldung(e);
+            }
+        }
+        return configuration;
+    }
 }

@@ -306,6 +306,8 @@ public class Entity {
                     String type = null;
                     String vocabularyName = null;
                     String vocabularyUrl = null;
+                    String valueUrl = null;
+                    String sourceType = null;
 
                     for (Metadata md : group.getMetadataList()) {
                         String metadataType = md.getType().getName();
@@ -330,7 +332,13 @@ public class Entity {
                         } else if (metadataType.equals(configuration.getRelationshipType())) {
                             type = md.getValue();
                             vocabularyName = md.getAuthorityID();
-                            vocabularyUrl = md.getAuthorityValue();
+                            vocabularyUrl = md.getAuthorityURI();
+                            valueUrl = md.getAuthorityValue();
+                        } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
+                                && metadataType.equals(configuration.getRelationshipSourceType())) {
+                            sourceType = md.getValue();
+                            vocabularyUrl = md.getAuthorityURI();
+                            valueUrl = md.getAuthorityValue();
                         }
 
                     }
@@ -339,6 +347,7 @@ public class Entity {
                     relationship.setBeginningDate(beginningDate);
                     relationship.setEndDate(endDate);
                     relationship.setAdditionalData(additionalData);
+                    relationship.setSourceType(sourceType);
                     relationship.setProcessId(processId);
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
@@ -361,6 +370,7 @@ public class Entity {
                     relationship.setDisplayName(displayName);
                     relationship.setVocabularyName(vocabularyName);
                     relationship.setVocabularyUrl(vocabularyUrl);
+                    relationship.setValueUrl(valueUrl);
                     relationship.setMetadataGroup(group);
                     for (EntityType et : linkedRelationships.keySet()) {
                         if (et.getName().equals(relationship.getEntityName())) {
@@ -437,13 +447,11 @@ public class Entity {
                                 }
                             } else {
                                 for (Metadata md : mg.getMetadataList()) {
-                                    if (StringUtils.isNotBlank(md.getValue())) {
-                                        if (md.getType().getName().equals(parts[1])) {
-                                            if (sb.length() > 0) {
-                                                sb.append(" ");
-                                            }
-                                            sb.append(md.getValue());
+                                    if (StringUtils.isNotBlank(md.getValue()) && md.getType().getName().equals(parts[1])) {
+                                        if (sb.length() > 0) {
+                                            sb.append(" ");
                                         }
+                                        sb.append(md.getValue());
                                     }
                                 }
                             }
@@ -454,13 +462,11 @@ public class Entity {
 
             } else {
                 for (Metadata md : logical.getAllMetadata()) {
-                    if (StringUtils.isNotBlank(md.getValue())) {
-                        if (md.getType().getName().equals(metadata)) {
-                            if (sb.length() > 0) {
-                                sb.append(" ");
-                            }
-                            sb.append(md.getValue());
+                    if (StringUtils.isNotBlank(md.getValue()) && md.getType().getName().equals(metadata)) {
+                        if (sb.length() > 0) {
+                            sb.append(" ");
                         }
+                        sb.append(md.getValue());
                     }
                 }
             }
@@ -656,7 +662,7 @@ public class Entity {
             // relationships
             for (List<Relationship> rellist : linkedRelationships.values()) {
                 for (Relationship rel : rellist) {
-                    upateRelationshipGroup(rel, false);
+                    upateRelationshipGroup(rel, rel.isReverse());
 
                 }
             }
@@ -756,7 +762,7 @@ public class Entity {
     }
 
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
-            RelationshipType selectedRelationship, boolean reversed) {
+            RelationshipType selectedRelationship, boolean reversed, String relationshipSourceType) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
         String relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
@@ -769,8 +775,10 @@ public class Entity {
         rel.setProcessId(String.valueOf(selectedEntity.getCurrentProcess().getId()));
         rel.setProcessStatus(relationshipStatus);
         rel.setType(selectedRelationship);
+        rel.setSourceType(relationshipSourceType);
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
+        rel.setValueUrl(selectedRelationship.getValueUrl());
 
         MetadataGroup relationGroup = null;
 
@@ -851,11 +859,12 @@ public class Entity {
             md.setValue(rel.getType().getReversedRelationshipNameEn());
         } else {
             if (rel.getType() == null) {
-                throw new IllegalStateException("The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
+                throw new IllegalStateException(
+                        "The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
             }
             md.setValue(rel.getType().getRelationshipNameEn());
         }
-        md.setAuthorityFile(rel.getVocabularyName(), EntityConfig.vocabularyUrl, rel.getVocabularyUrl());
+        md.setAuthorityFile(rel.getVocabularyName(), rel.getVocabularyUrl(), rel.getValueUrl());
 
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());
         if (mdl != null && !mdl.isEmpty()) {
@@ -864,6 +873,17 @@ public class Entity {
             md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipAdditionalData()));
             relationGroup.addMetadata(md);
             md.setValue(rel.getAdditionalData());
+        }
+
+        if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())) {
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipSourceType());
+            if (mdl != null && !mdl.isEmpty()) {
+                mdl.get(0).setValue(rel.getSourceType());
+            } else {
+                md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipSourceType()));
+                relationGroup.addMetadata(md);
+                md.setValue(rel.getSourceType());
+            }
         }
     }
 }
