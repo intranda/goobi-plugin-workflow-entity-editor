@@ -3,7 +3,7 @@
   <parent>
     <groupId>io.goobi.workflow.plugin</groupId>
     <artifactId>plugin-workflow-entity-editor</artifactId>
-    <version>24.10-SNAPSHOT</version>
+    <version>24.10.1</version>
   </parent>
   <artifactId>plugin-workflow-entity-editor-lib</artifactId>
   <packaging>jar</packaging>
