@@ -450,8 +450,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         try {
             mg = new MetadataGroup(prefs.getMetadataGroupTypeByName("Source"));
             Metadata sourceIdMetadata = new Metadata(prefs.getMetadataTypeByName("SourceID"));
-            sourceIdMetadata.setValue(sourceId);
             selectedSource.writeReferenceMetadata(sourceIdMetadata);
+            sourceIdMetadata.setValue(sourceId);
             mg.addMetadata(sourceIdMetadata);
 
             Metadata sourceNameMetadata = new Metadata(prefs.getMetadataTypeByName("SourceName"));
@@ -514,7 +514,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     }
 
     public void saveAndAddSource() {
-        vocabularyAPIManager.vocabularyRecords().save(selectedSource);
+        selectedSource = vocabularyAPIManager.vocabularyRecords().save(selectedSource);
         addSource();
     }
 
