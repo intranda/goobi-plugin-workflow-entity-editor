@@ -202,8 +202,8 @@ public class ConfiguredField {
                 ve.setEntryUrl(vr.getURI());
                 vr.getMainField().ifPresent(mainField -> {
                     ve.setLabelEn(mainField.getFieldValue("eng"));
-                    ve.setLabelFr(mainField.getFieldValue("ger"));
-                    ve.setLabelDe(mainField.getFieldValue("fre"));
+                    ve.setLabelFr(mainField.getFieldValue("fre"));
+                    ve.setLabelDe(mainField.getFieldValue("ger"));
                 });
                 vocabularyList.add(ve);
             }
