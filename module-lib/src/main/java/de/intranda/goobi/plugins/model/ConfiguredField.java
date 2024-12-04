@@ -1,5 +1,10 @@
 package de.intranda.goobi.plugins.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
@@ -8,14 +13,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang.StringUtils;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
 import ugh.dl.MetadataType;
 import ugh.exceptions.UGHException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -198,9 +199,9 @@ public class ConfiguredField {
             for (ExtendedVocabularyRecord vr : recordList) {
                 VocabularyEntry ve = new VocabularyEntry();
                 ve.setId(vr.getId());
-                ve.setMainValue(vr.getMainValue());
                 ve.setEntryUrl(vr.getURI());
                 vr.getMainField().ifPresent(mainField -> {
+                    ve.setMainValue(mainField.getFieldValue("eng"));
                     ve.setLabelEn(mainField.getFieldValue("eng"));
                     ve.setLabelFr(mainField.getFieldValue("fre"));
                     ve.setLabelDe(mainField.getFieldValue("ger"));
