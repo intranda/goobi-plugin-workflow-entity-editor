@@ -279,8 +279,8 @@ public class Entity {
                             field.setMetadata(metadata);
                             mf.adMetadataField(field);
                             mf.setShowField(true);
-                            metadataFieldList.add(mf);
                         }
+                        metadataFieldList.add(mf);
                     }
                 }
             }
