@@ -199,7 +199,9 @@
                                             styleClass="sources__pair"
                                             rendered="#{ not empty relationship.additionalData }">
                                             <div class="sources__key">#{msgs.plugin_workflow_entity_editor_additionalData}:</div>
-                                            <div class="sources__val">#{relationship.additionalData}</div>
+                                            <div class="sources__val">
+                                                <h:outputText escape="false" value="#{relationship.additionalData}" />
+                                            </div>
                                         </h:panelGroup>
 
                                         <h:panelGroup
