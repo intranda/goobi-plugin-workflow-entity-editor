@@ -5,8 +5,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk">
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:body>
     <ui:composition>
         <span class="badge #{styleclassname} #{item.valid ? '' : 'validation-error'}">
@@ -15,8 +14,8 @@
                 rendered="#{item.repeatable and item.showField}">
                 <i class="fa fa-plus-circle margin-right-5" />
                 <h:outputText value="#{msgs[item.label]}" />
-                <x:updateActionListener
-                    property="#{item.showField}"
+                <f:setPropertyActionListener
+                    target="#{item.showField}"
                     value="true" />
                 <f:ajax
                     execute="@this"
@@ -32,8 +31,8 @@
                     <i class="fa fa-exclamation-triangle margin-left-5" />
                 </ui:fragment>
 
-                <x:updateActionListener
-                    property="#{item.showField}"
+                <f:setPropertyActionListener
+                    target="#{item.showField}"
                     value="true" />
                 <f:ajax
                     execute="@this"

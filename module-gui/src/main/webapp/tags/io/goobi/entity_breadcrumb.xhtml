@@ -6,7 +6,6 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
 <h:body>
     <ui:composition>
@@ -45,9 +44,9 @@
             <button
                 class="btn breadcrumb-button "
                 jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}">
-                <x:updateActionListener
+                <f:setPropertyActionListener
                     value="#{breadcrumb}"
-                    property="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
+                    target="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
                 <span class="skew-fix">
                     <i
                         class="fa #{entityIcon} big-icon"

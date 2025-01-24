@@ -4,7 +4,6 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
@@ -64,7 +63,7 @@
                                         <h:outputLabel
                                             value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                             for="linkSearchInput" />
-                                        <x:inputText
+                                        <h:inputText
                                             id="linkSearchInput"
                                             styleClass="form-control"
                                             value="#{NavigationForm.workflowPlugin.entitySearch}" />
@@ -116,13 +115,13 @@
                                         rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
 
                                         <div class="modal__gnd-list link-entity-modal__search-results">
-                                            <x:dataList
+                                            <ui:repeat
                                                 value="#{NavigationForm.workflowPlugin.entities}"
                                                 var="record">
                                                 <div class="row link-entity-modal__card">
                                                     <h3>#{record.entityName}</h3>
                                                     <div class="col-sm-11 vocabulary-searchfield">
-                                                        <x:dataList
+                                                        <ui:repeat
                                                             value="#{record.metadataFieldList}"
                                                             var="configuredField">
 
@@ -178,7 +177,7 @@
                                                             </ui:repeat>
 
 
-                                                        </x:dataList>
+                                                        </ui:repeat>
                                                     </div>
 
                                                     <div class="col-sm-1 vocabulary-searchfield">
@@ -197,7 +196,7 @@
                                                     </div>
                                                 </div>
 
-                                            </x:dataList>
+                                            </ui:repeat>
 
                                         </div>
                                     </ui:fragment>
@@ -222,7 +221,7 @@
                                             </h3>
 
 
-                                            <x:dataList
+                                            <ui:repeat
                                                 value="#{NavigationForm.workflowPlugin.selectedEntity.metadataFieldList}"
                                                 var="configuredField">
 
@@ -278,7 +277,7 @@
                                                         </h:panelGroup>
                                                     </h:panelGroup>
                                                 </ui:repeat>
-                                            </x:dataList>
+                                            </ui:repeat>
                                         </div>
                                     </div>
 
