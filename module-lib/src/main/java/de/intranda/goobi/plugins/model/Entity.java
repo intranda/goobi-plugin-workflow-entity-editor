@@ -353,12 +353,6 @@ public class Entity {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
                             break;
-                        } else if (rel.getVocabularyName().equals(vocabularyName) && StringUtils.isNotBlank(rel.getReversedRelationshipNameEn())
-                                && rel.getReversedRelationshipNameEn().equals(type)) {
-                            relationship.setType(rel);
-                            rel.setReversed(true);
-                            relationship.setReverse(true);
-                            break;
                         }
                     }
                     if (relationship.getType() == null) {
@@ -662,7 +656,7 @@ public class Entity {
             // relationships
             for (List<Relationship> rellist : linkedRelationships.values()) {
                 for (Relationship rel : rellist) {
-                    upateRelationshipGroup(rel, rel.isReverse());
+                    upateRelationshipGroup(rel);
 
                 }
             }
@@ -762,7 +756,7 @@ public class Entity {
     }
 
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
-            RelationshipType selectedRelationship, boolean reversed, String relationshipSourceType) {
+            RelationshipType selectedRelationship, String relationshipSourceType) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
         String relationshipStatus = selectedEntity.getStatusProperty().getWert();
 
@@ -786,7 +780,7 @@ public class Entity {
             relationGroup = new MetadataGroup(prefs.getMetadataGroupTypeByName(configuration.getRelationshipMetadataName()));
             rel.setMetadataGroup(relationGroup);
 
-            upateRelationshipGroup(rel, reversed);
+            upateRelationshipGroup(rel);
 
             currentFileformat.getDigitalDocument().getLogicalDocStruct().addMetadataGroup(relationGroup);
 
@@ -798,7 +792,7 @@ public class Entity {
 
     }
 
-    private void upateRelationshipGroup(Relationship rel, boolean reversed) throws MetadataTypeNotAllowedException {
+    private void upateRelationshipGroup(Relationship rel) throws MetadataTypeNotAllowedException {
         MetadataGroup relationGroup = rel.getMetadataGroup();
         List<Metadata> mdl = relationGroup.getMetadataByType(configuration.getRelationshipEntityType());
         if (mdl != null && !mdl.isEmpty()) {
@@ -854,16 +848,11 @@ public class Entity {
             relationGroup.addMetadata(md);
         }
 
-        if (reversed && StringUtils.isNotBlank(rel.getType().getReversedRelationshipNameEn())) {
-            rel.setReverse(true);
-            md.setValue(rel.getType().getReversedRelationshipNameEn());
-        } else {
-            if (rel.getType() == null) {
-                throw new IllegalStateException(
-                        "The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
-            }
-            md.setValue(rel.getType().getRelationshipNameEn());
+        if (rel.getType() == null) {
+            throw new IllegalStateException(
+                    "The relationtype has not been set properly. This might have been caused due to a relation configured in the mets file, that is not present in the vocabulary (anymore)");
         }
+        md.setValue(rel.getType().getRelationshipNameEn());
         md.setAuthorityFile(rel.getVocabularyName(), rel.getVocabularyUrl(), rel.getValueUrl());
 
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipAdditionalData());

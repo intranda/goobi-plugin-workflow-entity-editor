@@ -704,11 +704,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipSourceType = relationship.getSourceType();
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
-        if (relationship.isReverse()) {
-            setRelationship(relationship.getType().getReversedRelationshipNameEn());
-        } else {
-            setRelationship(relationship.getType().getRelationshipNameEn());
-        }
+        setRelationship(relationship.getType().getRelationshipNameEn());
     }
 
     public void changeRelationshipBetweenEntities() {
@@ -730,9 +726,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 break;
             }
         }
+
+        // find reverse relationship type
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+                .findFirst();
+        if (otherRelationshipType.isEmpty()) {
+            otherRelationshipType = Optional.of(selectedRelationship);
+        }
+
         if (otherRelationship != null) {
             // update other type
-            otherRelationship.setType(selectedRelationship);
+            otherRelationship.setType(otherRelationshipType.get());
             if (selectedRelationship.isDisplayAdditionalData()) {
                 otherRelationship.setAdditionalData(relationshipData);
                 otherRelationship.setSourceType(relationshipSourceType);
@@ -795,11 +800,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false,
+        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship,
                 relationshipSourceType);
 
+        // find reverse relationship type
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+                .findFirst();
+        if (otherRelationshipType.isEmpty()) {
+            otherRelationshipType = Optional.of(selectedRelationship);
+        }
         // reverse relationship in other entity
-        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true,
+        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, otherRelationshipType.get(),
                 relationshipSourceType);
 
         // save both entities

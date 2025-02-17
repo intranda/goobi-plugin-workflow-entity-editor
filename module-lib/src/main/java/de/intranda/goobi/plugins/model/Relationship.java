@@ -28,7 +28,6 @@ public class Relationship {
     private String processStatus = "New";
 
     private boolean showDetails;
-    private boolean reverse;
 
     private MetadataGroup metadataGroup;
 
@@ -45,35 +44,10 @@ public class Relationship {
     }
 
     public String getLabel(Locale lang) {
-        String label;
-        switch (lang.getLanguage()) {
-            case "fr":
-                if (reverse && StringUtils.isNotBlank(type.getReversedRelationshipNameFr())) {
-                    label = type.getReversedRelationshipNameFr();
-                } else {
-                    label = type.getRelationshipNameFr();
-                }
-                break;
-            case "en":
-                if (reverse && StringUtils.isNotBlank(type.getReversedRelationshipNameEn())) {
-                    label = type.getReversedRelationshipNameEn();
-
-                } else {
-                    label = type.getRelationshipNameEn();
-                }
-
-                break;
-            default:
-                if (reverse && StringUtils.isNotBlank(type.getReversedRelationshipNameDe())) {
-                    label = type.getReversedRelationshipNameDe();
-
-                } else {
-                    label = type.getRelationshipNameDe();
-                }
-
-                break;
-        }
-        return label;
-
+        return switch (lang.getLanguage()) {
+            case "de" -> type.getRelationshipNameDe();
+            case "fr" -> type.getRelationshipNameFr();
+            default -> type.getRelationshipNameEn();
+        };
     }
 }
