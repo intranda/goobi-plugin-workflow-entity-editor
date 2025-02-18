@@ -11,10 +11,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.Part;
-
 import org.apache.commons.lang.StringUtils;
 
 import de.sub.goobi.helper.Helper;
@@ -28,6 +24,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageInterpreter;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.contentlib.imagelib.JpegInterpreter;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.Part;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

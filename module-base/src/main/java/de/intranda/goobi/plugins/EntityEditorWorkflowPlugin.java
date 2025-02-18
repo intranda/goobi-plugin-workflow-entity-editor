@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.faces.event.AjaxBehaviorEvent;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +55,7 @@ import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
