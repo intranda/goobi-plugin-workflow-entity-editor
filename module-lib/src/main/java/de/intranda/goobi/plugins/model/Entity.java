@@ -355,8 +355,21 @@ public class Entity {
                             break;
                         }
                     }
+                    // If the relationship type wasn't found, it might have been saved in the wrong direction in the past.
+                    // Try to find the reverse direction and inform the user about the automatic correction on a hit.
                     if (relationship.getType() == null) {
-                        String errorMessage = "Relationtype \"" + type + "\" is not present in the configured vocabulary \"" + vocabularyName + "\".";
+                        for (RelationshipType rel : currentType.getConfiguredRelations()) {
+                            if (rel.getVocabularyName().equals(vocabularyName) && StringUtils.isNotBlank(rel.getReversedRelationshipNameEn()) && rel.getReversedRelationshipNameEn().equals(type)) {
+                                relationship.setType(rel);
+                                String warnMessage = "Relation type \"" + type + "\" was read from the metadata, but the current entity type only supports the relation type \"" + rel.getRelationshipNameEn() + "\". This has been automatically corrected. If this is right, please save the entity. If not, please resolve the issue manually.";
+                                log.warn(warnMessage);
+                                Helper.setMeldung(warnMessage);
+                                break;
+                            }
+                        }
+                    }
+                    if (relationship.getType() == null) {
+                        String errorMessage = "Relation type \"" + type + "\" is not present in the configured vocabulary \"" + vocabularyName + "\".";
                         log.error(errorMessage);
                         Helper.setFehlerMeldung(errorMessage);
                     }
