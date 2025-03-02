@@ -152,7 +152,6 @@ public class EntityConfig {
                                 .getContent();
                         for (ExtendedVocabularyRecord rec : records) {
                             RelationshipType relationType = new RelationshipType();
-                            relationType.setReversed(reverse);
                             relationType.setSourceType(sourceEntity);
                             relationType.setDestinationType(destinationEntity);
 

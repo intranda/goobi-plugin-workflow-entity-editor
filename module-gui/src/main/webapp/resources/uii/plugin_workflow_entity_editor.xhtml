@@ -35,10 +35,10 @@
 
         <h:form id="menu">
             <div>
-                <a
+                <button
                     aria-label="intranda Logo"
                     id="brand"
-                    jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}"> </a>
+                    jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}"> </button>
             </div>
 
             <button
@@ -328,7 +328,7 @@
                                         id="badge-area"
                                         layout="block"
                                         styleClass="badge-area">
-                                        <x:dataList
+                                        <ui:repeat
                                             var="item"
                                             value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}">
                                             <ui:fragment>
@@ -337,7 +337,7 @@
                                                     fieldname="#{msgs[item.label]}"
                                                     showfield="#{item.showField}" />
                                             </ui:fragment>
-                                        </x:dataList>
+                                        </ui:repeat>
                                     </h:panelGroup>
 
                                     <!-- list all metadata fields -->
@@ -442,7 +442,7 @@
 
                                                         <ui:fragment
                                                             rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
-                                                            <x:inputText
+                                                            <h:inputText
                                                                 styleClass="form-control"
                                                                 value="#{field.metadata.value}"
                                                                 required="false"
@@ -453,7 +453,7 @@
                                                                     render="badge-area :header"
                                                                     event="blur"
                                                                     listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
-                                                            </x:inputText>
+                                                            </h:inputText>
                                                         </ui:fragment>
 
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'checkbox'}">
@@ -529,7 +529,7 @@
                                                                 <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
                                                                     id="inputGroup">
-                                                                    <x:inputText
+                                                                    <h:inputText
                                                                         styleClass="form-control"
                                                                         value="#{subfield.metadata.value}"
                                                                         required="false"
@@ -541,7 +541,7 @@
                                                                             render="badge-area :header"
                                                                             event="blur"
                                                                             listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
-                                                                    </x:inputText>
+                                                                    </h:inputText>
                                                                     <h:panelGroup
                                                                         layout="block"
                                                                         rendered="#{!subfield.valid}"
@@ -550,7 +550,7 @@
                                                                     </h:panelGroup>
                                                                 </h:panelGroup>
 
-                                                                <x:inputTextarea
+                                                                <h:inputTextarea
                                                                     styleClass="form-control tinymce"
                                                                     value="#{subfield.metadata.value}"
                                                                     required="false"
@@ -561,7 +561,7 @@
                                                                         render="badge-area :header"
                                                                         event="change"
                                                                         listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
-                                                                </x:inputTextarea>
+                                                                </h:inputTextarea>
 
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
                                                                     <h:selectOneMenu
@@ -603,7 +603,7 @@
 
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
                                                                     <div class="vocabulary-search">
-                                                                        <x:inputText
+                                                                        <h:inputText
                                                                             styleClass="form-control"
                                                                             value="#{subfield.metadata.value}"
                                                                             required="false"
@@ -613,7 +613,7 @@
                                                                                 execute="@this"
                                                                                 render="badge-area"
                                                                                 event="blur" />
-                                                                        </x:inputText>
+                                                                        </h:inputText>
                                                                         <span>
                                                                             <button
                                                                                 jsf:id="vocabularySearch"
@@ -703,7 +703,7 @@
                                                                 <h:panelGroup
                                                                     rendered="#{subfield.configField.fieldType == 'date'}"
                                                                     id="group">
-                                                                    <x:inputText
+                                                                    <h:inputText
                                                                         styleClass="form-control"
                                                                         value="#{subfield.metadata.value}"
                                                                         required="false"
@@ -714,7 +714,7 @@
                                                                             execute="@this"
                                                                             render="badge-area group"
                                                                             event="blur" />
-                                                                    </x:inputText>
+                                                                    </h:inputText>
                                                                     <h:panelGroup
                                                                         layout="block"
                                                                         rendered="#{!subfield.valid}"
@@ -725,7 +725,7 @@
 
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
                                                                     <div class="geonames-search">
-                                                                        <x:inputText
+                                                                        <h:inputText
                                                                             styleClass="form-control"
                                                                             value="#{subfield.metadata.value}"
                                                                             required="false"
@@ -735,7 +735,7 @@
                                                                                 execute="@this"
                                                                                 render="badge-area"
                                                                                 event="blur" />
-                                                                        </x:inputText>
+                                                                        </h:inputText>
                                                                         <span>
                                                                             <button
                                                                                 jsf:id="geonamesSearch"
@@ -903,7 +903,7 @@
 			window.onload = function() {
 				loadImages();
 			}
-            jsf.ajax.addOnEvent( function( data ) {
+			faces.ajax.addOnEvent( function( data ) {
                 var ajaxstatus = data.status;
                 switch ( ajaxstatus ) {
                     case "begin":

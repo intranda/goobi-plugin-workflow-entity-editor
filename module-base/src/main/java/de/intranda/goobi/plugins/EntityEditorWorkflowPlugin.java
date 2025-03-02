@@ -15,8 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.faces.event.AjaxBehaviorEvent;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
@@ -57,6 +55,7 @@ import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -704,11 +703,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipSourceType = relationship.getSourceType();
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
-        if (relationship.isReverse()) {
-            setRelationship(relationship.getType().getReversedRelationshipNameEn());
-        } else {
-            setRelationship(relationship.getType().getRelationshipNameEn());
-        }
+        setRelationship(relationship.getType().getRelationshipNameEn());
     }
 
     public void changeRelationshipBetweenEntities() {
@@ -730,9 +725,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 break;
             }
         }
+
+        // find reverse relationship type
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+                .findFirst();
+        if (otherRelationshipType.isEmpty()) {
+            otherRelationshipType = Optional.of(selectedRelationship);
+        }
+
         if (otherRelationship != null) {
             // update other type
-            otherRelationship.setType(selectedRelationship);
+            otherRelationship.setType(otherRelationshipType.get());
             if (selectedRelationship.isDisplayAdditionalData()) {
                 otherRelationship.setAdditionalData(relationshipData);
                 otherRelationship.setSourceType(relationshipSourceType);
@@ -795,11 +799,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return;
         }
 
-        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, false,
+        entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship,
                 relationshipSourceType);
 
+        // find reverse relationship type
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+                .findFirst();
+        if (otherRelationshipType.isEmpty()) {
+            otherRelationshipType = Optional.of(selectedRelationship);
+        }
         // reverse relationship in other entity
-        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship, true,
+        selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, otherRelationshipType.get(),
                 relationshipSourceType);
 
         // save both entities

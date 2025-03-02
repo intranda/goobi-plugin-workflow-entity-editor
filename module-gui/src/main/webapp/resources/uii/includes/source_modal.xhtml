@@ -3,7 +3,6 @@
                 xmlns:composite="http://xmlns.jcp.org/jsf/composite"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:x="http://myfaces.apache.org/tomahawk"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
 
@@ -45,7 +44,7 @@
                                         <h:outputLabel
                                                 value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
                                                 for="sourceSearchInput"/>
-                                        <x:inputText id="sourceSearchInput" styleClass="form-control"
+                                        <h:inputText id="sourceSearchInput" styleClass="form-control"
                                                      value="#{NavigationForm.workflowPlugin.searchValue}"/>
 
                                         <button class="btn btn-primary searchSources"
@@ -112,7 +111,7 @@
                                         </div>
                                         <div class="col-sm-9">
 
-                                            <x:inputText id="sourcePage" styleClass="form-control"
+                                            <h:inputText id="sourcePage" styleClass="form-control"
                                                          value="#{NavigationForm.workflowPlugin.pages}"/>
                                         </div>
                                     </div>
@@ -217,11 +216,11 @@
                                             rendered="#{NavigationForm.workflowPlugin.sources != null and NavigationForm.workflowPlugin.sources.size() != 0 and NavigationForm.workflowPlugin.sourceMode != 'edition'}">
 
                                         <div class="modal__gnd-list source-modal__search-results">
-                                            <x:dataList value="#{NavigationForm.workflowPlugin.sources}"
+                                            <ui:repeat value="#{NavigationForm.workflowPlugin.sources}"
                                                         var="record">
                                                 <div class="row source-modal__card">
                                                     <div class="col-sm-11 vocabulary-searchfield">
-                                                        <x:dataList
+                                                        <ui:repeat
                                                                 value="#{record.extendedFields}"
                                                                 var="field">
                                                             <ui:fragment
@@ -240,7 +239,7 @@
                                                                     </div>
                                                                 </div>
                                                             </ui:fragment>
-                                                        </x:dataList>
+                                                        </ui:repeat>
                                                     </div>
 
                                                     <div class="col-sm-1 vocabulary-searchfield">
@@ -255,7 +254,7 @@
                                                     </div>
 
                                                 </div>
-                                            </x:dataList>
+                                            </ui:repeat>
 
                                         </div>
                                     </ui:fragment>
