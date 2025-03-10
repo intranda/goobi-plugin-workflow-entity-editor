@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import de.sub.goobi.helper.Helper;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
@@ -337,8 +337,6 @@ public class Entity {
                         } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
                                 && metadataType.equals(configuration.getRelationshipSourceType())) {
                             sourceType = md.getValue();
-                            vocabularyUrl = md.getAuthorityURI();
-                            valueUrl = md.getAuthorityValue();
                         }
 
                     }
@@ -359,9 +357,13 @@ public class Entity {
                     // Try to find the reverse direction and inform the user about the automatic correction on a hit.
                     if (relationship.getType() == null) {
                         for (RelationshipType rel : currentType.getConfiguredRelations()) {
-                            if (rel.getVocabularyName().equals(vocabularyName) && StringUtils.isNotBlank(rel.getReversedRelationshipNameEn()) && rel.getReversedRelationshipNameEn().equals(type)) {
+                            if (rel.getVocabularyName().equals(vocabularyName) && StringUtils.isNotBlank(rel.getReversedRelationshipNameEn())
+                                    && rel.getReversedRelationshipNameEn().equals(type)) {
                                 relationship.setType(rel);
-                                String warnMessage = "Relation type \"" + type + "\" was read from the metadata, but the current entity type only supports the relation type \"" + rel.getRelationshipNameEn() + "\". This has been automatically corrected. If this is right, please save the entity. If not, please resolve the issue manually.";
+                                String warnMessage = "Relation type \"" + type
+                                        + "\" was read from the metadata, but the current entity type only supports the relation type \""
+                                        + rel.getRelationshipNameEn()
+                                        + "\". This has been automatically corrected. If this is right, please save the entity. If not, please resolve the issue manually.";
                                 log.warn(warnMessage);
                                 Helper.setMeldung(warnMessage);
                                 break;
@@ -369,7 +371,8 @@ public class Entity {
                         }
                     }
                     if (relationship.getType() == null) {
-                        String errorMessage = "Relation type \"" + type + "\" is not present in the configured vocabulary \"" + vocabularyName + "\".";
+                        String errorMessage =
+                                "Relation type \"" + type + "\" is not present in the configured vocabulary \"" + vocabularyName + "\".";
                         log.error(errorMessage);
                         Helper.setFehlerMeldung(errorMessage);
                     }
