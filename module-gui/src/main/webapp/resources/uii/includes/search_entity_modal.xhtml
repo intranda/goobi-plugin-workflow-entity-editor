@@ -34,21 +34,9 @@
                             onkeypress="submitOnEnter(event);"
                             prependId="false">
 
-                            <div class="modal-header">
-                                <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">
-                                        <h:outputText
-                                            value="&amp;times;"
-                                            escape="false" />
-                                    </span>
-                                </button>
+                            <div class="modal-header bg-primary text-white">
                                 <h4
-                                    class="modal-title"
-                                    style="width: 90%">
+                                    class="modal-title">
                                     <h:outputFormat
                                         rendered="#{NavigationForm.workflowPlugin.entityType != null}"
                                         value="#{msgs.plugin_workflow_entity_searchTabsHeader}">
@@ -58,6 +46,17 @@
                                         rendered="#{NavigationForm.workflowPlugin.entityType == null}"
                                         value="#{msgs.plugin_workflow_entity_searchTabsHeaderAllTypes}" />
                                 </h4>
+                                <button
+                                    type="button"
+                                    class="btn text-white"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">
+                                        <h:outputText
+                                            value="&amp;times;"
+                                            escape="false" />
+                                    </span>
+                                </button>
                             </div>
                             <div
                                 jsf:id="search-modal-body"
@@ -103,7 +102,7 @@
                                                 aria-hidden="true"></i>
                                             #{msgs.search}
                                             <f:passThroughAttribute
-                                                name="data-toggle"
+                                                name="data-bs-toggle"
                                                 value="tooltip" />
                                             <f:ajax
                                                 execute="@form"
@@ -250,7 +249,7 @@
                                 <a
                                     class="btn pull-left"
                                     title="#{msgs.cancel}"
-                                    data-dismiss="modal">
+                                    data-bs-dismiss="modal">
                                     <h:outputText value="#{msgs.cancel}" />
                                 </a>
 

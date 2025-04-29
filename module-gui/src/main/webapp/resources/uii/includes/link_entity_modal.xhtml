@@ -13,7 +13,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            styleClass="modal"
+            styleClass="modal fade"
             layout="block"
             id="entitySearchBox"
             tabindex="-1"
@@ -38,7 +38,7 @@
                                 <button
                                     type="button"
                                     class="close"
-                                    data-dismiss="modal"
+                                    data-bs-dismiss="modal"
                                     aria-label="Close">
                                     <span aria-hidden="true">
                                         <h:outputText
@@ -76,7 +76,7 @@
                                                 aria-hidden="true"></i>
                                             #{msgs.search}
                                             <f:passThroughAttribute
-                                                name="data-toggle"
+                                                name="data-bs-toggle"
                                                 value="tooltip" />
                                             <f:ajax
                                                 execute="@form"
@@ -397,7 +397,7 @@
                                             aria-hidden="true"></i>
                                         <h:outputText value="#{msgs.zurueck}" />
                                         <f:passThroughAttribute
-                                            name="data-toggle"
+                                            name="data-bs-toggle"
                                             value="tooltip" />
                                         <f:setPropertyActionListener
                                             value=""
@@ -429,7 +429,7 @@
                                 <a
                                     class="btn pull-left"
                                     title="#{msgs.cancel}"
-                                    data-dismiss="modal">
+                                    data-bs-dismiss="modal">
                                     <h:outputText value="#{msgs.cancel}" />
                                 </a>
 

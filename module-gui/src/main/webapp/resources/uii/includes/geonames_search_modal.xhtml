@@ -37,7 +37,7 @@
                                 <button
                                     type="button"
                                     class="close"
-                                    data-dismiss="modal"
+                                    data-bs-dismiss="modal"
                                     aria-label="Close">
                                     <span aria-hidden="true">
                                         <h:outputText
@@ -75,7 +75,7 @@
                                         #{msgs.search}
 
                                         <f:passThroughAttribute
-                                            name="data-toggle"
+                                            name="data-bs-toggle"
                                             value="tooltip" />
                                         <f:ajax
                                             execute="@form"
@@ -191,12 +191,12 @@
                                                 </button>
                                             </div>
                                         </div>
-                                  
+
 
                                     <hr />
                                 </ui:repeat>
                             </h:panelGroup>
-                                
+
 
                                 <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
                                     <h:outputText value="#{msgs.NORM_noHits}" />
@@ -210,7 +210,7 @@
                                 <a
                                     class="btn pull-left"
                                     title="#{msgs.cancel}"
-                                    data-dismiss="modal">
+                                    data-bs-dismiss="modal">
                                     <h:outputText value="#{msgs.cancel}" />
                                 </a>
 
