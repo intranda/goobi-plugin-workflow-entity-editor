@@ -19,172 +19,20 @@
 
     <ui:define name="navigation">
 
-        <script type="text/javascript">
-                                    function switchExpanded( id ) {
-                                        var x = document.getElementById( id ).getAttribute( "aria-expanded" );
-                                        if ( x == "true" ) {
-                                            x = "false"
-                                        }
-                                        else {
-                                            x = "true"
-                                        }
-                                        document.getElementById( id ).setAttribute( "aria-expanded", x );
-                                    }
-                                </script>
-
-
-        <h:form id="menu">
-            <div>
-                <button
-                    aria-label="intranda Logo"
-                    id="brand"
-                    jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}"> </button>
-            </div>
-
-            <button
-                class="btn pull-left"
-                jsf:id="exit"
-                jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
-                <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
-            </button>
-
-            <div class="user pull-right">
-                <ul class="icon-nav">
-                    <!-- Icon to enable help texts -->
-                    <li>
-                        <button
-                            type="button"
-                            class="btn"
-                            jsf:id="showHelp"
-                            aria-label="#{msgs.showHelpMessages}"
-                            jsf:action="#{NavigationForm.Reload}"
-                            title="#{NavigationForm.showHelp?msgs.hideHelpMessages:msgs.showHelpMessages}"
-                            jsf:rel="tooltip"
-                            data-placement="bottom">
-                            <i class="fa #{not NavigationForm.showHelp?'fa-question':'fa-question-circle'}"></i>
-                            <f:passThroughAttribute
-                                name="data-toggle"
-                                value="tooltip" />
-                            <f:setPropertyActionListener
-                                target="#{NavigationForm.showHelp}"
-                                value="#{not NavigationForm.showHelp}" />
-                        </button>
-                    </li>
-
-                    <!-- Icon to select language -->
-                    <li class="dropdown language-select">
-                        <div
-                            data-toggle="tooltip"
-                            title="#{msgs.spracheAendern}"
-                            data-placement="bottom">
-                            <button
-                                type="button"
-                                id="nav-language"
-                                aria-label="#{msgs.spracheAendern}"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                class="dropdown-toggle btn"
-                                jsf:rel="tooltip">
-
-                                <img
-                                    alt="#{SpracheForm.locale}"
-                                    src="template/img/flags/#{SpracheForm.locale}.gif" />
-                                <span></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <ui:repeat
-                                    var="availableLanguage"
-                                    value="#{SpracheForm.supportedLocales}"
-                                    id="plugin4">
-                                    <li>
-                                        <button
-                                            type="button"
-                                            jsf:id="locale"
-                                            class="dropdown-item text_head"
-                                            jsf:action="#{SpracheForm.SpracheUmschalten}"
-                                            title="#{availableLanguage.displayLanguageTranslated}">
-                                            <f:param
-                                                name="locale"
-                                                value="#{availableLanguage.id}" />
-                                            <f:setPropertyActionListener
-                                                value="#{null}"
-                                                target="#{SessionForm.dateFormatter}" />
-                                            <h:graphicImage value="template/img/flags/#{availableLanguage.id}.gif" />
-                                            <span>
-                                                <h:outputText value="#{msgs[availableLanguage.displayLanguageSelf]}" />
-                                            </span>
-                                        </button>
-                                    </li>
-                                </ui:repeat>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-                <div class="dropdown">
+        <h:form id="menu" styleClass="d-flex justify-content-between w-100">
+            <ul id="main-menu-set-class" class="navbar-nav">
+                <!-- Dropdown-Menü: "Startseite" / "Home page" -->
+                <li class="nav-item #{NavigationForm.parentMenu == 'menu_start' ? 'active' : ''}">
                     <button
-                        id="nav-account"
-                        type="button"
-                        class="dropdown-toggle btn"
-                        aria-haspopup="true"
-                        data-toggle="dropdown">
-                        <h:outputText
-                            rendered="#{LoginForm.myBenutzer != null}"
-                            value="#{LoginForm.myBenutzer.vorname} #{LoginForm.myBenutzer.nachname}" />
-                        <c:if test="#{empty LoginForm.myBenutzer.imageUrl}">
-                            <img
-                                alt=""
-                                src="template/img/intranda.png" />
-                        </c:if>
-                        <c:if test="#{not empty LoginForm.myBenutzer.imageUrl}">
-                            <img
-                                alt=""
-                                src="#{LoginForm.myBenutzer.imageUrl}" />
-                        </c:if>
+                        class="nav-link"
+                        jsf:id="exit"
+                        jsf:action="#{NavigationForm.workflowPlugin.exitPlugin}">
+                        <h:outputText value="#{msgs.plugin_workflow_entity_exit}" />
                     </button>
+                </li>
+            </ul>
+            <ui:include src="/uii/template/inc_menu_preferences.xhtml" />
 
-                    <ul class="dropdown-menu pull-right">
-                        <!-- User settings -->
-                        <intranda:menuItem
-                            id="a50"
-                            parentMenu="menu_account"
-                            label="#{msgs.benutzerkonfiguration}"
-                            action="user_config"
-                            display="#{NavigationForm.uiStatus.user_config}"
-                            icon="fa fa-user-circle-o box-icon-fix-menu-up3" />
-
-                        <!-- Change password -->
-                        <h:panelGroup rendered="#{HelperForm.passwordIsChangable}">
-                            <intranda:menuItem
-                                id="a51"
-                                parentMenu="menu_account"
-                                label="#{msgs.passwortAendern}"
-                                action="user_password"
-                                icon="fa fa-key box-icon-fix-menu-up3" />
-                        </h:panelGroup>
-
-
-                        <!-- Logout -->
-                        <ui:fragment rendered="#{!LoginForm.showSSOLogoutPage}">
-                            <intranda:menuItem
-                                id="a52"
-                                parentMenu="menu_account"
-                                label="#{msgs.logout}"
-                                action="#{LoginForm.Ausloggen}"
-                                icon="fa fa-power-off box-icon-fix-menu" />
-                        </ui:fragment>
-                        <ui:fragment rendered="#{LoginForm.showSSOLogoutPage}">
-                            <intranda:menuItem
-                                id="openIdLogout"
-                                parentMenu="menu_account"
-                                label="#{msgs.logout}"
-                                action="#{LoginForm.logoutOpenId}"
-                                icon="fa fa-power-off box-icon-fix-menu" />
-                        </ui:fragment>
-
-                    </ul>
-                </div>
-
-            </div>
         </h:form>
 
     </ui:define>
@@ -193,16 +41,17 @@
 
         <main class="plugin-entity-editor">
             <div class="main-wrapper">
-                <div class="head">
+                <div class="header">
                     <h:form
+                        styleClass="header__bottom"
                         id="headform"
                         prependId="false">
 
 
                         <!-- display current type , icons to search types-->
-                        <div class="search-row row">
+                        <div class="row w-100 justify-content-between">
                             <div
-                                class="col-sm-4"
+                                class="col-md-4"
                                 jsf:id="header">
                                 <h1>
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_header}" rendered="#{NavigationForm.workflowPlugin.entity != null}">
@@ -211,51 +60,34 @@
                                     </h:outputFormat>
                                 </h1>
                             </div>
-                            <div class="col-sm-8">
-                                <ul class="pull-right">
+                            <ul class="col-md-8 d-flex justify-content-end" role="list">
+                                <ui:repeat
+                                    var="type"
+                                    value="#{NavigationForm.workflowPlugin.allEntityTypes}">
                                     <li>
-                                        <ui:repeat
-                                            var="type"
-                                            value="#{NavigationForm.workflowPlugin.allEntityTypes}">
-
-                                            <style>
-                                                .entity-search--#{type.plural} {
-                                                    background-color: #{type.color};
-                                                    color: #fff;
-                                                }
-                                                .entity-search--#{type.plural}:hover {
-                                                    background-color: #{type.color};
-                                                    background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
-                                                    color: #fff;
-                                                }
-                                            </style>
-
-                                            <button
-                                                type="button"
-                                                class="btn entity-search entity-search--#{type.plural}"
-                                                jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
-                                                jsf:onclick="$('#searchEntitySearchBox').modal('show');">
-                                                <i class="fa #{type.icon} big-icon" />
-                                                <h:outputText
-                                                    value="#{msgs[type.plural]}"
-                                                    styleClass="btn-text" />
-                                                <f:ajax
-                                                    execute="@this"
-                                                    render=":searchEntityModalContent" />
-                                            </button>
-                                        </ui:repeat>
+                                        <button
+                                            type="button"
+                                            class="btn entity-search entity-search"
+                                            style="--entity-search-color: #{type.color};"
+                                            jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
+                                            jsf:onclick="$('#searchEntitySearchBox').modal('show');">
+                                            <span class="fa #{type.icon} big-icon"
+                                                aria-hidden="true" />
+                                            <h:outputText
+                                                value="#{msgs[type.plural]}"
+                                                styleClass="btn-text" />
+                                            <f:ajax
+                                                execute="@this"
+                                                render=":searchEntityModalContent" />
+                                        </button>
                                     </li>
-                                </ul>
-                            </div>
+                                </ui:repeat>
+                            </ul>
                         </div>
-                        <br />
-
-
-
                         <h:panelGroup
                             layout="block"
                             id="breadcrumbs"
-                            styleClass="breadcrumbs">
+                            styleClass="breadcrumbs bg-transparent">
                             <div class="breadcrumb-label">
                                 <h:outputText
                                     rendered="#{!NavigationForm.workflowPlugin.breadcrumbList.isEmpty()}"
@@ -263,7 +95,7 @@
                                     style="padding-left: 5px"
                                     value="#{msgs.plugin_workflow_entity_myTabs}:" />
                             </div>
-                            <ul class="breadcrumb-container row">
+                            <ul class="breadcrumb-container" role="list">
                                 <ui:repeat
                                     var="breadcrumb"
                                     value="#{NavigationForm.workflowPlugin.breadcrumbList}">
@@ -282,12 +114,14 @@
 
 
                 <div class="row">
-                    <div class="col-sm-12 col-md-6">
-                        <div class="box box-color box-bordered #{NavigationForm.workflowPlugin.entity.currentType.name}" 
-                             jsf:rendered="#{NavigationForm.workflowPlugin.entity != null}">
+                    <div class="col-md-12 col-lg-6">
+                        <div
+                            class="box box--outline #{NavigationForm.workflowPlugin.entity.currentType.name}"
+                            jsf:rendered="#{NavigationForm.workflowPlugin.entity != null}"
+                            style="--box-color: #{NavigationForm.workflowPlugin.entity.currentType.color}">
 
                             <div
-                                class="box-title"
+                                class="box-title text-white"
                                 jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
                                 <h3>
                                     <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
@@ -306,8 +140,8 @@
                                     jsf:id="generateBibliography"
                                     jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
                                     title="#{msgs.plugin_workflow_entity_createBibliography}"
-                                    data-toggle="tooltip"
-                                    data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                     <i class="fa fa-plus-circle margin-right-5 big-icon" />
                                 </button>
 
@@ -333,7 +167,7 @@
                                             value="#{NavigationForm.workflowPlugin.entity.metadataFieldList}">
                                             <ui:fragment>
                                                 <entity:entity_badge
-                                                    styleclassname="#{!item.filled ? 'badge-empty' : 'badge-filled'}"
+                                                    styleclassname="#{!item.filled ? 'badge-empty rounded-pill' : 'badge-intranda-light'}"
                                                     fieldname="#{msgs[item.label]}"
                                                     showfield="#{item.showField}" />
                                             </ui:fragment>
@@ -365,8 +199,8 @@
                                                                 jsf:id="toggle-export"
                                                                 jsf:rendered="#{field.displayPublishButton}"
                                                                 title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
-                                                                data-toggle="tooltip"
-                                                                data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                                 <i
                                                                     class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
                                                                 <f:ajax
@@ -385,8 +219,8 @@
                                                             jsf:id="remove"
                                                             jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
                                                             title="#{msgs.plugin_workflow_entity_delete}"
-                                                            data-toggle="tooltip"
-                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                             <i class="fa fa-minus-circle" />
                                                             <f:ajax
                                                                 execute="@this"
@@ -402,8 +236,8 @@
                                                             jsf:rendered="#{field.configField.repeatable}"
                                                             jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
                                                             title="#{msgs.plugin_workflow_entity_duplicate}"
-                                                            data-toggle="tooltip"
-                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                             <i class="fa fa-plus-circle" />
                                                             <f:ajax
                                                                 execute="@this"
@@ -418,8 +252,8 @@
                                                             class="btn pull-right toggle "
                                                             jsf:onclick="$('#sourceSearchBox').modal('show');"
                                                             title="#{msgs.plugin_workflow_entity_addSource}"
-                                                            data-toggle="tooltip"
-                                                            data-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                             <i class="fa fa-quote-left" />
                                                             <f:ajax
                                                                 execute="@this"
@@ -488,7 +322,7 @@
 
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'vocabularyList'}">
                                                             <h:selectOneMenu
-                                                                styleClass="form-control"
+                                                                styleClass="form-select"
                                                                 value="#{field.vocabularyValue}">
                                                                 <f:ajax
                                                                     event="change"
@@ -584,7 +418,7 @@
 
                                                                 <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
                                                                     <h:selectOneMenu
-                                                                        styleClass="form-control"
+                                                                        styleClass="form-select"
                                                                         value="#{subfield.vocabularyValue}">
                                                                         <f:ajax
                                                                             event="change"
@@ -634,10 +468,10 @@
                                                                                     execute="@this"
                                                                                     render=":vocabularySearchModalContent" />
                                                                                 <f:passThroughAttribute
-                                                                                    name="data-toggle"
+                                                                                    name="data-bs-toggle"
                                                                                     value="tooltip" />
                                                                                 <f:passThroughAttribute
-                                                                                    name="data-placement"
+                                                                                    name="data-bs-placement"
                                                                                     value="top" />
                                                                             </button>
                                                                         </span>
@@ -672,7 +506,7 @@
                                                                                         <button
                                                                                             title="#{subfield.image.tooltip}"
                                                                                             class="colorbox-image"
-                                                                                            data-toggle="tooltip"
+                                                                                            data-bs-toggle="tooltip"
                                                                                             href="#{subfield.image.bookmarkUrl}"
                                                                                             jsf:id="showBookmark1"
                                                                                             jsf:onclick="$('#imageBox').modal('show');">
@@ -756,10 +590,10 @@
                                                                                     execute="@this"
                                                                                     render=":geonamesSearchModalContent" />
                                                                                 <f:passThroughAttribute
-                                                                                    name="data-toggle"
+                                                                                    name="data-bs-toggle"
                                                                                     value="tooltip" />
                                                                                 <f:passThroughAttribute
-                                                                                    name="data-placement"
+                                                                                    name="data-bs-placement"
                                                                                     value="top" />
                                                                             </button>
                                                                         </span>
@@ -846,7 +680,7 @@
                             aria-haspopup="true"
                             aria-expanded="false"
                             onclick="switchExpanded(this.id)"
-                            data-toggle="dropdown"
+                            data-bs-toggle="dropdown"
                             type="button">
                             #{msgs.plugin_workflow_entity_export}
                             <span class="caret"></span>
@@ -881,17 +715,17 @@
 
 
             <script type="text/javascript">
-            
+
             function openEditRelationshipModal(data) {
             	showLoader(data);
             	if(data?.status == "success") {
             		$('#relationshipEditBox').modal('show');
             	}
             }
-            
+
             function loadColorbox () {
                 $.colorbox.remove();
-                
+
                 // set colorboxes
                 $( '.colorbox-image' ).colorbox( {
                     transition: 'fade',

@@ -13,8 +13,23 @@
   --gap: .8rem;
 }
 
+.navbar {
+  --clr-primary-400: var(--bg-nav-bar);
+  --clr-primary-600: var(--bg-hv-nav-bar);
+}
 
+.navbar .nav-link:hover {
+  background-color: var(--bg-hv-nav-bar);
+  border-color: var(--bg-hv-nav-bar);
+}
 
+.notification-area {
+  --clr-primary: var(--bg-nav-bar);
+}
+
+.notification-area .btn.btn-primary:hover {
+  background-color: var(--bg-hv-nav-bar);
+}
 
 .grid {
     display: grid;
@@ -302,6 +317,8 @@
 }
 
 .breadcrumb-container {
+    display: flex;
+    flex-wrap: nowrap;
     overflow: hidden;
 }
 
@@ -317,8 +334,24 @@
     margin-top: 10px;
 }
 
+
+.entity-search {
+  background-color: var(--entity-search-color);
+  color: #fff;
+}
+.entity-search:hover {
+  background-color: var(--entity-search-color);
+  background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+  color: #fff;
+}
+
 .big-icon {
     font-size: 20px !important;
+}
+
+.box.box--outline {
+  color: var(--box-color);
+  border-color: var(--box-color);
 }
 
 .header {
@@ -416,18 +449,26 @@ body,
   border-color: var(--bg-hv-nav-bar);
 }
 
+.box.box--outline {
+  color: var(--box-color);
+  border-color: var(--box-color);
+}
 
+.box.box--colored {
+  background-color: var(--box-color);
+  border-color: var(--box-color);
+}
 
 /* `linked entities` boxes */
-.box-title {
+.box__title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff;
+  background-color: #fff !important;
   padding-right: 1rem !important;
 }
 
-.entity-box .box-title {
+.entity-box .box__title {
   padding-right: unset;
 }
 
@@ -476,6 +517,7 @@ body,
 }
 
 .breadcrumb-button-group .breadcrumb-button {
+  border-radius: 0;
   color: currentColor !important;
 }
 
@@ -753,17 +795,11 @@ body,
 }
 
 .scrolling {
-    overflow-y: auto; 
+    overflow-y: auto;
     max-height: calc(50vh - 150px);
 }
 
 /* Modals */
-
-.modal-content-wrapper {
-  display: flex;
-  min-height: 100vh;
-}
-
 
 #searchEntityModalContent,
 #sourceModalContent,
@@ -1055,12 +1091,12 @@ body,
 	position: absolute;
     top: 50%;
     left: 50%;
-    width: 140px; 
+    width: 140px;
     margin-left: -70px;
-    margin-top: -70px; 
+    margin-top: -70px;
     border: none;
 }
-	
+
 
 /* Utilities */
 

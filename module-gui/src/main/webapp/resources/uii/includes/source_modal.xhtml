@@ -25,7 +25,7 @@
 
 
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal"
+                                <button type="button" class="close" data-bs-dismiss="modal"
                                         aria-label="Close">
 									<span aria-hidden="true"> <h:outputText
                                             value="&amp;times;" escape="false"/>
@@ -52,7 +52,7 @@
                                                 jsf:id="searchSource" type="button">
                                             <i class="fa fa-search" aria-hidden="true"></i>
                                             #{msgs.search}
-                                            <f:passThroughAttribute name="data-toggle" value="tooltip"/>
+                                            <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
                                             <f:ajax execute="@form" render="sourcesList"/>
                                         </button>
 
@@ -61,7 +61,7 @@
                                         <button type="button" class="btn btn-lightgrey"
                                                 jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
                                             <i class="fa fa-plus" aria-hidden="true"></i> #{msgs.add}
-                                            <f:passThroughAttribute name="data-toggle" value="tooltip"/>
+                                            <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
 
                                             <f:setPropertyActionListener value="edition"
                                                                          target="#{NavigationForm.workflowPlugin.sourceMode}"/>
@@ -80,7 +80,7 @@
                                                            value="#{msgs.plugin_workflow_entity_editor_sourceType}"/>
                                             <h:panelGroup>
                                                 <i class="fa fa-asterisk pull-right font-asterisk"
-                                                   title="#{msgs.requiredField}" data-toggle="tooltip"/>
+                                                   title="#{msgs.requiredField}" data-bs-toggle="tooltip"/>
                                             </h:panelGroup>
                                         </div>
                                         <div class="col-sm-9">
@@ -197,7 +197,7 @@
                                             <button class="btn btn-lightgrey "
                                                     jsf:action="#{NavigationForm.Reload}">
                                                 <i class="fa fa-undo" aria-hidden="true"></i> #{msgs.goBack}
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip"/>
+                                                <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
                                                 <f:setPropertyActionListener value=""
                                                                              target="#{NavigationForm.workflowPlugin.sourceMode}"/>
                                                 <f:ajax execute="@form" render="modalBody"/>
@@ -273,7 +273,7 @@
 
                                 <!-- cancel/abort -->
                                 <a class="btn pull-left" title="#{msgs.cancel}"
-                                   data-dismiss="modal"> <h:outputText value="#{msgs.cancel}"/>
+                                   data-bs-dismiss="modal"> <h:outputText value="#{msgs.cancel}"/>
                                 </a>
 
                             </div>

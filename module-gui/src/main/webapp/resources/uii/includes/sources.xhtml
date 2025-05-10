@@ -24,9 +24,9 @@
 					<div style="padding: 2px 12px; line-height: 1.42857143; font-size: 13px; color: #333; cursor: not-allowed; background-color: #eee; opacity: 1; border: 1px solid #ccc;">
                     	<h:outputText escape="false" value="#{source.sourceName}"/>
 					</div>
-                       
+
                        		<div class="source_properties" style="margin-top:3px">
-								
+
 										<div class="form-group">
 												<div class="col-sm-3"
 													style="background: var(- -bg-content); border-left: 0">
@@ -34,7 +34,7 @@
 														value="#{msgs.plugin_workflow_entity_editor_sourceType}" />
 													<h:panelGroup>
 														<i class="fa fa-asterisk pull-right font-asterisk"
-															title="#{msgs.requiredField}" data-toggle="tooltip" />
+															title="#{msgs.requiredField}" data-bs-toggle="tooltip" />
 													</h:panelGroup>
 												</div>
 												<div class="col-sm-9">
@@ -71,7 +71,7 @@
 													</h:inputText>
 												</div>
 											</div>
-								
+
 								</div>
                        </div>
 
@@ -83,8 +83,8 @@
                             class="btn pull-right btn--icon-light source-btn"
                             jsf:action="#{field.removeSource(source)}"
                             title="#{msgs.plugin_workflow_entity_delete}"
-                            data-toggle="tooltip"
-                            data-placement="top">
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top">
                             <i class="fa fa-trash" />
                             <f:ajax
                                 execute="@this"

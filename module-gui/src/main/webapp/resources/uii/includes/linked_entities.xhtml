@@ -41,8 +41,8 @@
                             jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
                             jsf:onclick="$('#entitySearchBox').modal('show');"
                             title="#{msgs.plugin_workflow_entity_addRelationship}"
-                            data-toggle="tooltip"
-                            data-placement="top">
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top">
                             <i class="fa fa-plus big-icon" />
                             <f:ajax
                                 execute="@this"
@@ -56,8 +56,8 @@
                                 jsf:id="showContent"
                                 style="color:  #{type.key.color};"
                                 title="#{ type.key.showLinkedContent == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
-                                data-toggle="tooltip"
-                                data-placement="top">
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top">
 
                                 <f:setPropertyActionListener
                                     value="#{not type.key.showLinkedContent}"
@@ -100,8 +100,8 @@
                                 jsf:id="toggleSourceVisibility"
                                 class="btn btn--icon-light source-btn sources-row__item sources__btn nobackground"
                                 title="#{ relationship.showDetails == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
-                                data-toggle="tooltip"
-                                data-placement="top">
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top">
                                 <i
                                     class="fa #{relationship.showDetails == false?'fa fa-chevron-down':'fa fa-chevron-up'}"
                                     style="color: #{type.key.color};" />
@@ -124,8 +124,8 @@
                                     style="color:  #{type.key.color};"
                                     jsf:action="#{NavigationForm.workflowPlugin.changeRelationship(relationship)}"
                                     title="#{msgs.plugin_workflow_entity_editRelationship}"
-                                    data-toggle="tooltip"
-                                    data-placement="top">
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top">
                                     <i class="fa fa-pencil-square-o" />
                                     <f:ajax
                                         execute="@this"
@@ -141,8 +141,8 @@
                                     style="color:  #{type.key.color};"
                                     jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}"
                                     title="#{msgs.plugin_workflow_entity_removeRelationship}"
-                                    data-toggle="tooltip"
-                                    data-placement="top">
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top">
                                     <i class="fa fa-chain-broken" />
                                     <f:ajax
                                         execute="@form"
@@ -155,8 +155,8 @@
                                     style="background-color: #{type.key.color}; color: #fff;"
                                     jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
                                     title="#{msgs.intranda_dashboard_entity_editEntity}"
-                                    data-toggle="tooltip"
-                                    data-placement="top">
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top">
                                     <i class="fa fa-pencil" />
                                 </button>
 
