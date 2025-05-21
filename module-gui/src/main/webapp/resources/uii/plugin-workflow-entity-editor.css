@@ -320,7 +320,7 @@
 
 
 .main-area {
-    max-height: calc(100vh - 322px);
+    max-height: calc(100vh - 353px);
     overflow-y: auto;
 }
 
