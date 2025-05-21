@@ -12,7 +12,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            styleClass="modal"
+            styleClass="modal modal-lg fade"
             layout="block"
             id="vocabularySearchBox"
             tabindex="-1"
@@ -20,135 +20,134 @@
             aria-labelledby="vocabSearchBox"
             aria-hidden="true">
 
-            <div class="modal-content-wrapper">
-                <div
-                    class="modal-dialog"
-                    role="document">
-                    <h:panelGroup
-                        styleClass="modal-content"
-                        layout="block"
-                        id="vocabularySearchModalContent">
+            <div
+                class="modal-dialog"
+                role="document">
+                <h:panelGroup
+                    styleClass="modal-content"
+                    layout="block"
+                    id="vocabularySearchModalContent">
 
-                        <h:form
-                            onkeypress="submitOnEnter(event, 'vocabularySearch');"
-                            prependId="false">
+                    <h:form
+                        onkeypress="submitOnEnter(event, 'vocabularySearch');"
+                        prependId="false">
 
-                            <div class="modal-header">
+                        <div class="modal-header">
+                            <h4
+                                class="modal-title"
+                                id="vocabularySearchBoxLabel">
+                                #{msgs.NORM_vocabularySearch}: #{msgs[NavigationForm.workflowPlugin.searchField.configField.label]}
+                            </h4>
+                            <button
+                                type="button"
+                                class="btn text-white"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                                <span class="fa fa-times" aria-hidden="true" />
+                            </button>
+
+                        </div>
+                        <div class="modal-body p-0">
+                            <p class="p-3">
+                                <h:outputText
+                                    value="#{msgs.NORM_helpVocabularySearch}"
+                                    escape="false" />
+                            </p>
+
+                            <div class="vocab-search-modal__search-bar">
+
+                                <h:inputText
+                                    id="vocabularySearchInput"
+                                    styleClass="form-control"
+                                    value="#{NavigationForm.workflowPlugin.sourceSearchValue}"
+                                    onkeyup="fireOnEnter('vocabularySearchAction')" />
                                 <button
-                                    type="button"
-                                    class="close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">
-                                        <h:outputText
-                                            value="&amp;times;"
-                                            escape="false" />
-                                    </span>
-                                </button>
-                                <h4
-                                    class="modal-title"
-                                    style="width: 90%"
-                                    id="vocabularySearchBoxLabel">#{msgs.NORM_vocabularySearch}: #{msgs[NavigationForm.workflowPlugin.searchField.configField.label]}</h4>
-
-                            </div>
-                            <div class="modal-body">
-                                <p>
-                                    <h:outputText
-                                        value="#{msgs.NORM_helpVocabularySearch}"
-                                        escape="false" />
-                                </p>
-
-                                <div class="vocab-search-modal__search-bar">
-
-                                    <h:inputText
-                                        id="vocabularySearchInput"
-                                        styleClass="form-control"
-                                        value="#{NavigationForm.workflowPlugin.sourceSearchValue}"
-                                        onkeyup="fireOnEnter('vocabularySearchAction')" />
-                                    <button
-                                        jsf:id="vocabularySearchAction"
-                                        class="btn btn-primary btn--loader vocabularySearch"
-                                        jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
-                                        <i
-                                            class="fa fa-search"
-                                            aria-hidden="true"></i>
+                                    jsf:id="vocabularySearchAction"
+                                    class="btn btn-box-color vocabularySearch"
+                                    jsf:action="#{NavigationForm.workflowPlugin.searchVocabulary}">
+                                    <span
+                                        class="fa fa-search"
+                                        aria-hidden="true" />
+                                    <span>
                                         #{msgs.search}
+                                    </span>
 
-                                        <f:passThroughAttribute
-                                            name="data-bs-toggle"
-                                            value="tooltip" />
-                                        <f:ajax
-                                            execute="@form"
-                                            render="vocabularySearchlist" />
-                                    </button>
-                                </div>
-
+                                    <f:passThroughAttribute
+                                        name="data-bs-toggle"
+                                        value="tooltip" />
+                                    <f:ajax
+                                        execute="@form"
+                                        render="vocabularySearchlist" />
+                                </button>
                             </div>
 
-                            <h:panelGroup id="vocabularySearchlist">
-                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
-                                    <div class="modal__gnd-list scrollable vocab-search-modal__search-results">
-                                        <ui:repeat
-                                            value="#{NavigationForm.workflowPlugin.records}"
-                                            var="record">
-                                            <div class="row vocab-search-modal__card">
-                                                <div class="col-sm-11 vocabulary-searchfield">
-                                                    <ui:repeat
-                                                        value="#{record.extendedFields}"
-                                                        var="field">
-                                                        <div
-                                                            class="row"
-                                                            style="margin: 0px;">
-                                                            <div class="col-sm-3">
-                                                                <h:outputText value="#{msgs[field.definition.name]}}" />
-                                                            </div>
-                                                            <div class="col-sm-9">
-                                                                <h:outputText value="#{record.getFieldValue(field.definition)}" />
-                                                            </div>
+                        </div>
+
+                        <h:panelGroup id="vocabularySearchlist">
+                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.records != null and NavigationForm.workflowPlugin.records.size() != 0}">
+                                <div class="modal__gnd-list scrollable vocab-search-modal__search-results">
+                                    <ui:repeat
+                                        value="#{NavigationForm.workflowPlugin.records}"
+                                        var="record">
+                                        <div class="row vocab-search-modal__card">
+                                            <div class="col-sm-11 vocabulary-searchfield">
+                                                <ui:repeat
+                                                    value="#{record.extendedFields}"
+                                                    var="field">
+                                                    <div
+                                                        class="row"
+                                                        style="margin: 0px;">
+                                                        <div class="col-sm-3">
+                                                            <h:outputText value="#{msgs[field.definition.name]}" />
                                                         </div>
-                                                    </ui:repeat>
-
-                                                </div>
-                                                <div class="col-sm-1 vocabulary-searchfield">
-                                                    <button
-                                                        jsf:id="check"
-                                                        class="btn btn-lightgrey"
-                                                        jsf:action="#{NavigationForm.workflowPlugin.importVocabularyData}">
-                                                        <f:setPropertyActionListener
-                                                            value="#{record}"
-                                                            target="#{NavigationForm.workflowPlugin.selectedVocabularyRecord}" />
-
-                                                        <i class="fa fa-check" />
-                                                    </button>
-                                                </div>
+                                                        <div class="col-sm-9">
+                                                            <h:outputText value="#{record.getFieldValue(field.definition)}" />
+                                                        </div>
+                                                    </div>
+                                                </ui:repeat>
 
                                             </div>
-                                        </ui:repeat>
+                                            <div class="col-sm-1 vocabulary-searchfield">
+                                                <button
+                                                    jsf:id="check"
+                                                    class="btn btn-box-color"
+                                                    jsf:action="#{NavigationForm.workflowPlugin.importVocabularyData}">
+                                                    <f:setPropertyActionListener
+                                                        value="#{record}"
+                                                        target="#{NavigationForm.workflowPlugin.selectedVocabularyRecord}" />
 
-                                    </div>
-                                </ui:fragment>
+                                                    <span
+                                                        aria-hidden="true"
+                                                        class="fa fa-check" />
+                                                </button>
+                                            </div>
 
-                                <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
-                                    <h:outputText value="#{msgs.NORM_noHits}" />
-                                </ui:fragment>
+                                        </div>
+                                    </ui:repeat>
 
-                            </h:panelGroup>
+                                </div>
+                            </ui:fragment>
 
-                            <div class="modal-footer">
+                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != NULL and NavigationForm.workflowPlugin.showNotHits}">
+                                <h:outputText value="#{msgs.NORM_noHits}" />
+                            </ui:fragment>
 
-                                <!-- cancel/abort -->
-                                <a
-                                    class="btn pull-left"
-                                    title="#{msgs.cancel}"
-                                    data-bs-dismiss="modal">
-                                    <h:outputText value="#{msgs.cancel}" />
-                                </a>
+                        </h:panelGroup>
 
-                            </div>
+                        <div class="modal-footer">
 
-                        </h:form>
-                    </h:panelGroup>
-                </div>
+                            <!-- cancel/abort -->
+                            <a
+                                class="btn btn-blank border"
+                                title="#{msgs.cancel}"
+                                data-bs-dismiss="modal">
+                                <h:outputText value="#{msgs.cancel}" />
+                            </a>
+
+                        </div>
+
+                    </h:form>
+                </h:panelGroup>
             </div>
         </h:panelGroup>
 

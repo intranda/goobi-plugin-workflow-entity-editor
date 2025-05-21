@@ -10,33 +10,6 @@
 <h:body>
     <ui:composition>
 
-        <style>
-            .breadcrumb-button-group {
-                color: var(--entity-color);
-                transition: all .4s ease;
-            }
-
-            .breadcrumb-button-group.active .breadcrumb-button {
-                background-color: var(--entity-color);
-                background: var(--entity-color);
-                color: #fff !important;
-                transition: all .4s ease;
-            }
-
-            .breadcrumb-button-group .breadcrumb-button:hover {
-                background-color: var(--entity-color);
-                color: #fff !important;
-                transition: all .4s ease;
-            }
-
-            .breadcrumb-button-group.active .breadcrumb-button:hover {
-                color: var(--entity-color) !important;
-                background-color: #fff !important;
-                transition: all .4s ease;
-            }
-
-        </style>
-
         <h:panelGroup
             layout="block"
             styleClass="breadcrumb-button-group  breadcrumb-button-group--#{entityType} btn-group #{NavigationForm.workflowPlugin.selectedBreadcrumb.processId == breadcrumb.processId ? 'active' : ''}"

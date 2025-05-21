@@ -14,13 +14,10 @@
     <h:head>
         <ui:include src="/WEB-INF/includes/template/inc_metadata.xhtml" />
         <ui:include src="/WEB-INF/includes/template/inc_CSS.xhtml" />
-        <link
-            rel="stylesheet"
-            href="plugin-workflow-entity-editor.css?v=#{HelperForm.buildVersion}" />
         <ui:include src="/WEB-INF/includes/template/inc_JS.xhtml" />
         <script
             type="text/javascript"
-            src='template/js/plugins/tinymce/tinymce.min.js'></script>
+            src="template/js/static/plugins/tinymce/tinymce.min.js"></script>
     </h:head>
 
 
@@ -90,8 +87,6 @@
                     case "success": // This is called when ajax response is successfully processed.
                         // NOOP.
                         $(function () {
-                            $('[data-bs-toggle="tooltip"]').tooltip();
-                            $('[data-bs-toggle="popover"]').popover();
                             if ($('.popover.fade.right.in').length > 0) {
                                 $('.popover.fade.right.in').remove();
                             }
@@ -104,8 +99,6 @@
             });
 
             $(document).ready(function () {
-                $('[data-bs-toggle="tooltip"]').tooltip();
-                $('[data-bs-toggle="popover"]').popover();
                 if ($('.popover.fade.right.in').length > 0) {
                     $('.popover.fade.right.in').remove();
                 }
@@ -151,10 +144,8 @@
                         'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
                         'searchreplace wordcount visualblocks visualchars code insertdatetime media nonbreaking',
                         'save table contextmenu directionality emoticons template paste'],
-                    content_css: 'css/content.css',
                     toolbar: 'undo redo | styleselect | bold italic underline strikethrough | bullist numlist | image link | fullscreen code',
                     menubar: false,
-                    content_css: 'css/content.css',
                     statusbar: false,
                     init_instance_callback: function( editor ) {
                         var readOnlyAttr = $( "#" + editor.id.replace( ":", "\\:" ) ).attr( "readonly" );

@@ -12,41 +12,41 @@
 
     <composite:implementation>
 
-        <div class="col-sm-6 entity-box p-0">
+        <div class="col-md-6 entity-box">
             <div
-                class="box  box-bordered"
-                style="color: #{type.key.color}">
+                class="box box--outline"
+                style="--box-color: #{type.key.color}">
                 <div
-                    class="box-title"
-                    jsf:style="border-color: #{type.key.color}">
-                    <h3>
-                        <i class="fa #{type.key.icon} big-icon" />
+                    class="box__title">
+                    <h2>
+                        <span
+                            aria-hidden="true"
+                            class="fa #{type.key.icon} big-icon" />
                         <h:outputFormat value="#{msgs.plugin_workflow_entity_link_header}">
                             <f:param value="#{msgs[type.key.plural]}" />
                             <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.entityName]}" />
 
                             <f:param value="#{type.value.size()}" />
                         </h:outputFormat>
-
-                    </h3>
-
-                    <div class="box-title__actions">
-
-
+                    </h2>
+                    <div class="actions">
                         <button
                             type="button"
                             class="btn"
                             jsf:id="addRelationship"
-                            style="color:  #{type.key.color};"
                             jsf:action="#{NavigationForm.workflowPlugin.addRelationship(type.key)}"
-                            jsf:onclick="$('#entitySearchBox').modal('show');"
                             title="#{msgs.plugin_workflow_entity_addRelationship}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top">
-                            <i class="fa fa-plus big-icon" />
+                            <span aria-hidden="true" class="fa fa-plus big-icon" />
                             <f:ajax
                                 execute="@this"
-                                render=":entityModalContent" />
+                                render=":entityModalContent"
+                                onevent="(data) => {
+                                    if (data.status === 'success') {
+                                        $('#entitySearchBox').modal('show');
+                                    }
+                                }" />
                         </button>
 
                         <h:panelGroup rendered="#{ type.value.size() != 0 }">
@@ -54,7 +54,6 @@
                                 type="button"
                                 class="btn"
                                 jsf:id="showContent"
-                                style="color:  #{type.key.color};"
                                 title="#{ type.key.showLinkedContent == false ? msgs.plugin_workflow_entity_showDetails : msgs.plugin_workflow_entity_hideDetails }"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="top">
@@ -62,26 +61,22 @@
                                 <f:setPropertyActionListener
                                     value="#{not type.key.showLinkedContent}"
                                     target="#{type.key.showLinkedContent}" />
-                                <i class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'} big-icon" />
+                                <span aria-hidden="true" class="fa #{type.key.showLinkedContent ? 'fa-angle-down' : 'fa-angle-up'} big-icon" />
                                 <f:ajax
                                     execute="@this"
                                     render="@form" />
                             </button>
                         </h:panelGroup>
-
-
                     </div>
-
-
                 </div>
                 <h:panelGroup
                     layout="block"
-                    styleClass="box-content nopadding #{type.key.name} scrolling"
-                    style="border-color: #{type.key.color}; #{type.key.showLinkedContent ? '' : 'display:none'}"
+                    styleClass="box-content nopadding #{type.key.name} scrolling#{type.key.showLinkedContent ? '' : ' d-none'}"
                     id="sources"
                     rendered="#{ type.value.size() != 0 }">
 
                     <h:panelGroup
+                        layout="block"
                         styleClass="sources-head grid-container"
                         rendered="#{type.key.showLinkedContent}">
 
@@ -121,12 +116,11 @@
                                 <button
                                     class="btn nobackground"
                                     jsf:id="changeRelationship"
-                                    style="color:  #{type.key.color};"
                                     jsf:action="#{NavigationForm.workflowPlugin.changeRelationship(relationship)}"
                                     title="#{msgs.plugin_workflow_entity_editRelationship}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top">
-                                    <i class="fa fa-pencil-square-o" />
+                                    <span aria-hidden="true" class="fa fa-pencil-square-o" />
                                     <f:ajax
                                         execute="@this"
                                         render=":relationshipModalContent"
@@ -138,31 +132,31 @@
                                     type="button"
                                     class="btn nobackground"
                                     jsf:id="removeRelationship"
-                                    style="color:  #{type.key.color};"
                                     jsf:action="#{NavigationForm.workflowPlugin.removeRelationship(type.key, relationship)}"
                                     title="#{msgs.plugin_workflow_entity_removeRelationship}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top">
-                                    <i class="fa fa-chain-broken" />
+                                    <span aria-hidden="true" class="fa fa-chain-broken" />
                                     <f:ajax
                                         execute="@form"
                                         render="@form" />
                                 </button>
 
                                 <button
-                                    class="btn btn-mini"
+                                    class="btn"
                                     jsf:id="editRelationship"
-                                    style="background-color: #{type.key.color}; color: #fff;"
                                     jsf:action="#{NavigationForm.workflowPlugin.editRelationship(relationship)}"
                                     title="#{msgs.intranda_dashboard_entity_editEntity}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top">
-                                    <i class="fa fa-pencil" />
+                                    <span aria-hidden="true" class="fa fa-pencil" />
                                 </button>
 
                             </div>
 
-                            <h:panelGroup id="entity">
+                            <h:panelGroup
+                                layout="block"
+                                id="entity">
 
                                 <ui:fragment rendered="#{relationship.showDetails}">
                                     <div class="flex-container">
