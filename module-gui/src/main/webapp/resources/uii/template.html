@@ -126,86 +126,115 @@
             //set the config part
             myfaces.config.no_portlet_env = true;
 
-
-
             var simpleTinyMceConfig = {
-                    selector: '.tinymce',
-                    setup: function( editor ) {
-                        editor.on( 'change', function() {
-                            tinymce.triggerSave();
-                        } );
-                    },
-                    statusbar: true,
-                    height: 200,
-                    menu: {},
-                    relative_urls: false,
-                    remove_script_host: false,
-                    plugins: [
-                        'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
-                        'searchreplace wordcount visualblocks visualchars code insertdatetime media nonbreaking',
-                        'save table contextmenu directionality emoticons template paste'],
-                    toolbar: 'undo redo | styleselect | bold italic underline strikethrough | bullist numlist | image link | fullscreen code',
-                    menubar: false,
-                    statusbar: false,
-                    init_instance_callback: function( editor ) {
-                        var readOnlyAttr = $( "#" + editor.id.replace( ":", "\\:" ) ).attr( "readonly" );
-                        if ( readOnlyAttr === "readonly" ) {
-                            editor.setMode( "readonly" );
-                        }
-                    },
-                    setup: function( editor ) {
-                        editor.on( "blur", function( event, a, b ) {
-                            editor.save();
-                            $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
-                        } );
+                setup: function( editor ) {
+                    editor.on( 'change', function() {
+                        tinymce.triggerSave();
+                    } );
+                },
+                statusbar: true,
+                height: 200,
+                menu: {},
+                relative_urls: false,
+                remove_script_host: false,
+                plugins: [
+                    'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
+                    'searchreplace wordcount visualblocks visualchars code insertdatetime media nonbreaking',
+                    'save table contextmenu directionality emoticons template paste'],
+                toolbar: 'undo redo | styleselect | bold italic underline strikethrough | bullist numlist | image link | fullscreen code',
+                menubar: false,
+                statusbar: false,
+                init_instance_callback: function( editor ) {
+                    var readOnlyAttr = $( "#" + editor.id.replace( ":", "\\:" ) ).attr( "readonly" );
+                    if ( readOnlyAttr === "readonly" ) {
+                        editor.setMode( "readonly" );
                     }
+                },
+                setup: (editor) => {
+                    editor.on( "blur", function( event, a, b ) {
+                        editor.save();
+                        $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
+                    } );
+                },
+            };
 
-                };
+            function initTinyMce(selector) {
+                console.log( "Init tinyMce", simpleTinyMceConfig);
+                tinymce.init({ selector: selector, ...simpleTinyMceConfig });
+            }
 
-                function initTinyMce() {
-                    console.log( "Init tinyMce", simpleTinyMceConfig);
-                    tinymce.init( simpleTinyMceConfig );
+            $( window ).on( "load", function() {
+                renderInputFields()
+            } )
+
+            faces.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
+                switch ( ajaxstatus ) {
+                    case "success": // This is called when ajax response is successfully processed.
+                        renderInputFields()
+                        break;
                 }
+            } );
 
-                $( window ).on( "load", function() {
-                    renderInputFields()
-                } )
-
-                faces.ajax.addOnEvent( function( data ) {
-                    var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
-                    switch ( ajaxstatus ) {
-                        case "success": // This is called when ajax response is successfully processed.
-                            renderInputFields()
-                            break;
-                    }
-                } );
-
-                function renderInputFields( ajaxData ) {
-                    if ( typeof tinyMCE !== 'undefined' ) {
-                        if ( ajaxData === undefined || ajaxData.status == "begin" ) {
-                            for ( edId in tinyMCE.editors ) {
-                                try {
-                                    tinyMCE.editors[ edId ].remove();
-                                    console.log( "Removed editor " + edId );
-                                }
-                                catch ( error ) {
-                                    console.log( "Error occured during removing editors; ", error );
-                                }
+            function renderInputFields( ajaxData ) {
+                if ( typeof tinyMCE !== 'undefined' ) {
+                    if ( ajaxData === undefined || ajaxData.status == "begin" ) {
+                        for ( edId in tinyMCE.editors ) {
+                            try {
+                                tinyMCE.editors[ edId ].remove();
+                                console.log( "Removed editor " + edId );
+                            }
+                            catch ( error ) {
+                                console.log( "Error occured during removing editors; ", error );
                             }
                         }
-                        if ( ajaxData === undefined || ajaxData.status == "success" ) {
-                            initTinyMce( ajaxData );
-                        }
+                    }
+                    if ( ajaxData === undefined || ajaxData.status == "success" ) {
+                        initTinyMce('.tinymce');
                     }
                 }
+            }
 
-                function showLoader(data) {
-                	if(data?.status == "begin") {
-                		$("#ajaxLoader").show();
-                	} else {
-                		$("#ajaxLoader").hide();
-                	}
+            function showLoader(data) {
+                if(data?.status == "begin") {
+                    $("#ajaxLoader").show();
+                } else {
+                    $("#ajaxLoader").hide();
                 }
+            }
+
+            // intersection observer for more efficient loading of tinyMCE
+            const observerOptions = {
+                root: document.querySelector('#metadataForm .main-area'),
+                rootMargin: '0px',
+                threshold: 0,
+            }
+
+            const initializedEditors = new Set();
+
+            // Callback function to execute when entries are observed
+            // For now, this will only initialize editors on demand and not destroy them
+            // when they are not visible anymore, as there seems to be an issue with
+            // tinyMCE's api when destroying editors and the performance gain from
+            // destroying them is not that big as opposed to staggered initialization
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    if (entry.isIntersecting) {
+                        if (!initializedEditors.has(id) && typeof tinyMCE !== 'undefined') {
+                            initializedEditors.add(id);
+                            const selector = '#' + CSS.escape(id);
+                            initTinyMce(selector);
+                        }
+                    }
+                });
+            }
+
+            const observer = new IntersectionObserver(observerCallback, observerOptions);
+            const editors = document.querySelectorAll('.tinymce-entity-editor');
+            editors.forEach(editor => {
+                observer.observe(editor);
+            });
 
          // ]]>
 
