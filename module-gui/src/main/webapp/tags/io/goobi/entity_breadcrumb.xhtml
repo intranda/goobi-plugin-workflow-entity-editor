@@ -17,7 +17,8 @@
 
             <button
                 class="btn breadcrumb-button "
-                jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}">
+                jsf:action="#{NavigationForm.workflowPlugin.loadSelectedBreadcrumb}"
+                data-reset-scroll="true">
                 <f:setPropertyActionListener
                     value="#{breadcrumb}"
                     target="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />

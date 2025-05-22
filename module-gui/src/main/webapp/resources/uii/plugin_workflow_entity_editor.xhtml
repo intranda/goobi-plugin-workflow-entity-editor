@@ -657,9 +657,6 @@
                 <!-- link entity modal -->
                 <ui:include src="includes/link_entity_modal.xhtml" />
                 <ui:include src="includes/search_entity_modal.xhtml" />
-                <h:inputHidden
-                    value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
-                    id="scrollpos" />
 
             </div>
             <div class="row editor-actions">
@@ -742,20 +739,46 @@
                     maxHeight: '90%',
                 } );
             }
-			window.onload = function() {
+
+            const loadMainAreaScrollPosition = () => {
+                const scrollTop = sessionStorage.getItem('ew-mainAreaScrollTop');
+                if (scrollTop) {
+                    document.querySelector('.main-area').scrollTop = scrollTop;
+                }
+            }
+
+            const scrollPosition = () => {
+                const mainArea = document.querySelector('.main-area');
+                mainArea.addEventListener('scroll', () => {
+                    sessionStorage.setItem('ew-mainAreaScrollTop', mainArea.scrollTop);
+                });
+                loadMainAreaScrollPosition();
+            }
+
+            const deleteScrollPosition = () => {
+                sessionStorage.removeItem('ew-mainAreaScrollTop');
+            }
+
+            const resetScrollButtons = () => {
+                const buttons = document.querySelectorAll('[data-reset-scroll]');
+                buttons.forEach((button) => {
+                    button.addEventListener('click', deleteScrollPosition);
+                });
+            }
+
+			document.addEventListener('DOMContentLoaded', function() {
 				loadImages();
-			}
+                scrollPosition();
+                resetScrollButtons();
+			});
+
 			faces.ajax.addOnEvent( function( data ) {
                 var ajaxstatus = data.status;
                 switch ( ajaxstatus ) {
-                    case "begin":
-                        var scrollPosition = $( '.main-area' ).scrollTop();
-                        $( '#scrollpos' ).val( scrollPosition );
-                        break;
                     case "success":
-                        var scrollPosition = $( '#scrollpos' ).val();
-                        $( '.main-area' ).scrollTop( scrollPosition );
-						loadImages();
+                        loadImages();
+                        scrollPosition();
+                        resetScrollButtons();
                         break;
                 }
             } );
