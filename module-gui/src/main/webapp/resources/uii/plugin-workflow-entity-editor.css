@@ -659,9 +659,9 @@ body,
 
 .sources-row__item.sources-row__item--actions {
     display: flex;
-	justify-content: space-around;
+	  justify-content: space-around;
     align-items: baseline;
-    padding-inline-end: 0.5em;
+    padding-inline-end: 1em;
 }
 
 .sources-row__item.sources-row__item--actions .btn {
