@@ -307,7 +307,7 @@
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
                                                             <h:selectOneMenu
-                                                                styleClass="form-control"
+                                                                styleClass="form-select"
                                                                 value="#{field.metadata.value}">
                                                                 <f:ajax
                                                                     event="change"
@@ -407,7 +407,7 @@
 
                                                                         <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
                                                                             <h:selectOneMenu
-                                                                                styleClass="form-control"
+                                                                                styleClass="form-select"
                                                                                 value="#{subfield.metadata.value}">
                                                                                 <f:ajax
                                                                                     event="change"
