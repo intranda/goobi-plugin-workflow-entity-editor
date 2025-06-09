@@ -72,29 +72,50 @@
 }
 
 .breadcrumbs {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
 }
 
 /* #f6f6f6 */
 .breadcrumb-label {
-    display: block;
-    padding: 4px 6px;
-    /*transform: skew(45deg);*/
-    margin-top: 3px;
-    /*     margin-left: -10px; */
-    /*     border: 1px solid #000; */
-    background-color: #f6f6f6;
-    margin-left: -15px;
-    flex: 0 0 auto;
+  display: block;
+  flex: 0 0 auto;
+  height: 23px;
+  padding-block: 4px;
+  margin-inline-end: 10px;
+  margin-top: 3px;
+  background-color: #f6f6f6;
 }
 
 .breadcrumb-button-group {
+    border-radius: 0;
     display: block;
     /*     padding: 2px 6px; */
     float: left;
     background: #fff;
     /*transform: skew(45deg);*/
     margin-top: 3px;
+    color: var(--entity-color);
+    transition: all .4s ease;
+}
+
+.breadcrumb-button-group.active .breadcrumb-button {
+    background-color: var(--entity-color);
+    background: var(--entity-color);
+    color: #fff !important;
+    transition: all .4s ease;
+}
+
+.breadcrumb-button-group:hover .breadcrumb-button {
+    background-color: var(--entity-color);
+    color: #fff !important;
+    transition: all .4s ease;
+}
+
+.breadcrumb-button-group.active:hover .breadcrumb-button {
+    color: var(--entity-color) !important;
+    background-color: #fff !important;
+    transition: all .4s ease;
 }
 
 .breadcrumb-button {
@@ -125,19 +146,20 @@
     gap: var(--gap);
 }
 
-.box .box-title h3 {
+.box .box__title h3 {
     color: inherit;
     display: flex;
 }
 
-.box .box-title h3 i {
+.box .box__title h3 i {
   min-width: 24px;
   max-width: 24px;
 }
 
 .toggle {
-    background: #f6f6f6;
+    background: transparent;
     padding: 0px 2px;
+    margin-block-end: auto;
 }
 
 .nobackground {
@@ -179,10 +201,10 @@
 
 .badge-area {
     display: flex;
-    /*     justify-content: flex-end; */
     flex-wrap: wrap;
     border-bottom: 1px solid #ddd;
     background: #f6f6f6;
+    padding: 8px;
 }
 
 .badge-bordered {
@@ -200,14 +222,20 @@
     border: 1px solid;
 }
 
-.field-label {
-    color: #666;
-    padding-bottom: 5px;
-    display: block;
-}
-
 .field-label-language {
     margin-top: 5px;
+}
+
+.field-set .form-label {
+    color: #666;
+}
+
+.form-label-required .fa-asterisk {
+    color: var(--clr-black);
+}
+
+.tox {
+    width: 100%;
 }
 
 .viaf-btn {
@@ -292,7 +320,7 @@
 
 
 .main-area {
-    max-height: calc(100vh - 322px);
+    max-height: calc(100vh - 353px);
     overflow-y: auto;
 }
 
@@ -320,6 +348,18 @@
     display: flex;
     flex-wrap: nowrap;
     overflow: hidden;
+    gap: calc(var(--flow-space, 1em) / 2);
+}
+
+.btn-box-color {
+    background-color: var(--box-color);
+    color: var(--clr-white);
+}
+
+.btn-box-color:hover {
+    background-color: var(--clr-white);
+    border-color: var(--box-color);
+    color: var(--box-color);
 }
 
 .btn-text {
@@ -347,11 +387,6 @@
 
 .big-icon {
     font-size: 20px !important;
-}
-
-.box.box--outline {
-  color: var(--box-color);
-  border-color: var(--box-color);
 }
 
 .header {
@@ -450,8 +485,18 @@ body,
 }
 
 .box.box--outline {
-  color: var(--box-color);
   border-color: var(--box-color);
+}
+
+.box.box--outline .box__title {
+    background: var(--clr-white);
+    color: var(--box-color);
+    border-color: var(--box-color);
+}
+
+.box.editor-box .box__title {
+    background: var(--box-color);
+    color: var(--clr-white);
 }
 
 .box.box--colored {
@@ -464,15 +509,9 @@ body,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff !important;
-  padding-right: 1rem !important;
 }
 
-.entity-box .box__title {
-  padding-right: unset;
-}
-
-.box .box-title h3 {
+.box .box__title h3 {
   float: unset;
   margin: 0;
 }
@@ -491,20 +530,19 @@ body,
   text-decoration: none;
 }
 
-.box .box-title::after {
+.box .box__title::after {
   content: unset;
   clear: unset;
   text-decoration: none;
 }
 
-.box-title__actions {
+.box__title .actions {
   display: flex;
   justify-content: flex-end;
   align-self: baseline;
-  margin-top: 2px;
 }
 
-.box-title__actions button {
+.box__title .actions button {
   display: flex;
   align-items: baseline;
   margin: 0;
@@ -528,10 +566,13 @@ body,
 
 /* Entity boxes */
 .entity-box {
-  --padding: 1rem;
+    --bs-gutter-x: var(--gap);
+    --bs-gutter-y: var(--gap);
+    margin-block-start: 0;
+    margin-block-end: var(--gap);
 }
 
-.entity-box h3 {
+.entity-box h2 {
   display: flex;
   align-items: baseline;
   gap: var(--gap);
@@ -540,22 +581,8 @@ body,
   overflow: hidden;
 }
 
-.entity-box .box-title {
-    padding-top: var(--padding) !important;
+.entity-box .box__title {
     gap: var(--gap);
-}
-
-.entity-box .box-title__actions {
-  gap: var(--gap);
-}
-
-.entity-box .box-title__actions button {
-  background-color: transparent;
-  padding: 0;
-}
-
-.entity-box .box-title i {
-  margin: 0 !important;
 }
 
 .entity-box .box-content {
@@ -564,6 +591,7 @@ body,
 
 
 .entity-box .grid-container {
+    background: var(--clr-white);
   display: grid;
   grid-template-columns: 50px repeat(2, minmax(0, 1fr)) 75px;
 }
@@ -630,15 +658,28 @@ body,
 }
 
 .sources-row__item.sources-row__item--actions {
-	display: flex;
-	gap: var(--gap);
-	justify-content: space-between;
-  align-items: baseline;
+    display: flex;
+	  justify-content: space-around;
+    align-items: baseline;
+    padding-inline-end: 1em;
+}
+
+.sources-row__item.sources-row__item--actions .btn {
+    width: 20px;
+}
+
+.sources-row__item.sources-row__item--actions .btn:last-of-type {
+    line-height: 1.5;
+    padding: 1px 3px;
+}
+
+.sources-row__item.sources-row__item--actions .nobackground {
+    background: transparent;
+    color: var(--box-color);
 }
 
 .sources__btn {
   display: flex;
-  padding: 0;
   margin: 0;
   text-align: start;
 }
@@ -810,6 +851,15 @@ body,
   background: var(--bg-content) !important;
 }
 
+.modal-header {
+    background: var(--box-color);
+    color: var(--clr-white);
+}
+
+.modal-content {
+    border: 1px solid var(--box-color);
+}
+
 .modal__gnd-list {
   display: grid;
   gap: var(--gap);
@@ -830,21 +880,6 @@ body,
 }
 .modal__gnd-list .col-sm-11 {
   padding: 0 !important;
-}
-
-.entity-modal .modal-dialog,
-#entitySearchBox .modal-dialog,
-#geonamesSearchBox .modal-dialog,
-#vocabularySearchBox .modal-dialog,
-#sourceSearchBox .modal-dialog {
-    width: 80vw;
-    max-width: 84rem;
-    margin: auto;
-}
-
-.entity-modal__search-container,
-.link-entity-modal__search-container {
-    /* padding-bottom: 2.4rem; */
 }
 
 .entity-modal__search-bar,
@@ -872,8 +907,25 @@ body,
     margin-bottom: 15px;
 }
 
+.vocab-search-modal__search-bar,
 .source-modal__search-bar {
-    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--clr-neutral-600);
+    margin: 0;
+    padding: 15px;
+    padding-bottom: 3rem;
+}
+
+.source-modal__search-bar label {
+    margin-block: auto;
+}
+
+.entity-modal__search-bar .btn,
+.link-entity-modal__search-bar .btn,
+.vocab-search-modal__search-bar .btn,
+.source-modal__search-bar .btn {
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 
@@ -887,10 +939,12 @@ body,
 .link-entity-modal__search-bar label {
     flex: 1 0 auto;
 }
-.entity-modal__search-bar input,
-.vocab-search-modal__search-bar input,
-.link-entity-modal__search-bar input {
-    height: 3rem;
+.entity-modal__search-bar .btn,
+.vocab-search-modal__search-bar .btn,
+.link-entity-modal__search-bar .btn {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items-center
 }
 
 .entity-modal__search-results,
@@ -957,14 +1011,6 @@ body,
     gap: 8px;
 }
 
-.flex-form [id$="sourceSearchInput"] {
-    height: 30px;
-}
-
-#sourceSearchInput {
-    height: 3rem;
-}
-
 #addSource .form-group::after {
   content: '';
   display: table;
@@ -984,7 +1030,7 @@ body,
 }
 
 .source-modal__actions {
-    margin-top: 3.2rem;
+    padding: 1.6rem 1rem;
     display: flex;
     justify-content: flex-end;
     gap: var(--gap);
@@ -1051,9 +1097,7 @@ body,
 
 #relationship {
   background-color: #fff;
-  padding: 20px 0;
   margin: 0;
-  border: 1px solid #ccc;
   border-top: 4px solid #e8860c;
 }
 
@@ -1065,7 +1109,7 @@ body,
 .link-entity-modal__actions {
   display: flex;
   gap: 8px;
-  margin: 16px 0;
+  margin: 16px;
   justify-content: flex-end;
 }
 
@@ -1114,14 +1158,6 @@ body,
     }
 }
 
-
-@media only screen and (min-width: 1440px) {
-
-    .entity-box {
-        padding-right: var(--gap);
-    }
-}
-
 @media only screen and (max-width: 1440px) {
     .grid {
         display: grid;
@@ -1133,4 +1169,8 @@ body,
     .entity-box {
         width: 100%;
     }
+}
+
+textarea.tinymce {
+    height: 200px;
 }

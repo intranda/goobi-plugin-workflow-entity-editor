@@ -13,86 +13,82 @@
     <composite:implementation>
         <h:panelGroup
             id="sources"
-            rendered="#{field.allowSources}"
+            rendered="#{field.allowSources and not empty field.sources}"
             layout="block">
             <ui:repeat
                 var="source"
                 value="#{field.sources}">
-
-                <div class="source">
-					<div class="source_values">
-					<div style="padding: 2px 12px; line-height: 1.42857143; font-size: 13px; color: #333; cursor: not-allowed; background-color: #eee; opacity: 1; border: 1px solid #ccc;">
-                    	<h:outputText escape="false" value="#{source.sourceName}"/>
-					</div>
-
-                       		<div class="source_properties" style="margin-top:3px">
-
-										<div class="form-group">
-												<div class="col-sm-3"
-													style="background: var(- -bg-content); border-left: 0">
-													<h:outputLabel for="sourceType"
-														value="#{msgs.plugin_workflow_entity_editor_sourceType}" />
-													<h:panelGroup>
-														<i class="fa fa-asterisk pull-right font-asterisk"
-															title="#{msgs.requiredField}" data-bs-toggle="tooltip" />
-													</h:panelGroup>
-												</div>
-												<div class="col-sm-9">
-													<h:selectOneMenu id="sourceType" styleClass="form-control"
-														value="#{source.sourceType}">
-														<f:selectItem itemValue=""
-															itemLabel="#{msgs.bitteAuswaehlen}" />
-														<f:selectItem
-															itemLabel="#{msgs.plugin_workflow_entity_editor_primary}"
-															itemValue="Primary" />
-														<f:selectItem
-															itemLabel="#{msgs.plugin_workflow_entity_editor_secondary}"
-															itemValue="Secondary" />
-														<f:selectItem
-															itemLabel="#{msgs.plugin_workflow_entity_editor_tertiary}"
-															itemValue="Tertiary" />
-															<f:ajax execute="@this"></f:ajax>
-													</h:selectOneMenu>
-												</div>
-
-												<div class="col-sm-3"
-													style="background: var(- -bg-content); border-left: 0">
-													<h:outputLabel
-														value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
-														for="sourcePage" />
-												</div>
-												<div class="col-sm-9">
-
-													<h:inputText id="sourcePage" styleClass="form-control"
-														value="#{source.pageRange}">
-														<f:ajax
-								                            execute="@form"
-								                            event="valueChange" />
-													</h:inputText>
-												</div>
-											</div>
-
-								</div>
-                       </div>
-
-                    <span>
+				<div class="form-row">
+					<div class="form-label"></div>
+					<div class="form-input flex-nowrap">
+						<div
+							class="flex-grow-1 form-control"
+							style="color: #333; cursor: not-allowed; background-color: #eee;">
+							<h:outputText escape="false" value="#{source.sourceName}"/>
+						</div>
                         <!--  button to remove source -->
                         <button
                             type="button"
                             jsf:id="deleteSource"
-                            class="btn pull-right btn--icon-light source-btn"
+                            class="btn font-light mb-auto"
                             jsf:action="#{field.removeSource(source)}"
                             title="#{msgs.plugin_workflow_entity_delete}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top">
-                            <i class="fa fa-trash" />
+                            <span
+								aria-hidden="true"
+								class="fa fa-trash" />
                             <f:ajax
                                 execute="@this"
                                 render="@form" />
                         </button>
-                    </span>
+					</div>
+				</div>
 
-                </div>
+				<div class="form-row">
+					<div class="form-label">
+						<h:outputLabel for="sourceType"
+							value="#{msgs.plugin_workflow_entity_editor_sourceType}" />
+						<span
+							class="fa fa-asterisk pull-right font-asterisk"
+							aria-hidden="true"
+							title="#{msgs.requiredField}" data-bs-toggle="tooltip" />
+					</div>
+					<div class="form-input">
+						<h:selectOneMenu id="sourceType" styleClass="form-select"
+							value="#{source.sourceType}">
+							<f:selectItem itemValue=""
+								itemLabel="#{msgs.bitteAuswaehlen}" />
+							<f:selectItem
+								itemLabel="#{msgs.plugin_workflow_entity_editor_primary}"
+								itemValue="Primary" />
+							<f:selectItem
+								itemLabel="#{msgs.plugin_workflow_entity_editor_secondary}"
+								itemValue="Secondary" />
+							<f:selectItem
+								itemLabel="#{msgs.plugin_workflow_entity_editor_tertiary}"
+								itemValue="Tertiary" />
+								<f:ajax execute="@this"></f:ajax>
+						</h:selectOneMenu>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-label">
+						<h:outputLabel
+							value="#{msgs.plugin_workflow_entity_editor_sourcePage}"
+							for="sourcePage" />
+					</div>
+					<div class="form-input">
+
+						<h:inputText id="sourcePage" styleClass="form-control"
+							value="#{source.pageRange}">
+							<f:ajax
+								execute="@form"
+								event="valueChange" />
+						</h:inputText>
+					</div>
+				</div>
+
             </ui:repeat>
 
 

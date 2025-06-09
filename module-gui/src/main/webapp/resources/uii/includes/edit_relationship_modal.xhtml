@@ -13,7 +13,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            styleClass="modal"
+            styleClass="modal modal-lg fade"
             layout="block"
             id="relationshipEditBox"
             tabindex="-1"
@@ -26,150 +26,151 @@
                 <h:panelGroup
                     styleClass="modal-content"
                     layout="block"
-                    id="relationshipModalContent">
+                    id="relationshipModalContent"
+                    style="--box-color: #{NavigationForm.workflowPlugin.changeRelationshipEntity.currentType.color}">
                     <h:form
                         styleClass="form-horizontal"
                         onkeypress="submitOnEnter(event, 'saveRelationship');"
                         prependId="false">
 
                         <div class="modal-header">
-                            <button
-                                type="button"
-                                class="close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close">
-                                <span aria-hidden="true">
-                                    <h:outputText
-                                        value="&amp;times;"
-                                        escape="false" />
-                                </span>
-                            </button>
                             <h4
                                 class="modal-title"
                                 style="width: 90%">#{msgs.plugin_workflow_entity_linkType}
-                                #{NavigationForm.workflowPlugin.changeRelationshipEntity.entityName}</h4>
+                                #{NavigationForm.workflowPlugin.changeRelationshipEntity.entityName}
+                            </h4>
+                            <button
+                                type="button"
+                                class="btn text-white"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                                <span class="fa fa-times" aria-hidden="true" />
+                            </button>
                         </div>
                         <h:form
                             styleClass="form-horizontal"
                             prependId="false">
-                            <div class="modal-body">
+                            <div class="modal-body p-0">
 
                                 <h:panelGroup rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity == null}">
                                     <div class="alert alert-danger">#{msgs.plugin_workflow_entity_locked}</div>
                                 </h:panelGroup>
 
                                 <h:panelGroup
+                                    layout="block"
                                     id="changeRelationshipEntity"
                                     rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity != null}">
-                                    <div
-                                        class="row form-group"
-                                        style="border-color: #368ee0;">
-                                        <div class="col-sm-12 vocabulary-searchfield">
-                                            <h3>
-                                                <h:outputText value="#{NavigationForm.workflowPlugin.changeRelationshipEntity.entityName}" />
-                                            </h3>
+                                    <div>
+                                        <h3 class="p-2 m-0 border-bottom">
+                                            <h:outputText value="#{NavigationForm.workflowPlugin.changeRelationshipEntity.entityName}" />
+                                        </h3>
 
+
+                                        <ui:repeat
+                                            value="#{NavigationForm.workflowPlugin.changeRelationshipEntity.metadataFieldList}"
+                                            var="configuredField">
 
                                             <ui:repeat
-                                                value="#{NavigationForm.workflowPlugin.changeRelationshipEntity.metadataFieldList}"
-                                                var="configuredField">
+                                                var="field"
+                                                value="#{configuredField.metadataList}"
+                                                rendered="#{configuredField.showInSearch}">
 
-                                                <ui:repeat
-                                                    var="field"
-                                                    value="#{configuredField.metadataList}"
-                                                    rendered="#{configuredField.showInSearch}">
+                                                <h:panelGroup
+                                                    styleClass="form-row"
+                                                    rendered="#{field.showFieldInSearchResult}">
+                                                    <h:panelGroup
+                                                        styleClass="form-label"
+                                                        rendered="#{field.configField.group or field.metadata.value != null}">
+                                                        <h:outputLabel
+                                                            for="field_#{status.index}"
+                                                            value="#{msgs[configuredField.label]}" />
+                                                    </h:panelGroup>
 
                                                     <h:panelGroup
-                                                        styleClass="form-group noborder"
-                                                        rendered="#{field.showFieldInSearchResult}">
-                                                        <h:panelGroup
-                                                            styleClass="col-sm-3 control-label"
-                                                            rendered="#{field.configField.group or field.metadata.value != null}">
-                                                            <h:outputLabel
-                                                                for="field_#{status.index}"
-                                                                value="#{msgs[configuredField.label]}" />
-                                                        </h:panelGroup>
+                                                        layout="block"
+                                                        rendered="#{!field.configField.group and field.metadata.value != null}"
+                                                        styleClass="form-input">
+                                                        <h:outputText
+                                                            styleClass=""
+                                                            value="#{field.metadata.value}" />
+                                                    </h:panelGroup>
 
-                                                        <h:panelGroup
-                                                            layout="block"
-                                                            rendered="#{!field.configField.group and field.metadata.value != null}"
-                                                            styleClass="col-sm-9">
-                                                            <h:outputText
-                                                                styleClass=""
-                                                                value="#{field.metadata.value}" />
-                                                        </h:panelGroup>
-
-                                                        <h:panelGroup
-                                                            id="group"
-                                                            layout="block"
-                                                            rendered="#{field.configField.group}"
-                                                            styleClass="col-sm-9">
+                                                    <h:panelGroup
+                                                        id="group"
+                                                        layout="block"
+                                                        rendered="#{field.configField.group}"
+                                                        styleClass="form-input field-set">
+                                                        <div class="field-set-content">
                                                             <ui:repeat
                                                                 var="subfield"
                                                                 value="#{field.subfields}">
                                                                 <h:panelGroup
-                                                                    layout="block"
-                                                                    styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                                    layout="form-row"
+                                                                    styleClass="form-row h-100"
                                                                     rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
-
-                                                                    <h:outputText
-                                                                        styleClass="field-label"
-                                                                        value="#{msgs[subfield.configField.label]}"
-                                                                        rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+                                                                    <span class="form-label">
+                                                                        <h:outputText
+                                                                            value="#{msgs[subfield.configField.label]}"
+                                                                            rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+                                                                    </span>
 
                                                                     <h:outputText
                                                                         rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
-                                                                        styleClass=""
+                                                                        styleClass="form-input"
                                                                         value="#{subfield.metadata.value}" />
                                                                 </h:panelGroup>
                                                             </ui:repeat>
-                                                        </h:panelGroup>
+                                                        </div>
                                                     </h:panelGroup>
-                                                </ui:repeat>
+                                                </h:panelGroup>
                                             </ui:repeat>
-                                        </div>
+                                        </ui:repeat>
                                     </div>
 
                                     <h:panelGroup
                                         layout="block"
-                                        styleClass="row form-group"
                                         id="selectedRelationship">
 
                                         <!-- select relationship type -->
-                                        <div class="col-sm-3 noborder">
-                                            <h:outputLabel
-                                                value="#{msgs.plugin_workflow_entity_editor_relationshipType}"
-                                                for="selectedType" />
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h:selectOneMenu
-                                                required="true"
-                                                id="selectedType"
-                                                styleClass="form-control"
-                                                value="#{NavigationForm.workflowPlugin.relationship}">
-                                                <f:selectItem
-                                                    itemValue=""
-                                                    itemLabel="#{msgs.bitteAuswaehlen}" />
-                                                <f:selectItems
-                                                    value="#{NavigationForm.workflowPlugin.relationshipTypes}"
-                                                    var="item"
-                                                    itemLabel="#{item.getLabel(SpracheForm.locale)}"
-                                                    itemValue="#{item.relationshipNameEn}" />
-                                                <f:ajax
-                                                    event="change"
-                                                    execute="@this"
-                                                    render="selectedRelationship" />
-                                            </h:selectOneMenu>
+                                        <div class="form-row">
+                                            <div class="form-label">
+                                                <h:outputLabel
+                                                    value="#{msgs.plugin_workflow_entity_editor_relationshipType}"
+                                                    for="selectedType" />
+                                            </div>
+                                            <div class="form-input">
+                                                <h:selectOneMenu
+                                                    required="true"
+                                                    id="selectedType"
+                                                    styleClass="form-select"
+                                                    value="#{NavigationForm.workflowPlugin.relationship}">
+                                                    <f:selectItem
+                                                        itemValue=""
+                                                        itemLabel="#{msgs.bitteAuswaehlen}" />
+                                                    <f:selectItems
+                                                        value="#{NavigationForm.workflowPlugin.relationshipTypes}"
+                                                        var="item"
+                                                        itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                        itemValue="#{item.relationshipNameEn}" />
+                                                    <f:ajax
+                                                        event="change"
+                                                        execute="@this"
+                                                        render="selectedRelationship" />
+                                                </h:selectOneMenu>
+                                            </div>
                                         </div>
 
                                         <!--  additional fields, if allowed -->
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayStartDate}">
-                                            <div class="col-sm-3 noborder">
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="form-row"
+                                            rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayStartDate}">
+                                            <div class="form-label">
                                                 <h:outputLabel
                                                     value="#{msgs.plugin_workflow_entity_editor_beginnDate}"
                                                     for="beginnDate2" />
                                             </div>
-                                            <div class="col-sm-9">
+                                            <div class="form-input">
                                                 <h:inputText
                                                     id="beginnDate2"
                                                     styleClass="form-control"
@@ -177,13 +178,16 @@
                                             </div>
                                         </h:panelGroup>
 
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayEndDate}">
-                                            <div class="col-sm-3 noborder">
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="form-row"
+                                            rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayEndDate}">
+                                            <div class="form-label">
                                                 <h:outputLabel
                                                     value="#{msgs.plugin_workflow_entity_editor_endDate}"
                                                     for="endDate2" />
                                             </div>
-                                            <div class="col-sm-9">
+                                            <div class="form-input">
                                                 <h:inputText
                                                     id="endDate2"
                                                     styleClass="form-control"
@@ -191,13 +195,16 @@
                                             </div>
                                         </h:panelGroup>
 
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayAdditionalData}">
-                                            <div class="col-sm-3 noborder">
+                                        <h:panelGroup
+                                            layout="block"
+                                            styleClass="form-row"
+                                            rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayAdditionalData}">
+                                            <div class="form-label">
                                                 <h:outputLabel
                                                     value="#{msgs.plugin_workflow_entity_editor_additionalData}"
                                                     for="additionalData2" />
                                             </div>
-                                            <div class="col-sm-9">
+                                            <div class="form-input">
 
                                                 <h:inputText
                                                     id="additionalData2"
@@ -207,12 +214,12 @@
 
 
                                             <ui:fragment rendered="#{NavigationForm.workflowPlugin.configuration.relationshipSourceType != ''}">
-                                                <div class="col-sm-3 noborder">
+                                                <div class="form-label">
                                                     <h:outputLabel
                                                         value="#{msgs.plugin_workflow_entity_editor_sourceType}"
                                                         for="relationshipSourceType" />
                                                 </div>
-                                                <div class="col-sm-9">
+                                                <div class="form-input">
 
                                                     <h:selectOneMenu
                                                         id="relationshipSourceType"
@@ -238,23 +245,25 @@
                                 </h:panelGroup>
                             </div>
 
-                            <div class="modal-footer">
+                            <div class="modal-footer border-0">
 
+                                <!-- cancel/abort -->
+                                <button
+                                    class="btn btn-blank me-auto"
+                                    title="#{msgs.cancel}"
+                                    jsf:action="#{NavigationForm.workflowPlugin.freeRelationshipLock()}">
+                                    <h:outputText value="#{msgs.cancel}" />
+                                </button>
                                 <button
                                     jsf:action="#{NavigationForm.workflowPlugin.changeRelationshipBetweenEntities}"
                                     jsf:rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity != null}"
                                     title="#{msgs.save}"
-                                    class="btn btn-green"
+                                    class="btn btn-box-color"
                                     jsf:id="saveRelationship">
-                                    <i class="fa fa-floppy-o margin-right-10"></i>
-                                    <h:outputText value="#{msgs.save}" />
-                                </button>
-                                <!-- cancel/abort -->
-                                <button
-                                    class="btn btn-blank pull-left"
-                                    title="#{msgs.cancel}"
-                                    jsf:action="#{NavigationForm.workflowPlugin.freeRelationshipLock()}">
-                                    <h:outputText value="#{msgs.cancel}" />
+                                    <span class="fa fa-floppy-o" />
+                                    <span>
+                                        <h:outputText value="#{msgs.save}" />
+                                    </span>
                                 </button>
 
                             </div>

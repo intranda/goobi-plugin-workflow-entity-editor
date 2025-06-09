@@ -13,7 +13,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            styleClass="modal fade"
+            styleClass="modal modal-lg fade"
             layout="block"
             id="entitySearchBox"
             tabindex="-1"
@@ -21,282 +21,276 @@
             aria-labelledby="entitySearchBox"
             aria-hidden="true">
 
-            <div class="modal-content-wrapper">
-                <div
-                    class="modal-dialog"
-                    role="document">
-                    <h:panelGroup
-                        styleClass="modal-content"
-                        layout="block"
-                        id="entityModalContent">
-                        <h:form
-                            styleClass="form-horizontal"
-                            onkeypress="submitOnEnter(event, 'searchEntity');"
-                            prependId="false">
+            <div
+                class="modal-dialog"
+                role="document">
+                <h:panelGroup
+                    styleClass="modal-content"
+                    layout="block"
+                    id="entityModalContent"
+                    style="--box-color: #{NavigationForm.workflowPlugin.entityType.color};">
+                    <h:form
+                        styleClass="form-horizontal"
+                        onkeypress="submitOnEnter(event, 'searchEntity');"
+                        prependId="false">
 
-                            <div class="modal-header">
-                                <button
-                                    type="button"
-                                    class="close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">
-                                        <h:outputText
-                                            value="&amp;times;"
-                                            escape="false" />
-                                    </span>
-                                </button>
-                                <h4
-                                    class="modal-title"
-                                    style="width: 90%">#{msgs.plugin_workflow_entity_linkType}
-                                    #{msgs[NavigationForm.workflowPlugin.entityType.name]}</h4>
-                            </div>
-                            <div
-                                jsf:id="entity-modal-body"
-                                class="modal-body">
+                        <div class="modal-header">
+                            <h4
+                                class="modal-title">
+                                #{msgs.plugin_workflow_entity_linkType}
+                                #{msgs[NavigationForm.workflowPlugin.entityType.name]}
+                            </h4>
+                            <button
+                                type="button"
+                                class="btn text-white"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                                <span class="fa fa-times" aria-hidden="true" />
+                            </button>
+                        </div>
+                        <div
+                            jsf:id="entity-modal-body"
+                            class="modal-body p-0">
 
-                                <h:panelGroup
-                                    layout="block"
-                                    styleClass="form-group vocabulary-searcharea link-entity-modal__search-container"
-                                    rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
-                                    <div class="link-entity-modal__search-bar">
-                                        <h:outputLabel
-                                            value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
-                                            for="linkSearchInput" />
-                                        <h:inputText
-                                            id="linkSearchInput"
-                                            styleClass="form-control"
-                                            value="#{NavigationForm.workflowPlugin.entitySearch}" />
+                            <h:panelGroup
+                                layout="block"
+                                styleClass="form-group vocabulary-searcharea link-entity-modal__search-container"
+                                rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
+                                <div class="link-entity-modal__search-bar">
+                                    <h:outputLabel
+                                        value="#{msgs.plugin_workflow_entity_editor_searchTerm}"
+                                        for="linkSearchInput" />
+                                    <h:inputText
+                                        id="linkSearchInput"
+                                        styleClass="form-control"
+                                        value="#{NavigationForm.workflowPlugin.entitySearch}" />
 
-                                        <button
-                                            class="btn btn-primary searchEntity"
-                                            jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
-                                            <i
-                                                class="fa fa-search"
-                                                aria-hidden="true"></i>
+                                    <button
+                                        class="btn btn-box-color searchEntity"
+                                        jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
+                                        <span
+                                            class="fa fa-search"
+                                            aria-hidden="true" />
+                                        <span>
                                             #{msgs.search}
-                                            <f:passThroughAttribute
-                                                name="data-bs-toggle"
-                                                value="tooltip" />
-                                            <f:ajax
-                                                execute="@form"
-                                                render="entityList createEntity" />
-                                        </button>
+                                        </span>
+                                        <f:passThroughAttribute
+                                            name="data-bs-toggle"
+                                            value="tooltip" />
+                                        <f:ajax
+                                            execute="@form"
+                                            render="entityList createEntity" />
+                                    </button>
 
-                                    </div>
-                                </h:panelGroup>
+                                </div>
+                            </h:panelGroup>
 
-                                <h:panelGroup
-                                    layout="block"
-                                    id="createEntity"
-                                    styleClass="row form-group vocabulary-searcharea">
-                                    <ui:fragment
-                                        rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
-                                        <div class="create-new-entity__hits">#{msgs.NORM_noHits}</div>
-                                        <div class="create-new-entity__actions">
-                                            <button
-                                                class="btn btn-primary"
-                                                jsf:id="createEntityButton"
-                                                jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
-                                                <i
-                                                    class="fa fa-plus"
-                                                    style="margin-right: 5px;" />
+                            <h:panelGroup
+                                layout="block"
+                                id="createEntity"
+                                styleClass="row form-group vocabulary-searcharea">
+                                <ui:fragment
+                                    rendered="#{NavigationForm.workflowPlugin.selectedEntity == null and NavigationForm.workflowPlugin.entitySearch != '' and (NavigationForm.workflowPlugin.entities == null or NavigationForm.workflowPlugin.entities.size() == 0)}">
+                                    <div class="create-new-entity__hits">#{msgs.NORM_noHits}</div>
+                                    <div class="create-new-entity__actions">
+                                        <button
+                                            class="btn btn-box-color"
+                                            jsf:id="createEntityButton"
+                                            jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
+                                            <span
+                                                class="fa fa-plus" />
+                                            <span>
                                                 <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
+                                            </span>
 
-                                            </button>
-                                        </div>
-                                    </ui:fragment>
-                                </h:panelGroup>
+                                        </button>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
 
-                                <h:panelGroup
-                                    id="entityList"
-                                    rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
-                                    <ui:fragment
-                                        rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
+                            <h:panelGroup
+                                id="entityList"
+                                rendered="#{NavigationForm.workflowPlugin.selectedEntity == null}">
+                                <ui:fragment
+                                    rendered="#{NavigationForm.workflowPlugin.entities != null and NavigationForm.workflowPlugin.entities.size() != 0}">
 
-                                        <div class="modal__gnd-list link-entity-modal__search-results">
-                                            <ui:repeat
-                                                value="#{NavigationForm.workflowPlugin.entities}"
-                                                var="record">
-                                                <div class="row link-entity-modal__card">
-                                                    <h3>#{record.entityName}</h3>
-                                                    <div class="col-sm-11 vocabulary-searchfield">
+                                    <div class="modal__gnd-list link-entity-modal__search-results">
+                                        <ui:repeat
+                                            value="#{NavigationForm.workflowPlugin.entities}"
+                                            var="record">
+                                            <div class="row link-entity-modal__card">
+                                                <h3>#{record.entityName}</h3>
+                                                <div class="col-sm-11 vocabulary-searchfield">
+                                                    <ui:repeat
+                                                        value="#{record.metadataFieldList}"
+                                                        var="configuredField">
+
                                                         <ui:repeat
-                                                            value="#{record.metadataFieldList}"
-                                                            var="configuredField">
+                                                            var="field"
+                                                            value="#{configuredField.metadataList}"
+                                                            rendered="#{configuredField.showInSearch}">
 
-                                                            <ui:repeat
-                                                                var="field"
-                                                                value="#{configuredField.metadataList}"
-                                                                rendered="#{configuredField.showInSearch}">
-
-                                                                <h:panelGroup
-                                                                    styleClass="form-group"
-                                                                    rendered="#{field.showFieldInSearchResult}">
-                                                                    <h:panelGroup styleClass="col-sm-3 control-label">
-                                                                        <h:outputLabel
-                                                                            for="field_#{status.index}"
-                                                                            value="#{msgs[configuredField.label]}" />
-                                                                    </h:panelGroup>
-
-                                                                    <h:panelGroup
-                                                                        layout="block"
-                                                                        rendered="#{!field.configField.group and field.metadata.value != null}"
-                                                                        styleClass="col-sm-9">
-                                                                        <h:outputText
-                                                                            styleClass=""
-                                                                            value="#{field.metadata.value}" />
-                                                                    </h:panelGroup>
-
-                                                                    <h:panelGroup
-                                                                        id="group"
-                                                                        layout="block"
-                                                                        rendered="#{field.configField.group}"
-                                                                        styleClass="col-sm-9">
-                                                                        <ui:repeat
-                                                                            var="subfield"
-                                                                            value="#{field.subfields}">
-                                                                            <h:panelGroup
-                                                                                layout="block"
-                                                                                styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
-                                                                                rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
-
-                                                                                <h:outputText
-                                                                                    styleClass="field-label"
-                                                                                    value="#{msgs[subfield.configField.label]}"
-                                                                                    rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
-
-                                                                                <h:outputText
-                                                                                    rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
-                                                                                    styleClass=""
-                                                                                    value="#{subfield.metadata.value}" />
-                                                                            </h:panelGroup>
-                                                                        </ui:repeat>
-                                                                    </h:panelGroup>
+                                                            <h:panelGroup
+                                                                styleClass="form-group"
+                                                                rendered="#{field.showFieldInSearchResult}">
+                                                                <h:panelGroup styleClass="col-sm-3 control-label">
+                                                                    <h:outputLabel
+                                                                        for="field_#{status.index}"
+                                                                        value="#{msgs[configuredField.label]}" />
                                                                 </h:panelGroup>
-                                                            </ui:repeat>
 
-
-                                                        </ui:repeat>
-                                                    </div>
-
-                                                    <div class="col-sm-1 vocabulary-searchfield">
-                                                        <button
-                                                            jsf:id="check"
-                                                            class="btn btn-lightgrey greenCheckButton">
-                                                            <f:ajax
-                                                                execute="@this"
-                                                                render="entityModalContent" />
-
-                                                            <f:setPropertyActionListener
-                                                                value="#{record}"
-                                                                target="#{NavigationForm.workflowPlugin.selectedEntity}" />
-                                                            <i class="fa fa-check" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                            </ui:repeat>
-
-                                        </div>
-                                    </ui:fragment>
-
-
-
-                                </h:panelGroup>
-
-
-
-
-
-                                <h:panelGroup
-                                    id="selectedEntity"
-                                    rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
-                                    <div
-                                        class="row form-group"
-                                        style="border-color: #368ee0;">
-                                        <div class="col-sm-12 vocabulary-searchfield">
-                                            <h3>
-                                                <h:outputText value="#{NavigationForm.workflowPlugin.selectedEntity.entityName}" />
-                                            </h3>
-
-
-                                            <ui:repeat
-                                                value="#{NavigationForm.workflowPlugin.selectedEntity.metadataFieldList}"
-                                                var="configuredField">
-
-                                                <ui:repeat
-                                                    var="field"
-                                                    value="#{configuredField.metadataList}"
-                                                    rendered="#{configuredField.showInSearch}">
-
-                                                    <h:panelGroup
-                                                        styleClass="form-group noborder"
-                                                        rendered="#{field.showFieldInSearchResult}">
-                                                        <h:panelGroup
-                                                            styleClass="col-sm-3 control-label"
-                                                            rendered="#{field.configField.group or field.metadata.value != null}">
-                                                            <h:outputLabel
-                                                                for="field_#{status.index}"
-                                                                value="#{msgs[configuredField.label]}" />
-                                                        </h:panelGroup>
-
-                                                        <h:panelGroup
-                                                            layout="block"
-                                                            rendered="#{!field.configField.group and field.metadata.value != null}"
-                                                            styleClass="col-sm-9">
-                                                            <h:outputText
-                                                                styleClass=""
-                                                                value="#{field.metadata.value}" />
-                                                        </h:panelGroup>
-
-                                                        <h:panelGroup
-                                                            id="group"
-                                                            layout="block"
-                                                            rendered="#{field.configField.group}"
-                                                            styleClass="col-sm-9">
-                                                            <ui:repeat
-                                                                var="subfield"
-                                                                value="#{field.subfields}">
                                                                 <h:panelGroup
                                                                     layout="block"
-                                                                    styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
-                                                                    rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
-
+                                                                    rendered="#{!field.configField.group and field.metadata.value != null}"
+                                                                    styleClass="col-sm-9">
                                                                     <h:outputText
-                                                                        styleClass="field-label"
-                                                                        value="#{msgs[subfield.configField.label]}"
-                                                                        rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
-
-                                                                    <h:outputText
-                                                                        rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
                                                                         styleClass=""
-                                                                        value="#{subfield.metadata.value}" />
+                                                                        value="#{field.metadata.value}" />
                                                                 </h:panelGroup>
-                                                            </ui:repeat>
-                                                        </h:panelGroup>
+
+                                                                <h:panelGroup
+                                                                    id="group"
+                                                                    layout="block"
+                                                                    rendered="#{field.configField.group}"
+                                                                    styleClass="col-sm-9">
+                                                                    <ui:repeat
+                                                                        var="subfield"
+                                                                        value="#{field.subfields}">
+                                                                        <h:panelGroup
+                                                                            layout="block"
+                                                                            styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                                            rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                                            <h:outputText
+                                                                                styleClass="field-label"
+                                                                                value="#{msgs[subfield.configField.label]}"
+                                                                                rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
+                                                                            <h:outputText
+                                                                                rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
+                                                                                styleClass=""
+                                                                                value="#{subfield.metadata.value}" />
+                                                                        </h:panelGroup>
+                                                                    </ui:repeat>
+                                                                </h:panelGroup>
+                                                            </h:panelGroup>
+                                                        </ui:repeat>
+
+
+                                                    </ui:repeat>
+                                                </div>
+
+                                                <div class="col-sm-1 vocabulary-searchfield">
+                                                    <button
+                                                        jsf:id="check"
+                                                        class="btn btn-box-color">
+                                                        <f:ajax
+                                                            execute="@this"
+                                                            render="entityModalContent" />
+
+                                                        <f:setPropertyActionListener
+                                                            value="#{record}"
+                                                            target="#{NavigationForm.workflowPlugin.selectedEntity}" />
+                                                        <i class="fa fa-check" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </ui:repeat>
+
+                                    </div>
+                                </ui:fragment>
+
+
+
+                            </h:panelGroup>
+
+
+
+
+
+                            <h:panelGroup
+                                id="selectedEntity"
+                                layout="block"
+                                rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
+                                <h3 class="p-3 ">
+                                    <h:outputText value="#{NavigationForm.workflowPlugin.selectedEntity.entityName}" />
+                                </h3>
+
+
+                                <ui:repeat
+                                    value="#{NavigationForm.workflowPlugin.selectedEntity.metadataFieldList}"
+                                    var="configuredField">
+
+                                    <ui:repeat
+                                        var="field"
+                                        value="#{configuredField.metadataList}"
+                                        rendered="#{configuredField.showInSearch}">
+
+                                        <h:panelGroup
+                                            styleClass="form-row"
+                                            rendered="#{field.showFieldInSearchResult}">
+                                            <h:panelGroup
+                                                styleClass="form-label"
+                                                rendered="#{field.configField.group or field.metadata.value != null}">
+                                                <h:outputLabel
+                                                    for="field_#{status.index}"
+                                                    value="#{msgs[configuredField.label]}" />
+                                            </h:panelGroup>
+
+                                            <h:panelGroup
+                                                layout="block"
+                                                rendered="#{!field.configField.group and field.metadata.value != null}"
+                                                styleClass="form-input">
+                                                <h:outputText
+                                                    styleClass=""
+                                                    value="#{field.metadata.value}" />
+                                            </h:panelGroup>
+
+                                            <h:panelGroup
+                                                id="group"
+                                                layout="block"
+                                                rendered="#{field.configField.group}"
+                                                styleClass="form-input">
+                                                <ui:repeat
+                                                    var="subfield"
+                                                    value="#{field.subfields}">
+                                                    <h:panelGroup
+                                                        layout="block"
+                                                        styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
+                                                        rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+
+                                                        <h:outputText
+                                                            styleClass="field-label"
+                                                            value="#{msgs[subfield.configField.label]}"
+                                                            rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+
+                                                        <h:outputText
+                                                            rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
+                                                            styleClass=""
+                                                            value="#{subfield.metadata.value}" />
                                                     </h:panelGroup>
                                                 </ui:repeat>
-                                            </ui:repeat>
-                                        </div>
-                                    </div>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </ui:repeat>
+                                </ui:repeat>
 
-                                    <h:panelGroup
-                                        layout="block"
-                                        styleClass="row form-group"
-                                        id="relationship">
-
+                                <h:panelGroup
+                                    layout="block"
+                                    id="relationship">
+                                    <div class="form-row">
                                         <!-- select relationship type -->
-                                        <div class="col-sm-3 noborder">
+                                        <div class="form-label">
                                             <h:outputLabel
                                                 value="#{msgs.plugin_workflow_entity_editor_relationshipType}"
                                                 for="relationshipType" />
                                         </div>
-                                        <div class="col-sm-9">
+                                        <div class="form-input">
                                             <h:selectOneMenu
                                                 required="true"
                                                 id="relationshipType"
-                                                styleClass="form-control"
+                                                styleClass="form-select"
                                                 value="#{NavigationForm.workflowPlugin.relationship}">
                                                 <f:selectItem
                                                     itemValue=""
@@ -312,56 +306,69 @@
                                                     render="relationship" />
                                             </h:selectOneMenu>
                                         </div>
+                                    </div>
+                                    <!--  additional fields, if allowed -->
+                                    <h:panelGroup
+                                        layout="block"
+                                        styleClass="form-row"
+                                        rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayStartDate}">
+                                        <div class="form-label">
+                                            <h:outputLabel
+                                                value="#{msgs.plugin_workflow_entity_editor_beginnDate}"
+                                                for="beginnDate" />
+                                        </div>
+                                        <div class="form-input">
+                                            <h:inputText
+                                                id="beginnDate"
+                                                styleClass="form-control"
+                                                value="#{NavigationForm.workflowPlugin.relationshipStartDate}" />
+                                        </div>
+                                    </h:panelGroup>
 
-                                        <!--  additional fields, if allowed -->
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayStartDate}">
-                                            <div class="col-sm-3 noborder">
-                                                <h:outputLabel
-                                                    value="#{msgs.plugin_workflow_entity_editor_beginnDate}"
-                                                    for="beginnDate" />
-                                            </div>
-                                            <div class="col-sm-9">
-                                                <h:inputText
-                                                    id="beginnDate"
-                                                    styleClass="form-control"
-                                                    value="#{NavigationForm.workflowPlugin.relationshipStartDate}" />
-                                            </div>
-                                        </h:panelGroup>
+                                    <h:panelGroup
+                                        layout="block"
+                                        styleClass="form-row"
+                                        rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayEndDate}">
+                                        <div class="form-label">
+                                            <h:outputLabel
+                                                value="#{msgs.plugin_workflow_entity_editor_endDate}"
+                                                for="endDate" />
+                                        </div>
+                                        <div class="form-input">
+                                            <h:inputText
+                                                id="endDate"
+                                                styleClass="form-control"
+                                                value="#{NavigationForm.workflowPlugin.relationshipEndDate}" />
+                                        </div>
+                                    </h:panelGroup>
 
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayEndDate}">
-                                            <div class="col-sm-3 noborder">
-                                                <h:outputLabel
-                                                    value="#{msgs.plugin_workflow_entity_editor_endDate}"
-                                                    for="endDate" />
-                                            </div>
-                                            <div class="col-sm-9">
-                                                <h:inputText
-                                                    id="endDate"
-                                                    styleClass="form-control"
-                                                    value="#{NavigationForm.workflowPlugin.relationshipEndDate}" />
-                                            </div>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayAdditionalData}">
-                                            <div class="col-sm-3 noborder">
+                                    <h:panelGroup
+                                        layout="block"
+                                        rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayAdditionalData}">
+                                        <div class="form-row">
+                                            <!-- additional data -->
+                                            <div class="form-label">
                                                 <h:outputLabel
                                                     value="#{msgs.plugin_workflow_entity_editor_additionalData}"
                                                     for="additionalData" />
                                             </div>
-                                            <div class="col-sm-9">
+                                            <div class="form-input">
 
                                                 <h:inputText
                                                     id="additionalData"
                                                     styleClass="form-control tinymce"
                                                     value="#{NavigationForm.workflowPlugin.relationshipData}" />
                                             </div>
-                                            <ui:fragment rendered="#{NavigationForm.workflowPlugin.configuration.relationshipSourceType != ''}">
-                                                <div class="col-sm-3 noborder">
+                                        </div>
+                                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.configuration.relationshipSourceType != ''}">
+                                            <div class="form-row">
+
+                                                <div class="form-label">
                                                     <h:outputLabel
                                                         value="#{msgs.plugin_workflow_entity_editor_sourceType}"
                                                         for="addRelationshipSourceType" />
                                                 </div>
-                                                <div class="col-sm-9">
+                                                <div class="form-input">
                                                     <h:selectOneMenu
                                                         id="addRelationshipSourceType"
                                                         styleClass="form-control"
@@ -380,63 +387,67 @@
                                                             itemValue="Tertiary" />
                                                     </h:selectOneMenu>
                                                 </div>
-                                            </ui:fragment>
+                                            </div>
+                                        </ui:fragment>
 
-                                        </h:panelGroup>
                                     </h:panelGroup>
                                 </h:panelGroup>
+                            </h:panelGroup>
 
-                                <!-- back to search list -->
-                                <div class="link-entity-modal__actions">
-                                    <button
-                                        class="btn btn-lightgrey"
-                                        jsf:id="back"
-                                        jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
-                                        <i
-                                            class="fa fa-undo margin-right-10"
-                                            aria-hidden="true"></i>
+                            <!-- back to search list -->
+                            <div class="link-entity-modal__actions">
+                                <button
+                                    class="btn btn-blank border"
+                                    jsf:id="back"
+                                    jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
+                                    <span
+                                        class="fa fa-undo"
+                                        aria-hidden="true" />
+                                    <span>
                                         <h:outputText value="#{msgs.zurueck}" />
-                                        <f:passThroughAttribute
-                                            name="data-bs-toggle"
-                                            value="tooltip" />
-                                        <f:setPropertyActionListener
-                                            value=""
-                                            target="#{NavigationForm.workflowPlugin.selectedEntity}" />
-                                        <f:ajax
-                                            execute="@this"
-                                            render="entityModalContent" />
-                                    </button>
+                                    </span>
+                                    <f:passThroughAttribute
+                                        name="data-bs-toggle"
+                                        value="tooltip" />
+                                    <f:setPropertyActionListener
+                                        value=""
+                                        target="#{NavigationForm.workflowPlugin.selectedEntity}" />
+                                    <f:ajax
+                                        execute="@this"
+                                        render="entityModalContent" />
+                                </button>
 
 
-                                    <!-- add/save buttons -->
+                                <!-- add/save buttons -->
 
-                                    <button
-                                        jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
-                                        jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
-                                        title="#{msgs.save}"
-                                        class="btn btn-green">
-                                        <i class="fa fa-floppy-o margin-right-10"></i>
+                                <button
+                                    jsf:action="#{NavigationForm.workflowPlugin.addRelationshipBetweenEntities}"
+                                    jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
+                                    title="#{msgs.save}"
+                                    class="btn btn-box-color">
+                                    <span class="fa fa-floppy-o" />
+                                    <span>
                                         <h:outputText value="#{msgs.save}" />
-                                    </button>
-                                </div>
-
+                                    </span>
+                                </button>
                             </div>
 
+                        </div>
 
-                            <div class="modal-footer">
 
-                                <!-- cancel/abort -->
-                                <a
-                                    class="btn pull-left"
-                                    title="#{msgs.cancel}"
-                                    data-bs-dismiss="modal">
-                                    <h:outputText value="#{msgs.cancel}" />
-                                </a>
+                        <div class="modal-footer">
 
-                            </div>
-                        </h:form>
-                    </h:panelGroup>
-                </div>
+                            <!-- cancel/abort -->
+                            <a
+                                class="btn btn-blank border"
+                                title="#{msgs.cancel}"
+                                data-bs-dismiss="modal">
+                                <h:outputText value="#{msgs.cancel}" />
+                            </a>
+
+                        </div>
+                    </h:form>
+                </h:panelGroup>
             </div>
         </h:panelGroup>
 

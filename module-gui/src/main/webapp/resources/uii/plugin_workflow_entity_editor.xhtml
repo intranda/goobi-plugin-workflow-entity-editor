@@ -31,7 +31,7 @@
                     </button>
                 </li>
             </ul>
-            <ui:include src="/uii/template/inc_menu_preferences.xhtml" />
+            <ui:include src="/WEB-INF/includes/template/inc_menu_preferences.xhtml" />
 
         </h:form>
 
@@ -67,10 +67,9 @@
                                     <li>
                                         <button
                                             type="button"
-                                            class="btn entity-search entity-search"
+                                            class="btn entity-search"
                                             style="--entity-search-color: #{type.color};"
-                                            jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}"
-                                            jsf:onclick="$('#searchEntitySearchBox').modal('show');">
+                                            jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}">
                                             <span class="fa #{type.icon} big-icon"
                                                 aria-hidden="true" />
                                             <h:outputText
@@ -78,7 +77,12 @@
                                                 styleClass="btn-text" />
                                             <f:ajax
                                                 execute="@this"
-                                                render=":searchEntityModalContent" />
+                                                render="searchEntityModalContent"
+                                                onevent="(data) => {
+                                                    if (data.status == 'success') {
+                                                        $('#searchEntitySearchBox').modal('show');
+                                                    }
+                                                }" />
                                         </button>
                                     </li>
                                 </ui:repeat>
@@ -91,7 +95,6 @@
                             <div class="breadcrumb-label">
                                 <h:outputText
                                     rendered="#{!NavigationForm.workflowPlugin.breadcrumbList.isEmpty()}"
-                                    styleClass="skew-fix"
                                     style="padding-left: 5px"
                                     value="#{msgs.plugin_workflow_entity_myTabs}:" />
                             </div>
@@ -116,34 +119,35 @@
                 <div class="row">
                     <div class="col-md-12 col-lg-6">
                         <div
-                            class="box box--outline #{NavigationForm.workflowPlugin.entity.currentType.name}"
+                            class="box box--outline editor-box #{NavigationForm.workflowPlugin.entity.currentType.name}"
                             jsf:rendered="#{NavigationForm.workflowPlugin.entity != null}"
                             style="--box-color: #{NavigationForm.workflowPlugin.entity.currentType.color}">
 
                             <div
-                                class="box-title text-white"
-                                jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color}; border-color: #{NavigationForm.workflowPlugin.entity.currentType.color};">
-                                <h3>
-                                    <i class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
+                                class="box__title">
+                                <h2>
+                                    <span class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
 
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                         <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
                                         <f:param value="#{msgs[NavigationForm.workflowPlugin.entity.entityName]}" />
                                     </h:outputFormat>
 
-                                </h3>
+                                </h2>
+                                <div class="actions">
+                                    <button
+                                        jsf:rendered="#{NavigationForm.workflowPlugin.entity.showGenerateBibliographyButton}"
+                                        jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
+                                        class="btn btn-link btn--generateBibliography"
+                                        jsf:id="generateBibliography"
+                                        jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
+                                        title="#{msgs.plugin_workflow_entity_createBibliography}"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
+                                    </button>
+                                </div>
 
-                                <button
-                                    jsf:rendered="#{NavigationForm.workflowPlugin.entity.showGenerateBibliographyButton}"
-                                    jsf:style="background: #{NavigationForm.workflowPlugin.entity.currentType.color};"
-                                    class="btn btn-link btn--generateBibliography"
-                                    jsf:id="generateBibliography"
-                                    jsf:action="#{NavigationForm.workflowPlugin.entity.generateBibliography}"
-                                    title="#{msgs.plugin_workflow_entity_createBibliography}"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                    <i class="fa fa-plus-circle margin-right-5 big-icon" />
-                                </button>
 
 
                             </div>
@@ -185,86 +189,88 @@
                                                 value="#{configuredField.metadataList}"
                                                 rendered="#{configuredField.showField}">
 
-                                                <div class="form-group">
-                                                    <div class="col-sm-3 control-label">
+                                                <div class="form-row">
+                                                    <div class="form-label">
 
                                                         <h:outputLabel
                                                             for="field_#{status.index}"
                                                             value="#{msgs[configuredField.label]}" />
-                                                        <!-- publish button -->
-                                                        <h:panelGroup id="pubBtn">
+                                                        <div class="ms-auto">
+
+                                                            <!-- button to add source-->
+                                                            <button
+                                                                type="button"
+                                                                jsf:rendered="#{field.allowSources}"
+                                                                jsf:id="addSource"
+                                                                class="btn pull-right toggle "
+                                                                jsf:onclick="$('#sourceSearchBox').modal('show');"
+                                                                title="#{msgs.plugin_workflow_entity_addSource}"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                                <i class="fa fa-quote-left" />
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render=":sourceModalContent" />
+                                                                <f:setPropertyActionListener
+                                                                    value="#{field}"
+                                                                    target="#{NavigationForm.workflowPlugin.currentField}" />
+                                                                <f:setPropertyActionListener
+                                                                    value=""
+                                                                    target="#{NavigationForm.workflowPlugin.sourceMode}" />
+                                                            </button>
+
+
+                                                            <!-- duplicate button -->
                                                             <button
                                                                 type="button"
                                                                 class="btn pull-right toggle"
-                                                                jsf:id="toggle-export"
-                                                                jsf:rendered="#{field.displayPublishButton}"
-                                                                title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
+                                                                jsf:id="duplicate"
+                                                                jsf:rendered="#{field.configField.repeatable}"
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
+                                                                title="#{msgs.plugin_workflow_entity_duplicate}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                <i
-                                                                    class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                                <i class="fa fa-plus-circle" />
                                                                 <f:ajax
-                                                                    execute="pubBtn"
-                                                                    render="pubBtn" />
-                                                                <f:setPropertyActionListener
-                                                                    value="#{not field.publishField.booleanValue}"
-                                                                    target="#{field.publishField.booleanValue}" />
+                                                                    execute="@this"
+                                                                    render="@form" />
                                                             </button>
-                                                        </h:panelGroup>
 
-                                                        <!-- delete button -->
-                                                        <button
-                                                            type="button"
-                                                            class="btn pull-right toggle"
-                                                            jsf:id="remove"
-                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
-                                                            title="#{msgs.plugin_workflow_entity_delete}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                            <i class="fa fa-minus-circle" />
-                                                            <f:ajax
-                                                                execute="@this"
-                                                                render="@form" />
-                                                        </button>
-
-
-                                                        <!-- duplicate button -->
-                                                        <button
-                                                            type="button"
-                                                            class="btn pull-right toggle"
-                                                            jsf:id="duplicate"
-                                                            jsf:rendered="#{field.configField.repeatable}"
-                                                            jsf:action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(configuredField)}"
-                                                            title="#{msgs.plugin_workflow_entity_duplicate}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                            <i class="fa fa-plus-circle" />
-                                                            <f:ajax
-                                                                execute="@this"
-                                                                render="@form" />
-                                                        </button>
-
-                                                        <!-- button to add source-->
-                                                        <button
-                                                            type="button"
-                                                            jsf:rendered="#{field.allowSources}"
-                                                            jsf:id="addSource"
-                                                            class="btn pull-right toggle "
-                                                            jsf:onclick="$('#sourceSearchBox').modal('show');"
-                                                            title="#{msgs.plugin_workflow_entity_addSource}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                            <i class="fa fa-quote-left" />
-                                                            <f:ajax
-                                                                execute="@this"
-                                                                render=":sourceModalContent" />
-                                                            <f:setPropertyActionListener
-                                                                value="#{field}"
-                                                                target="#{NavigationForm.workflowPlugin.currentField}" />
-                                                            <f:setPropertyActionListener
-                                                                value=""
-                                                                target="#{NavigationForm.workflowPlugin.sourceMode}" />
-                                                        </button>
+                                                            <!-- delete button -->
+                                                            <button
+                                                                type="button"
+                                                                class="btn pull-right toggle"
+                                                                jsf:id="remove"
+                                                                jsf:action="#{NavigationForm.workflowPlugin.entity.removeMetadata(field)}"
+                                                                title="#{msgs.plugin_workflow_entity_delete}"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                                <i class="fa fa-minus-circle" />
+                                                                <f:ajax
+                                                                    execute="@this"
+                                                                    render="@form" />
+                                                            </button>
+                                                            <!-- publish button -->
+                                                            <h:panelGroup id="pubBtn">
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn pull-right toggle"
+                                                                    jsf:id="toggle-export"
+                                                                    jsf:rendered="#{field.displayPublishButton}"
+                                                                    title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
+                                                                    data-bs-toggle="tooltip"
+                                                                    data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
+                                                                    <i
+                                                                        class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                                    <f:ajax
+                                                                        execute="pubBtn"
+                                                                        render="pubBtn" />
+                                                                    <f:setPropertyActionListener
+                                                                        value="#{not field.publishField.booleanValue}"
+                                                                        target="#{field.publishField.booleanValue}" />
+                                                                </button>
+                                                            </h:panelGroup>
+                                                        </div>
 
 
                                                     </div>
@@ -272,7 +278,7 @@
                                                     <h:panelGroup
                                                         layout="block"
                                                         rendered="#{!field.configField.group}"
-                                                        styleClass="col-sm-9">
+                                                        styleClass="form-input">
 
                                                         <ui:fragment
                                                             rendered="#{field.configField.fieldType == 'input' or field.configField.fieldType == 'generated'}">
@@ -292,8 +298,7 @@
 
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'checkbox'}">
                                                             <h:selectBooleanCheckbox
-                                                                styleClass="form-control checkbox-height-fix"
-                                                                style="width: auto;"
+                                                                styleClass="form-check-input"
                                                                 value="#{field.booleanValue}">
                                                                 <f:ajax
                                                                     event="change"
@@ -302,7 +307,7 @@
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'select'}">
                                                             <h:selectOneMenu
-                                                                styleClass="form-control"
+                                                                styleClass="form-select"
                                                                 value="#{field.metadata.value}">
                                                                 <f:ajax
                                                                     event="change"
@@ -346,264 +351,270 @@
                                                         id="group"
                                                         layout="block"
                                                         rendered="#{field.configField.group}"
-                                                        styleClass="col-sm-9">
-                                                        <ui:repeat
-                                                            var="subfield"
-                                                            value="#{field.subfields}">
-                                                            <h:panelGroup
-                                                                layout="block"
-                                                                styleClass="group-metadata #{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
-                                                                rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
-
-                                                                <h:outputText
-                                                                    styleClass="field-label"
-                                                                    value="#{msgs[subfield.configField.label]}"
-                                                                    rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
-
+                                                        styleClass="form-input field-set">
+                                                        <div class="field-set-content">
+                                                            <ui:repeat
+                                                                var="subfield"
+                                                                value="#{field.subfields}">
                                                                 <h:panelGroup
-                                                                    rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
-                                                                    id="inputGroup">
-                                                                    <h:inputText
-                                                                        styleClass="form-control"
-                                                                        value="#{subfield.metadata.value}"
-                                                                        required="false"
-                                                                        validator="#{subfield.requiredValidator}"
-                                                                        readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}"
-                                                                        id="inputField">
-                                                                        <f:ajax
-                                                                            execute="@this"
-                                                                            render="badge-area :header"
-                                                                            event="blur"
-                                                                            listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
-                                                                    </h:inputText>
-                                                                    <h:panelGroup
-                                                                        layout="block"
-                                                                        rendered="#{!subfield.valid}"
-                                                                        styleClass="font-danger validation-message">
-                                                                        <h:outputText value="#{subfield.validationErrorMessage}" />
-                                                                    </h:panelGroup>
-                                                                </h:panelGroup>
+                                                                    layout="block"
+                                                                    styleClass="form-row"
+                                                                    rendered="#{subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
 
-                                                                <h:inputTextarea
-                                                                    styleClass="form-control tinymce"
-                                                                    value="#{subfield.metadata.value}"
-                                                                    required="false"
-                                                                    rendered="#{subfield.configField.fieldType == 'textarea'}"
-                                                                    readonly="#{subfield.configField.readonly}">
-                                                                    <f:ajax
-                                                                        execute="@this"
-                                                                        render="badge-area :header"
-                                                                        event="change"
-                                                                        listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
-                                                                </h:inputTextarea>
+                                                                    <h:outputText
+                                                                        styleClass="form-label"
+                                                                        value="#{msgs[subfield.configField.label]}"
+                                                                        rendered="#{subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+                                                                    <div class="form-input">
 
-                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
-                                                                    <h:selectOneMenu
-                                                                        styleClass="form-control"
-                                                                        value="#{subfield.metadata.value}">
-                                                                        <f:ajax
-                                                                            event="change"
-                                                                            render="badge-area" />
-                                                                        <f:selectItem
-                                                                            itemValue=""
-                                                                            itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                            itemDisabled="true" />
-                                                                        <f:selectItems
-                                                                            value="#{subfield.configField.valueList}"
-                                                                            var="item"
-                                                                            itemLabel="#{msgs[item]}"
-                                                                            itemValue="#{item}" />
-                                                                    </h:selectOneMenu>
-                                                                </ui:fragment>
-
-                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
-                                                                    <h:selectOneMenu
-                                                                        styleClass="form-select"
-                                                                        value="#{subfield.vocabularyValue}">
-                                                                        <f:ajax
-                                                                            event="change"
-                                                                            render="badge-area" />
-                                                                        <f:selectItem
-                                                                            itemValue=""
-                                                                            itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                            itemDisabled="false" />
-                                                                        <f:selectItems
-                                                                            value="#{subfield.configField.vocabularyList}"
-                                                                            var="item"
-                                                                            itemLabel="#{item.getLabel(SpracheForm.locale)}"
-                                                                            itemValue="#{item.mainValue}" />
-                                                                    </h:selectOneMenu>
-                                                                </ui:fragment>
-
-                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
-                                                                    <div class="vocabulary-search">
-                                                                        <h:inputText
-                                                                            styleClass="form-control"
-                                                                            value="#{subfield.metadata.value}"
-                                                                            required="false"
-                                                                            id="field_#{status.index}"
-                                                                            readonly="true">
-                                                                            <f:ajax
-                                                                                execute="@this"
-                                                                                render="badge-area"
-                                                                                event="blur" />
-                                                                        </h:inputText>
-                                                                        <span>
-                                                                            <button
-                                                                                jsf:id="vocabularySearch"
-                                                                                class="btn vocabularySearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
-                                                                                title="#{msgs.NORM_vocabularySearch}"
-                                                                                aria-label="#{msgs.NORM_vocabularySearch}"
-                                                                                type="button"
-                                                                                jsf:onclick="$('#vocabularySearchBox').modal('show');">
-                                                                                <img
-                                                                                    class="toggle"
-                                                                                    style="width: 16px;"
-                                                                                    alt="Vocabulary"
-                                                                                    src="template/img/Icons_Vocabulary_color.png" />
-                                                                                <f:setPropertyActionListener
-                                                                                    value="#{subfield}"
-                                                                                    target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                        <h:panelGroup
+                                                                            rendered="#{subfield.configField.fieldType == 'input' or subfield.configField.fieldType == 'generated'}"
+                                                                            id="inputGroup"
+                                                                            styleClass="w-100">
+                                                                            <h:inputText
+                                                                                styleClass="form-control"
+                                                                                value="#{subfield.metadata.value}"
+                                                                                required="false"
+                                                                                validator="#{subfield.requiredValidator}"
+                                                                                readonly="#{subfield.configField.readonly  or subfield.configField.fieldType == 'generated'}"
+                                                                                id="inputField">
                                                                                 <f:ajax
                                                                                     execute="@this"
-                                                                                    render=":vocabularySearchModalContent" />
-                                                                                <f:passThroughAttribute
-                                                                                    name="data-bs-toggle"
-                                                                                    value="tooltip" />
-                                                                                <f:passThroughAttribute
-                                                                                    name="data-bs-placement"
-                                                                                    value="top" />
-                                                                            </button>
-                                                                        </span>
-                                                                    </div>
-                                                                </ui:fragment>
-                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
-                                                                    <h:panelGroup id="imageArea">
-                                                                        <h:inputFile
-                                                                            rendered="#{subfield.image == null}"
-                                                                            id="thirdtab_fileupload3"
-                                                                            value="#{subfield.uploadedFile}"
-                                                                            storage="file"
-                                                                            styleClass="form-control form-control-file"
-                                                                            style="border: 0;padding-left: 0px;"
-                                                                            required="false">
+                                                                                    render="badge-area :header"
+                                                                                    event="blur"
+                                                                                    listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
+                                                                            </h:inputText>
+                                                                            <h:panelGroup
+                                                                                layout="block"
+                                                                                rendered="#{!subfield.valid}"
+                                                                                styleClass="font-danger validation-message">
+                                                                                <h:outputText value="#{subfield.validationErrorMessage}" />
+                                                                            </h:panelGroup>
+                                                                        </h:panelGroup>
+
+                                                                        <h:inputTextarea
+                                                                            styleClass="form-control tinymce-entity-editor"
+                                                                            value="#{subfield.metadata.value}"
+                                                                            required="false"
+                                                                            rendered="#{subfield.configField.fieldType == 'textarea'}"
+                                                                            readonly="#{subfield.configField.readonly}">
                                                                             <f:ajax
-                                                                                listener="#{subfield.uploadFile}"
-                                                                                render="imageArea"
-                                                                                onevent="showLoader" />
-                                                                        </h:inputFile>
-                                                                        <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
-                                                                            <div
-                                                                                class="goobi-thumbnail"
-                                                                                dir="auto">
-                                                                                <div
-                                                                                    class="goobi-thumbnail-image"
-                                                                                    style="height: 200px; max-width: 200px">
+                                                                                execute="@this"
+                                                                                render="badge-area :header"
+                                                                                event="change"
+                                                                                listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
+                                                                        </h:inputTextarea>
 
-                                                                                    <div
-                                                                                        class="thumb"
-                                                                                        style="max-height: 200px;">
-                                                                                        <button
-                                                                                            title="#{subfield.image.tooltip}"
-                                                                                            class="colorbox-image"
-                                                                                            data-bs-toggle="tooltip"
-                                                                                            href="#{subfield.image.bookmarkUrl}"
-                                                                                            jsf:id="showBookmark1"
-                                                                                            jsf:onclick="$('#imageBox').modal('show');">
-                                                                                            <canvas
-                                                                                                class="thumb-canvas"
-                                                                                                style="max-height: 200px;"
-                                                                                                data-image_small="#{subfield.image.thumbnailUrl}"
-                                                                                                data-image_large="#{subfield.image.largeThumbnailUrl}"
-                                                                                                title="#{subfield.image.tooltip}"
-                                                                                                id="thumbnail"></canvas>
-                                                                                            <f:setPropertyActionListener
-                                                                                                value="#{subfield.image.largeThumbnailUrl}"
-                                                                                                target="#{NavigationForm.workflowPlugin.imageUrl}" />
-                                                                                            <f:setPropertyActionListener
-                                                                                                value="#{subfield.image.tooltip}"
-                                                                                                target="#{NavigationForm.workflowPlugin.imageName}" />
-                                                                                            <f:ajax
-                                                                                                execute="@this"
-                                                                                                render="imageBoxContent" />
-                                                                                        </button>
-                                                                                    </div>
+                                                                        <ui:fragment rendered="#{subfield.configField.fieldType == 'select'}">
+                                                                            <h:selectOneMenu
+                                                                                styleClass="form-select"
+                                                                                value="#{subfield.metadata.value}">
+                                                                                <f:ajax
+                                                                                    event="change"
+                                                                                    render="badge-area" />
+                                                                                <f:selectItem
+                                                                                    itemValue=""
+                                                                                    itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                                    itemDisabled="true" />
+                                                                                <f:selectItems
+                                                                                    value="#{subfield.configField.valueList}"
+                                                                                    var="item"
+                                                                                    itemLabel="#{msgs[item]}"
+                                                                                    itemValue="#{item}" />
+                                                                            </h:selectOneMenu>
+                                                                        </ui:fragment>
 
-                                                                                </div>
+                                                                        <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularyList'}">
+                                                                            <h:selectOneMenu
+                                                                                styleClass="form-select"
+                                                                                value="#{subfield.vocabularyValue}">
+                                                                                <f:ajax
+                                                                                    event="change"
+                                                                                    render="badge-area" />
+                                                                                <f:selectItem
+                                                                                    itemValue=""
+                                                                                    itemLabel="#{msgs.bitteAuswaehlen}"
+                                                                                    itemDisabled="false" />
+                                                                                <f:selectItems
+                                                                                    value="#{subfield.configField.vocabularyList}"
+                                                                                    var="item"
+                                                                                    itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                                                    itemValue="#{item.mainValue}" />
+                                                                            </h:selectOneMenu>
+                                                                        </ui:fragment>
+
+                                                                        <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">
+                                                                            <div class="vocabulary-search w-100">
+                                                                                <h:inputText
+                                                                                    styleClass="form-control"
+                                                                                    value="#{subfield.metadata.value}"
+                                                                                    required="false"
+                                                                                    id="field_#{status.index}"
+                                                                                    readonly="true">
+                                                                                    <f:ajax
+                                                                                        execute="@this"
+                                                                                        render="badge-area"
+                                                                                        event="blur" />
+                                                                                </h:inputText>
+                                                                                <span>
+                                                                                    <button
+                                                                                        jsf:id="vocabularySearch"
+                                                                                        class="btn vocabularySearchIndexTrigger font-light metadataButton"
+                                                                                        title="#{msgs.NORM_vocabularySearch}"
+                                                                                        aria-label="#{msgs.NORM_vocabularySearch}"
+                                                                                        type="button"
+                                                                                        jsf:onclick="$('#vocabularySearchBox').modal('show');">
+                                                                                        <img
+                                                                                            class="color-icon"
+                                                                                            style="width: 16px;"
+                                                                                            alt="Vocabulary"
+                                                                                            src="template/img/Icons_Vocabulary_color.png" />
+                                                                                        <f:setPropertyActionListener
+                                                                                            value="#{subfield}"
+                                                                                            target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                                        <f:ajax
+                                                                                            execute="@this"
+                                                                                            render=":vocabularySearchModalContent" />
+                                                                                        <f:passThroughAttribute
+                                                                                            name="data-bs-toggle"
+                                                                                            value="tooltip" />
+                                                                                        <f:passThroughAttribute
+                                                                                            name="data-bs-placement"
+                                                                                            value="top" />
+                                                                                    </button>
+                                                                                </span>
                                                                             </div>
                                                                         </ui:fragment>
-                                                                    </h:panelGroup>
-                                                                </ui:fragment>
-                                                                <h:panelGroup
-                                                                    rendered="#{subfield.configField.fieldType == 'date'}"
-                                                                    id="group">
-                                                                    <h:inputText
-                                                                        styleClass="form-control"
-                                                                        value="#{subfield.metadata.value}"
-                                                                        required="false"
-                                                                        readonly="false"
-                                                                        id="dateField"
-                                                                        validator="#{subfield.dateValidator}">
-                                                                        <f:ajax
-                                                                            execute="@this"
-                                                                            render="badge-area group"
-                                                                            event="blur" />
-                                                                    </h:inputText>
-                                                                    <h:panelGroup
-                                                                        layout="block"
-                                                                        rendered="#{!subfield.valid}"
-                                                                        styleClass="font-danger validation-message">
-                                                                        <h:outputText value="#{subfield.validationErrorMessage}" />
-                                                                    </h:panelGroup>
-                                                                </h:panelGroup>
+                                                                        <ui:fragment rendered="#{subfield.configField.fieldType == 'fileupload'}">
+                                                                            <h:panelGroup id="imageArea" styleClass="w-100">
+                                                                                <h:inputFile
+                                                                                    rendered="#{subfield.image == null}"
+                                                                                    id="thirdtab_fileupload3"
+                                                                                    value="#{subfield.uploadedFile}"
+                                                                                    storage="file"
+                                                                                    styleClass="form-control"
+                                                                                    required="false">
+                                                                                    <f:ajax
+                                                                                        listener="#{subfield.uploadFile}"
+                                                                                        render="imageArea"
+                                                                                        onevent="showLoader" />
+                                                                                </h:inputFile>
+                                                                                <ui:fragment rendered="#{subfield.image != null and subfield.image.type == 'image'}">
+                                                                                    <div
+                                                                                        class="goobi-thumbnail"
+                                                                                        dir="auto">
+                                                                                        <div
+                                                                                            class="goobi-thumbnail-image"
+                                                                                            style="height: 200px; max-width: 200px">
 
-                                                                <ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
-                                                                    <div class="geonames-search">
-                                                                        <h:inputText
-                                                                            styleClass="form-control"
-                                                                            value="#{subfield.metadata.value}"
-                                                                            required="false"
-                                                                            id="geonamesfield_#{status.index}"
-                                                                            readonly="true">
-                                                                            <f:ajax
-                                                                                execute="@this"
-                                                                                render="badge-area"
-                                                                                event="blur" />
-                                                                        </h:inputText>
-                                                                        <span>
-                                                                            <button
-                                                                                jsf:id="geonamesSearch"
-                                                                                class="btn geonamesSearchIndexTrigger btn--icon-light metadataButton pull-right viaf-btn"
-                                                                                title="#{msgs.NORM_geonamesSearch}"
-                                                                                aria-label="#{msgs.NORM_geonamesSearch}"
-                                                                                type="button"
-                                                                                jsf:onclick="$('#geonamesSearchBox').modal('show');">
-                                                                                <img
-                                                                                    class="toggle"
-                                                                                    style="width: 16px;"
-                                                                                    alt="Vocabulary"
-                                                                                    src="template/img/Icons_GeoNames_color.png" />
-                                                                                <f:setPropertyActionListener
-                                                                                    value="#{subfield}"
-                                                                                    target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                                            <div
+                                                                                                class="thumb"
+                                                                                                style="max-height: 200px;">
+                                                                                                <button
+                                                                                                    title="#{subfield.image.tooltip}"
+                                                                                                    class="colorbox-image"
+                                                                                                    data-bs-toggle="tooltip"
+                                                                                                    href="#{subfield.image.bookmarkUrl}"
+                                                                                                    jsf:id="showBookmark1"
+                                                                                                    jsf:onclick="$('#imageBox').modal('show');">
+                                                                                                    <canvas
+                                                                                                        class="thumb-canvas"
+                                                                                                        style="max-height: 200px;"
+                                                                                                        data-image_small="#{subfield.image.thumbnailUrl}"
+                                                                                                        data-image_large="#{subfield.image.largeThumbnailUrl}"
+                                                                                                        title="#{subfield.image.tooltip}"
+                                                                                                        id="thumbnail"></canvas>
+                                                                                                    <f:setPropertyActionListener
+                                                                                                        value="#{subfield.image.largeThumbnailUrl}"
+                                                                                                        target="#{NavigationForm.workflowPlugin.imageUrl}" />
+                                                                                                    <f:setPropertyActionListener
+                                                                                                        value="#{subfield.image.tooltip}"
+                                                                                                        target="#{NavigationForm.workflowPlugin.imageName}" />
+                                                                                                    <f:ajax
+                                                                                                        execute="@this"
+                                                                                                        render="imageBoxContent" />
+                                                                                                </button>
+                                                                                            </div>
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </ui:fragment>
+                                                                            </h:panelGroup>
+                                                                        </ui:fragment>
+                                                                        <h:panelGroup
+                                                                            rendered="#{subfield.configField.fieldType == 'date'}"
+                                                                            id="group"
+                                                                            styleClass="w-100">
+                                                                            <h:inputText
+                                                                                styleClass="form-control"
+                                                                                value="#{subfield.metadata.value}"
+                                                                                required="false"
+                                                                                readonly="false"
+                                                                                id="dateField"
+                                                                                validator="#{subfield.dateValidator}">
                                                                                 <f:ajax
                                                                                     execute="@this"
-                                                                                    render=":geonamesSearchModalContent" />
-                                                                                <f:passThroughAttribute
-                                                                                    name="data-bs-toggle"
-                                                                                    value="tooltip" />
-                                                                                <f:passThroughAttribute
-                                                                                    name="data-bs-placement"
-                                                                                    value="top" />
-                                                                            </button>
-                                                                        </span>
+                                                                                    render="badge-area group"
+                                                                                    event="blur" />
+                                                                            </h:inputText>
+                                                                            <h:panelGroup
+                                                                                layout="block"
+                                                                                rendered="#{!subfield.valid}"
+                                                                                styleClass="font-danger validation-message">
+                                                                                <h:outputText value="#{subfield.validationErrorMessage}" />
+                                                                            </h:panelGroup>
+                                                                        </h:panelGroup>
+
+                                                                        <ui:fragment rendered="#{subfield.configField.fieldType == 'geonames'}">
+                                                                            <div class="geonames-search w-100">
+                                                                                <h:inputText
+                                                                                    styleClass="form-control"
+                                                                                    value="#{subfield.metadata.value}"
+                                                                                    required="false"
+                                                                                    id="geonamesfield_#{status.index}"
+                                                                                    readonly="true">
+                                                                                    <f:ajax
+                                                                                        execute="@this"
+                                                                                        render="badge-area"
+                                                                                        event="blur" />
+                                                                                </h:inputText>
+                                                                                <span>
+                                                                                    <button
+                                                                                        jsf:id="geonamesSearch"
+                                                                                        class="btn font-light geonamesSearchIndexTrigger metadataButton"
+                                                                                        title="#{msgs.NORM_geonamesSearch}"
+                                                                                        aria-label="#{msgs.NORM_geonamesSearch}"
+                                                                                        type="button"
+                                                                                        jsf:onclick="$('#geonamesSearchBox').modal('show');">
+                                                                                        <img
+                                                                                            class="color-icon"
+                                                                                            style="width: 16px;"
+                                                                                            alt="Geoanames"
+                                                                                            src="template/img/Icons_GeoNames_color.png" />
+                                                                                        <f:setPropertyActionListener
+                                                                                            value="#{subfield}"
+                                                                                            target="#{NavigationForm.workflowPlugin.searchField}" />
+                                                                                        <f:ajax
+                                                                                            execute="@this"
+                                                                                            render=":geonamesSearchModalContent" />
+                                                                                        <f:passThroughAttribute
+                                                                                            name="data-bs-toggle"
+                                                                                            value="tooltip" />
+                                                                                        <f:passThroughAttribute
+                                                                                            name="data-bs-placement"
+                                                                                            value="top" />
+                                                                                    </button>
+                                                                                </span>
+                                                                            </div>
+                                                                        </ui:fragment>
                                                                     </div>
-                                                                </ui:fragment>
 
 
-                                                            </h:panelGroup>
-                                                        </ui:repeat>
-                                                        <ui:include src="includes/sources.xhtml" />
+
+                                                                </h:panelGroup>
+                                                            </ui:repeat>
+                                                            <ui:include src="includes/sources.xhtml" />
+                                                        </div>
                                                     </h:panelGroup>
                                                 </div>
                                             </ui:repeat>
@@ -626,12 +637,11 @@
 
 
 
-                    <div class="col-sm-12 col-md-6">
-                        <h:form>
+                    <div class="col-md-12 col-lg-6">
+                        <h:form styleClass="row">
                             <ui:repeat
                                 var="type"
                                 value="#{NavigationForm.workflowPlugin.entity.linkedRelationships}">
-
                                 <ui:include src="includes/linked_entities.xhtml" />
 
                             </ui:repeat>
@@ -647,9 +657,6 @@
                 <!-- link entity modal -->
                 <ui:include src="includes/link_entity_modal.xhtml" />
                 <ui:include src="includes/search_entity_modal.xhtml" />
-                <h:inputHidden
-                    value="#{NavigationForm.workflowPlugin.mainScrollPosition}"
-                    id="scrollpos" />
 
             </div>
             <div class="row editor-actions">
@@ -676,20 +683,18 @@
 
                         <button
                             jsf:id="exportBtnDropdownToggle"
-                            class="btn"
+                            class="btn dropdown-toggle"
                             aria-haspopup="true"
                             aria-expanded="false"
-                            onclick="switchExpanded(this.id)"
                             data-bs-toggle="dropdown"
                             type="button">
                             #{msgs.plugin_workflow_entity_export}
-                            <span class="caret"></span>
                         </button>
 
                         <div class="dropdown-menu">
 
                             <button
-                                class="btn btn-link"
+                                class="btn"
                                 jsf:id="exportSingle"
                                 jsf:action="#{NavigationForm.workflowPlugin.exportSingleRecord}"
                                 type="button">
@@ -698,7 +703,7 @@
                             </button>
 
                             <button
-                                class="btn btn-link"
+                                class="btn"
                                 jsf:id="exportAll"
                                 jsf:action="#{NavigationForm.workflowPlugin.exportAllRecords}"
                                 type="button">
@@ -734,20 +739,46 @@
                     maxHeight: '90%',
                 } );
             }
-			window.onload = function() {
+
+            const loadMainAreaScrollPosition = () => {
+                const scrollTop = sessionStorage.getItem('ew-mainAreaScrollTop');
+                if (scrollTop) {
+                    document.querySelector('.main-area').scrollTop = scrollTop;
+                }
+            }
+
+            const scrollPosition = () => {
+                const mainArea = document.querySelector('.main-area');
+                mainArea.addEventListener('scroll', () => {
+                    sessionStorage.setItem('ew-mainAreaScrollTop', mainArea.scrollTop);
+                });
+                loadMainAreaScrollPosition();
+            }
+
+            const deleteScrollPosition = () => {
+                sessionStorage.removeItem('ew-mainAreaScrollTop');
+            }
+
+            const resetScrollButtons = () => {
+                const buttons = document.querySelectorAll('[data-reset-scroll]');
+                buttons.forEach((button) => {
+                    button.addEventListener('click', deleteScrollPosition);
+                });
+            }
+
+			document.addEventListener('DOMContentLoaded', function() {
 				loadImages();
-			}
+                scrollPosition();
+                resetScrollButtons();
+			});
+
 			faces.ajax.addOnEvent( function( data ) {
                 var ajaxstatus = data.status;
                 switch ( ajaxstatus ) {
-                    case "begin":
-                        var scrollPosition = $( '.main-area' ).scrollTop();
-                        $( '#scrollpos' ).val( scrollPosition );
-                        break;
                     case "success":
-                        var scrollPosition = $( '#scrollpos' ).val();
-                        $( '.main-area' ).scrollTop( scrollPosition );
-						loadImages();
+                        loadImages();
+                        scrollPosition();
+                        resetScrollButtons();
                         break;
                 }
             } );

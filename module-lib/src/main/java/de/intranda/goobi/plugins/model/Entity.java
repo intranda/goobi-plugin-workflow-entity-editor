@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
+import org.goobi.beans.GoobiProperty;
+import org.goobi.beans.GoobiProperty.PropertyOwnerType;
 import org.goobi.beans.Process;
-import org.goobi.beans.Processproperty;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
@@ -63,39 +64,37 @@ public class Entity {
     // list of all metadata fields
     private List<ConfiguredField> metadataFieldList = new ArrayList<>();
 
-    private Processproperty statusProperty = null;
-    private Processproperty displayNameProperty = null;
+    private GoobiProperty statusProperty = null;
+    private GoobiProperty displayNameProperty = null;
 
     public Entity(EntityConfig configuration, Process process) {
         this.configuration = new EntityConfig(configuration);
         this.currentProcess = process;
         if (process.getEigenschaftenSize() > 0) {
-            for (Processproperty property : process.getEigenschaften()) {
-                if ("ProcessStatus".equals(property.getTitel())) {
+            for (GoobiProperty property : process.getProperties()) {
+                if ("ProcessStatus".equals(property.getPropertyName())) {
                     statusProperty = property;
-                } else if ("DisplayName".equals(property.getTitel())) {
+                } else if ("DisplayName".equals(property.getPropertyName())) {
                     displayNameProperty = property;
                 }
             }
         }
 
         if (statusProperty == null) {
-            statusProperty = new Processproperty();
-            statusProperty = new Processproperty();
-            statusProperty.setTitel("ProcessStatus");
-            statusProperty.setProzess(process);
-            statusProperty.setWert("New");
+            statusProperty = new GoobiProperty(PropertyOwnerType.PROCESS);
+            statusProperty.setPropertyName("ProcessStatus");
+            statusProperty.setOwner(process);
+            statusProperty.setPropertyValue("New");
             process.getEigenschaften().add(statusProperty);
-            PropertyManager.saveProcessProperty(statusProperty);
+            PropertyManager.saveProperty(statusProperty);
         }
 
         if (displayNameProperty == null) {
-            displayNameProperty = new Processproperty();
-            displayNameProperty = new Processproperty();
-            displayNameProperty.setTitel("DisplayName");
-            displayNameProperty.setProzess(process);
+            displayNameProperty = new GoobiProperty(PropertyOwnerType.PROCESS);
+            displayNameProperty.setPropertyName("DisplayName");
+            displayNameProperty.setOwner(process);
             process.getEigenschaften().add(displayNameProperty);
-            PropertyManager.saveProcessProperty(displayNameProperty);
+            PropertyManager.saveProperty(displayNameProperty);
         }
 
         try {
@@ -677,15 +676,15 @@ public class Entity {
                 }
             }
 
-            if ("New".equals(statusProperty.getWert())) {
-                statusProperty.setWert("In work");
+            if ("New".equals(statusProperty.getPropertyValue())) {
+                statusProperty.setPropertyValue("In work");
             }
             statusProperty.setCreationDate(new Date());
 
             // check if the display name was changed, in this case linked entities must be updated
-            boolean updatedName = !entityName.equals(displayNameProperty.getWert()) && !entityName.equals(currentType.getName());
+            boolean updatedName = !entityName.equals(displayNameProperty.getPropertyValue()) && !entityName.equals(currentType.getName());
 
-            displayNameProperty.setWert(entityName);
+            displayNameProperty.setPropertyValue(entityName);
             writeSourcePropertiesToMetadata();
 
             currentProcess.writeMetadataFile(currentFileformat);
@@ -774,7 +773,7 @@ public class Entity {
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
             RelationshipType selectedRelationship, String relationshipSourceType) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
-        String relationshipStatus = selectedEntity.getStatusProperty().getWert();
+        String relationshipStatus = selectedEntity.getStatusProperty().getPropertyName();
 
         Relationship rel = new Relationship();
         rel.setAdditionalData(relationshipData);
