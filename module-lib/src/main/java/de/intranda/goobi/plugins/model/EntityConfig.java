@@ -167,7 +167,13 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
+                                            if (relationType.getRelationshipNameEn() == null) {
+                                                if (!reverse) {
+                                                    relationType.setRelationshipNameEn(t.getValue());
+                                                } else {
+                                                    relationType.setReversedRelationshipNameEn(t.getValue());
+                                                }
+                                            }
                                         }
                                         if (!reverse) {
                                             switch (t.getLanguage()) {
@@ -206,7 +212,13 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
+                                            if (relationType.getRelationshipNameEn() == null) {
+                                                if (reverse) {
+                                                    relationType.setRelationshipNameEn(t.getValue());
+                                                } else {
+                                                    relationType.setReversedRelationshipNameEn(t.getValue());
+                                                }
+                                            }
                                         }
                                         if (reverse) {
                                             switch (t.getLanguage()) {
@@ -277,6 +289,20 @@ public class EntityConfig {
                                             relationType.setDisplayAdditionalData(true);
                                         }
                                     });
+
+                            // generate missing translations
+                            if (relationType.getRelationshipNameDe() == null) {
+                                relationType.setRelationshipNameDe(relationType.getRelationshipNameEn());
+                            }
+                            if (relationType.getReversedRelationshipNameDe() == null) {
+                                relationType.setReversedRelationshipNameDe(relationType.getReversedRelationshipNameEn());
+                            }
+                            if (relationType.getRelationshipNameFr() == null) {
+                                relationType.setRelationshipNameFr(relationType.getRelationshipNameEn());
+                            }
+                            if (relationType.getReversedRelationshipNameFr() == null) {
+                                relationType.setReversedRelationshipNameFr(relationType.getReversedRelationshipNameEn());
+                            }
 
                             if (StringUtils.isNotBlank(relationType.getRelationshipNameEn())) {
                                 newType.addRelationshipType(relationType);
