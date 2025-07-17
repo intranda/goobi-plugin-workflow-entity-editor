@@ -1045,6 +1045,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 configuration = new EntityConfig(config, true);
                 sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
             } catch (RuntimeException e) {
+                log.error("Error during configuration initialization: {}", e.getMessage(), e);
                 Helper.setFehlerMeldung(e);
             }
         }
