@@ -167,15 +167,12 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            if (relationType.getRelationshipNameEn() == null) {
-                                                if (!reverse) {
-                                                    relationType.setRelationshipNameEn(t.getValue());
-                                                } else {
-                                                    relationType.setReversedRelationshipNameEn(t.getValue());
-                                                }
+                                            if (!reverse && relationType.getRelationshipNameEn() == null) {
+                                                relationType.setRelationshipNameEn(t.getValue());
+                                            } else if (reverse && relationType.getReversedRelationshipNameEn() == null) {
+                                                relationType.setReversedRelationshipNameEn(t.getValue());
                                             }
-                                        }
-                                        if (!reverse) {
+                                        } else if (!reverse) {
                                             switch (t.getLanguage()) {
                                                 case "eng":
                                                     relationType.setRelationshipNameEn(t.getValue());
@@ -212,15 +209,12 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            if (relationType.getRelationshipNameEn() == null) {
-                                                if (reverse) {
-                                                    relationType.setRelationshipNameEn(t.getValue());
-                                                } else {
-                                                    relationType.setReversedRelationshipNameEn(t.getValue());
-                                                }
+                                            if (reverse && relationType.getRelationshipNameEn() == null) {
+                                                relationType.setRelationshipNameEn(t.getValue());
+                                            } else if (!reverse && relationType.getReversedRelationshipNameEn() == null) {
+                                                relationType.setReversedRelationshipNameEn(t.getValue());
                                             }
-                                        }
-                                        if (reverse) {
+                                        } else if (reverse) {
                                             switch (t.getLanguage()) {
                                                 case "eng":
                                                     relationType.setRelationshipNameEn(t.getValue());
