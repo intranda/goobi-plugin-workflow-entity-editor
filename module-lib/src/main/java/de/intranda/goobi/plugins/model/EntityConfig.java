@@ -77,6 +77,9 @@ public class EntityConfig {
     @Getter
     private String conversionFolderName;
 
+    @Getter
+    private int maxNumberOfItems = 0;
+
     public EntityConfig(XMLConfiguration config, boolean extendedConfiguration) {
 
         processTemplateId = config.getInt("/global/processTemplateId");
@@ -85,6 +88,8 @@ public class EntityConfig {
         updateProcessTitle = config.getBoolean("/global/updateProcessTitle", false);
         uploadFolderName = config.getString("/global/uploadFolderName", "media");
         conversionFolderName = config.getString("/global/conversionFolderName", null);
+
+        maxNumberOfItems = config.getInt("/global/maxNumberOfItemsPerBox", 0);
 
         // data for vocabulary search
         sourceVocabularyId = config.getInt("/global/sources/vocabulary/@id", 0);
