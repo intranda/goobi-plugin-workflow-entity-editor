@@ -590,19 +590,24 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         entities.clear();
 
         //index.EntitySearch
+
         StringBuilder sql = new StringBuilder();
-        sql.append("select m1.processid from metadata m1 ");
-        sql.append("left join metadata m2 on m1.processid = m2.processid ");
-        sql.append("where  m1.name=\"docstruct\" and m1.value =\"");
+        sql.append("SELECT DISTINCT m1.processid ");
+        sql.append("FROM metadata m1 ");
+        sql.append("JOIN metadata m2 ON m1.processid = m2.processid ");
+        sql.append("WHERE m1.name = 'docstruct' ");
+        sql.append("AND m1.value = '");
         sql.append(entityType.getRulesetName());
-        sql.append("\" and m2.name=\"index.EntitySearch\" and m2.value like \"%");
+        sql.append("' ");
+        sql.append("AND m2.name = 'index.EntitySearch' ");
+        sql.append("AND m2.value LIKE '%");
         String searchTerm = entitySearch;
         searchTerm = searchTerm.replace(" ", "%");
         searchTerm = searchTerm.replace("`", "_");
         searchTerm = searchTerm.replace("’", "_");
         searchTerm = searchTerm.replace("\'", "_");
         sql.append(searchTerm);
-        sql.append("%\"; ");
+        sql.append("%'; ");
 
         // load mets files, open entities
         List<?> rows = ProcessManager.runSQL(sql.toString());
@@ -655,7 +660,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process newProcess = new BeanHelper().createAndSaveNewProcess(template, processname, fileformat);
         // create and open new entity
         entity = new Entity(getConfiguration(), newProcess);
-        entity.getDisplayNameProperty().setWert(processname);
+        entity.getDisplayNameProperty().setPropertyValue(processname);
         entity.saveEntity();
         LockingBean.lockObject(String.valueOf(entity.getCurrentProcess().getId()), Helper.getCurrentUser().getNachVorname());
 
@@ -727,8 +732,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
 
         // find reverse relationship type
-        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
-                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations()
+                .stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank()
+                        && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
                 .findFirst();
         if (otherRelationshipType.isEmpty()) {
             otherRelationshipType = Optional.of(selectedRelationship);
@@ -803,8 +810,10 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 relationshipSourceType);
 
         // find reverse relationship type
-        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations().stream()
-                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank() && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
+        Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations()
+                .stream()
+                .filter(r -> !selectedRelationship.getReversedRelationshipNameEn().isBlank()
+                        && selectedRelationship.getReversedRelationshipNameEn().equals(r.getRelationshipNameEn()))
                 .findFirst();
         if (otherRelationshipType.isEmpty()) {
             otherRelationshipType = Optional.of(selectedRelationship);
@@ -884,9 +893,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
 
         // check export status
 
-        if (!"Published".equals(entity.getStatusProperty().getWert())) {
+        if (!"Published".equals(entity.getStatusProperty().getPropertyValue())) {
             // mark process as published
-            entity.getStatusProperty().setWert("Published");
+            entity.getStatusProperty().setPropertyValue("Published");
         }
         // save
         entity.saveEntity();
@@ -912,9 +921,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         Process p = entity.getCurrentProcess();
 
         // check export status
-        if (!"Published".equals(entity.getStatusProperty().getWert())) {
+        if (!"Published".equals(entity.getStatusProperty().getPropertyValue())) {
             // mark process as published
-            entity.getStatusProperty().setWert("Published");
+            entity.getStatusProperty().setPropertyValue("Published");
         }
         // save
         entity.saveEntity();
@@ -1045,6 +1054,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 configuration = new EntityConfig(config, true);
                 sourceVocabulary = vocabularyAPIManager.vocabularies().get(configuration.getSourceVocabularyId());
             } catch (RuntimeException e) {
+                log.error("Error during configuration initialization: {}", e.getMessage(), e);
                 Helper.setFehlerMeldung(e);
             }
         }

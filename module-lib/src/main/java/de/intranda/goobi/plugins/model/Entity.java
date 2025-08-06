@@ -389,7 +389,7 @@ public class Entity {
                 }
                 if (processids.length() > 0) {
                     // get current status from database
-                    String sql = "select prozesseID, Wert from prozesseeigenschaften where titel = 'ProcessStatus' and prozesseID in ("
+                    String sql = "select object_id, property_value from properties where property_name = 'ProcessStatus' and object_id in ("
                             + processids.toString() + ")";
                     List<?> rows = ProcessManager.runSQL(sql);
                     for (Object obj : rows) {

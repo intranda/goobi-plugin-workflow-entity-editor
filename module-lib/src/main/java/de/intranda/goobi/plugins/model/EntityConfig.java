@@ -77,6 +77,9 @@ public class EntityConfig {
     @Getter
     private String conversionFolderName;
 
+    @Getter
+    private int maxNumberOfItems = 0;
+
     public EntityConfig(XMLConfiguration config, boolean extendedConfiguration) {
 
         processTemplateId = config.getInt("/global/processTemplateId");
@@ -85,6 +88,8 @@ public class EntityConfig {
         updateProcessTitle = config.getBoolean("/global/updateProcessTitle", false);
         uploadFolderName = config.getString("/global/uploadFolderName", "media");
         conversionFolderName = config.getString("/global/conversionFolderName", null);
+
+        maxNumberOfItems = config.getInt("/global/maxNumberOfItemsPerBox", 0);
 
         // data for vocabulary search
         sourceVocabularyId = config.getInt("/global/sources/vocabulary/@id", 0);
@@ -167,9 +172,12 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
-                                        }
-                                        if (!reverse) {
+                                            if (!reverse && relationType.getRelationshipNameEn() == null) {
+                                                relationType.setRelationshipNameEn(t.getValue());
+                                            } else if (reverse && relationType.getReversedRelationshipNameEn() == null) {
+                                                relationType.setReversedRelationshipNameEn(t.getValue());
+                                            }
+                                        } else if (!reverse) {
                                             switch (t.getLanguage()) {
                                                 case "eng":
                                                     relationType.setRelationshipNameEn(t.getValue());
@@ -206,9 +214,12 @@ public class EntityConfig {
                                     .flatMap(v -> v.getTranslations().stream())
                                     .forEach(t -> {
                                         if (t.getLanguage() == null) {
-                                            throw new IllegalStateException("No language specified, this should never happen!");
-                                        }
-                                        if (reverse) {
+                                            if (reverse && relationType.getRelationshipNameEn() == null) {
+                                                relationType.setRelationshipNameEn(t.getValue());
+                                            } else if (!reverse && relationType.getReversedRelationshipNameEn() == null) {
+                                                relationType.setReversedRelationshipNameEn(t.getValue());
+                                            }
+                                        } else if (reverse) {
                                             switch (t.getLanguage()) {
                                                 case "eng":
                                                     relationType.setRelationshipNameEn(t.getValue());
@@ -277,6 +288,20 @@ public class EntityConfig {
                                             relationType.setDisplayAdditionalData(true);
                                         }
                                     });
+
+                            // generate missing translations
+                            if (relationType.getRelationshipNameDe() == null) {
+                                relationType.setRelationshipNameDe(relationType.getRelationshipNameEn());
+                            }
+                            if (relationType.getReversedRelationshipNameDe() == null) {
+                                relationType.setReversedRelationshipNameDe(relationType.getReversedRelationshipNameEn());
+                            }
+                            if (relationType.getRelationshipNameFr() == null) {
+                                relationType.setRelationshipNameFr(relationType.getRelationshipNameEn());
+                            }
+                            if (relationType.getReversedRelationshipNameFr() == null) {
+                                relationType.setReversedRelationshipNameFr(relationType.getReversedRelationshipNameEn());
+                            }
 
                             if (StringUtils.isNotBlank(relationType.getRelationshipNameEn())) {
                                 newType.addRelationshipType(relationType);
