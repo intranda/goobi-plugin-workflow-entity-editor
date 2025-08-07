@@ -1,8 +1,8 @@
 package de.intranda.goobi.plugins.model;
 
-import lombok.Data;
-
 import java.util.Locale;
+
+import lombok.Data;
 
 @Data
 public class RelationshipType {
@@ -19,6 +19,7 @@ public class RelationshipType {
     private String vocabularyUrl;
     private String valueUrl;
 
+    private boolean displayTierField = false;
     private boolean displayStartDate = false;
     private boolean displayEndDate = false;
 

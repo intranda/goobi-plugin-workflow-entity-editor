@@ -346,6 +346,7 @@ public class Entity {
                     relationship.setAdditionalData(additionalData);
                     relationship.setSourceType(sourceType);
                     relationship.setProcessId(processId);
+                    //TODO award tier
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
@@ -788,7 +789,7 @@ public class Entity {
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
         rel.setValueUrl(selectedRelationship.getValueUrl());
-
+        //TODO award tier
         MetadataGroup relationGroup = null;
 
         try {
