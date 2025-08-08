@@ -40,6 +40,7 @@ import de.intranda.goobi.plugins.model.MetadataField;
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.intranda.goobi.plugins.model.Relationship;
 import de.intranda.goobi.plugins.model.RelationshipType;
+import de.intranda.goobi.plugins.model.VocabularyEntry;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
@@ -208,6 +209,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String relationshipSourceType;
+
+    private VocabularyEntry relationshipAwardType;
 
     @Getter
     @Setter
@@ -689,6 +692,25 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             return null;
         }
         return selectedRelationship.getRelationshipNameEn();
+    }
+
+    public void setAwardTier(String tier) {
+        if (tier == null) {
+            relationshipAwardType = null;
+        } else {
+            for (VocabularyEntry ve : getConfiguration().getTiers()) {
+                if (tier.equals(ve.getMainValue())) {
+                    relationshipAwardType = ve;
+                }
+            }
+        }
+    }
+
+    public String getAwardTier() {
+        if (relationshipAwardType == null) {
+            return null;
+        }
+        return relationshipAwardType.getMainValue();
     }
 
     public void changeRelationship(Relationship relationship) {
