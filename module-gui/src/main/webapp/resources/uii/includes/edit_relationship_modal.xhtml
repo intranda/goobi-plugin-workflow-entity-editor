@@ -241,6 +241,38 @@
                                                 </div>
                                             </ui:fragment>
                                         </h:panelGroup>
+                                        
+                                        
+                                        <h:panelGroup
+                                        layout="block"
+                                        styleClass="form-row"
+                                        rendered="#{NavigationForm.workflowPlugin.selectedRelationship.displayTierField}">
+                                        <div class="form-label">
+                                            <h:outputLabel
+                                                value="#{msgs.plugin_workflow_entity_editor_tier}"
+                                                for="edittier" />
+                                        </div>
+                                        <div class="form-input">
+                                            <h:selectOneMenu
+                                                required="false"
+                                                id="edittier"
+                                                styleClass="form-select"
+                                                value="#{NavigationForm.workflowPlugin.awardTier}">
+                                                <f:selectItem
+                                                    itemValue=""
+                                                    itemLabel="#{msgs.bitteAuswaehlen}" />
+                                                <f:selectItems
+                                                    value="#{NavigationForm.workflowPlugin.configuration.tiers}"
+                                                    var="item"
+                                                    itemLabel="#{item.getLabel(SpracheForm.locale)}"
+                                                    itemValue="#{item.mainValue}" />
+                                                <f:ajax
+                                                    event="change"
+                                                    execute="@this"
+                                                    render="tier" />
+                                            </h:selectOneMenu>
+                                        </div>
+                                    </h:panelGroup>  
                                     </h:panelGroup>
                                 </h:panelGroup>
                             </div>

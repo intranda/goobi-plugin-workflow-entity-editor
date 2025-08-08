@@ -729,6 +729,18 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipData = relationship.getAdditionalData();
         relationshipSourceType = relationship.getSourceType();
 
+        relationshipAwardType = null;
+        if (getConfiguration().getTiers() != null) {
+            String tier = relationship.getAwardTier();
+            if (StringUtils.isNotBlank(tier)) {
+                for (VocabularyEntry ve : getConfiguration().getTiers()) {
+                    if (ve.getMainValue().equals(tier)) {
+                        relationshipAwardType = ve;
+                    }
+                }
+            }
+        }
+
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
         setRelationship(relationship.getType().getRelationshipNameEn());
@@ -786,6 +798,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 otherRelationship.setEndDate(null);
             }
 
+            if (otherRelationshipType.get().isDisplayTierField()) {
+                if (relationshipAwardType != null) {
+                    otherRelationship.setAwardTier(relationshipAwardType.getMainValue());
+                    otherRelationship.setAwardTierUri(relationshipAwardType.getEntryUrl());
+                } else {
+                    otherRelationship.setAwardTier(null);
+                    otherRelationship.setAwardTierUri(null);
+                }
+            }
+
             // save other process
             changeRelationshipEntity.saveEntity();
         }
@@ -809,6 +831,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         } else {
             changeRelationship.setEndDate(null);
         }
+
+        if (selectedRelationship.isDisplayTierField()) {
+            if (relationshipAwardType != null) {
+                changeRelationship.setAwardTier(relationshipAwardType.getMainValue());
+                changeRelationship.setAwardTierUri(relationshipAwardType.getEntryUrl());
+            } else {
+                changeRelationship.setAwardTier(null);
+                changeRelationship.setAwardTierUri(null);
+            }
+        }
+
         // save current entity
         entity.saveEntity();
         freeRelationshipLock();

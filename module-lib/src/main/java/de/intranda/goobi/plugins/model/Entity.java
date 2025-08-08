@@ -307,7 +307,8 @@ public class Entity {
                     String vocabularyUrl = null;
                     String valueUrl = null;
                     String sourceType = null;
-
+                    String awardTier = null;
+                    String awardTierUri = null;
                     for (Metadata md : group.getMetadataList()) {
                         String metadataType = md.getType().getName();
                         if (metadataType.equals(configuration.getRelationshipEntityType())) {
@@ -336,6 +337,10 @@ public class Entity {
                         } else if (StringUtils.isNotBlank(configuration.getRelationshipSourceType())
                                 && metadataType.equals(configuration.getRelationshipSourceType())) {
                             sourceType = md.getValue();
+                        } else if (StringUtils.isNotBlank(configuration.getRelationshipTierType())
+                                && metadataType.equals(configuration.getRelationshipTierType())) {
+                            awardTier = md.getValue();
+                            awardTierUri = md.getAuthorityValue();
                         }
 
                     }
@@ -346,7 +351,9 @@ public class Entity {
                     relationship.setAdditionalData(additionalData);
                     relationship.setSourceType(sourceType);
                     relationship.setProcessId(processId);
-                    //TODO award tier
+                    relationship.setAwardTier(awardTier);
+                    relationship.setAwardTierUri(awardTierUri);
+
                     for (RelationshipType rel : currentType.getConfiguredRelations()) {
                         if (rel.getVocabularyName().equals(vocabularyName) && rel.getRelationshipNameEn().equals(type)) {
                             relationship.setType(rel);
