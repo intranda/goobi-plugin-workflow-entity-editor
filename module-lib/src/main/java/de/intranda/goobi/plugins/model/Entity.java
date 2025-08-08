@@ -772,7 +772,7 @@ public class Entity {
     }
 
     public void addRelationship(Entity selectedEntity, String relationshipData, String relationshipStartDate, String relationshipEndDate,
-            RelationshipType selectedRelationship, String relationshipSourceType) {
+            RelationshipType selectedRelationship, String relationshipSourceType, String tierLabel, String tierUri) {
         List<Relationship> relationships = linkedRelationships.get(selectedEntity.getCurrentType());
         String relationshipStatus = selectedEntity.getStatusProperty().getPropertyName();
 
@@ -789,7 +789,9 @@ public class Entity {
         rel.setVocabularyName(selectedRelationship.getVocabularyName());
         rel.setVocabularyUrl(selectedRelationship.getVocabularyUrl());
         rel.setValueUrl(selectedRelationship.getValueUrl());
-        //TODO award tier
+        rel.setAwardTier(tierLabel);
+        rel.setAwardTierUri(tierUri);
+
         MetadataGroup relationGroup = null;
 
         try {
@@ -854,14 +856,26 @@ public class Entity {
             md.setValue(rel.getDisplayName());
         }
         Metadata md = null;
-
         mdl = relationGroup.getMetadataByType(configuration.getRelationshipType());
-
         if (mdl != null && !mdl.isEmpty()) {
             md = mdl.get(0);
         } else {
             md = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipType()));
             relationGroup.addMetadata(md);
+        }
+
+        if (StringUtils.isNotBlank(rel.getAwardTier()) && StringUtils.isNotBlank(configuration.getRelationshipTierType())) {
+            Metadata tier = null;
+            mdl = relationGroup.getMetadataByType(configuration.getRelationshipTierType());
+            if (mdl != null && !mdl.isEmpty()) {
+                tier = mdl.get(0);
+            } else {
+                tier = new Metadata(prefs.getMetadataTypeByName(configuration.getRelationshipTierType()));
+                relationGroup.addMetadata(tier);
+            }
+            tier.setValue(rel.getAwardTier());
+            tier.setAuthorityFile(configuration.getRelationshipTierVocabulary(), configuration.getRelationshipTierVocabularyUri(),
+                    rel.getAwardTierUri());
         }
 
         if (rel.getType() == null) {

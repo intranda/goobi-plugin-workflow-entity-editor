@@ -65,7 +65,10 @@ public class EntityConfig {
 
     @Getter
     private String relationshipTierType;
+    @Getter
     private String relationshipTierVocabulary;
+    @Getter
+    private String relationshipTierVocabularyUri;
     @Getter
     private List<VocabularyEntry> tiers;
 
@@ -123,6 +126,8 @@ public class EntityConfig {
         relationshipTierVocabulary = config.getString("/global/relations/tierVocabulary", "");
         if (StringUtils.isNotBlank(relationshipTierVocabulary)) {
             ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(relationshipTierVocabulary);
+            relationshipTierVocabularyUri = currentVocabulary.getURI();
+
             List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
                     .list(currentVocabulary.getId())
                     .all()
@@ -456,6 +461,11 @@ public class EntityConfig {
         exportPluginName = other.exportPluginName;
         uploadFolderName = other.uploadFolderName;
         conversionFolderName = other.conversionFolderName;
+
+        relationshipTierType = other.relationshipTierType;
+        relationshipTierVocabulary = other.relationshipTierVocabulary;
+        relationshipTierVocabularyUri = other.relationshipTierVocabularyUri;
+        tiers = other.tiers;
     }
 
     public EntityType getTypeByName(String name) {

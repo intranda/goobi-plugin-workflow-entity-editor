@@ -728,6 +728,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipEndDate = relationship.getEndDate();
         relationshipData = relationship.getAdditionalData();
         relationshipSourceType = relationship.getSourceType();
+
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
         setRelationship(relationship.getType().getRelationshipNameEn());
@@ -827,9 +828,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             Helper.setFehlerMeldung("plugin_workflow_entity_locked");
             return;
         }
-
+        String tierLabel = null;
+        String tierUri = null;
+        if (relationshipAwardType != null) {
+            tierLabel = relationshipAwardType.getMainValue();
+            tierUri = relationshipAwardType.getEntryUrl();
+        }
         entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship,
-                relationshipSourceType);
+                relationshipSourceType, tierLabel, tierUri);
 
         // find reverse relationship type
         Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations()
@@ -842,7 +848,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         // reverse relationship in other entity
         selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, otherRelationshipType.get(),
-                relationshipSourceType);
+                relationshipSourceType, tierLabel, tierUri);
 
         // save both entities
         entity.saveEntity();

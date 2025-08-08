@@ -16,7 +16,8 @@ public class Relationship {
     private String additionalData;
     private String sourceType;
     private String awardTier;
-    
+    private String awardTierUri;
+
     private String processId;
     private String displayName;
 
