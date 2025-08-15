@@ -18,6 +18,8 @@ import java.util.UUID;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geonames.Style;
 import org.geonames.Toponym;
 import org.geonames.ToponymSearchCriteria;
@@ -44,6 +46,7 @@ import de.intranda.goobi.plugins.model.VocabularyEntry;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
+import de.sub.goobi.helper.FacesContextHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.ExportFileException;
@@ -56,7 +59,12 @@ import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.AjaxBehaviorEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -1120,5 +1128,32 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             }
         }
         return configuration;
+    }
+
+    public void createEntityRelationshipFile() {
+        FacesContext facesContext = FacesContextHelper.getCurrentFacesContext();
+        if (!facesContext.getResponseComplete()) {
+            // Prepare header information
+            ExternalContext externalContext = facesContext.getExternalContext();
+            ServletContext servletContext = (ServletContext) externalContext.getContext();
+
+            // Create and initialize response object
+            HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
+            response.setContentType(servletContext.getMimeType("linked_entites.xlsx"));
+            response.setHeader("Content-Disposition", "attachment;filename=\"linked_entites.xlsx\"");
+
+            try {
+                ServletOutputStream out = response.getOutputStream();
+                Workbook wb = new XSSFWorkbook();
+                entity.createLinkedEntityFile(wb, false);
+
+                wb.write(out);
+                out.flush();
+                facesContext.responseComplete();
+
+            } catch (IOException exception) {
+                log.error(exception);
+            }
+        }
     }
 }

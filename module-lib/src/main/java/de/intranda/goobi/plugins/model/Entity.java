@@ -6,13 +6,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.goobi.beans.GoobiProperty;
 import org.goobi.beans.GoobiProperty.PropertyOwnerType;
 import org.goobi.beans.Process;
+import org.goobi.production.cli.helper.StringPair;
 
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.sub.goobi.config.ConfigurationHelper;
@@ -21,6 +27,7 @@ import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
+import de.sub.goobi.persistence.managers.MetadataManager;
 import de.sub.goobi.persistence.managers.ProcessManager;
 import de.sub.goobi.persistence.managers.PropertyManager;
 import lombok.Getter;
@@ -911,5 +918,385 @@ public class Entity {
                 md.setValue(rel.getSourceType());
             }
         }
+    }
+
+    public void createLinkedEntityFile(Workbook wb, boolean followRelationships) {
+        Locale locale = Helper.getSessionLocale();
+        int rowNum = 0;
+
+        Sheet sheet = wb.createSheet(entityName.replaceAll("[:\\*?/\\]\\[]", ""));
+
+        rowNum = createAgentSection(locale, rowNum, sheet);
+
+        // blank rows
+        sheet.createRow(rowNum++);
+        sheet.createRow(rowNum++);
+
+        // linked persons
+        rowNum = createPersonSection(locale, rowNum, sheet);
+
+        // blank rows
+        sheet.createRow(rowNum++);
+        sheet.createRow(rowNum++);
+
+        // linked events
+
+        rowNum = createEventSection(locale, rowNum, sheet);
+
+        // blank rows
+        sheet.createRow(rowNum++);
+        sheet.createRow(rowNum++);
+        // linked awards
+
+        createAwardSection(locale, rowNum, sheet);
+
+        if (followRelationships) {
+            // add an additional sheet for every linked relationship
+            for (List<Relationship> relationships : linkedRelationships.values()) {
+                for (Relationship rel : relationships) {
+                    // initialize entity
+                    Process process = ProcessManager.getProcessById(Integer.parseInt(rel.getProcessId()));
+                    Entity other = new Entity(configuration, process);
+                    // add sheet
+                    other.createLinkedEntityFile(wb, false);
+                }
+            }
+        }
+    }
+
+    public int createAgentSection(Locale locale, int rowNum, Sheet sheet) {
+        Row firstRow = sheet.createRow(rowNum++);
+        Cell c = firstRow.createCell(0);
+        c.setCellValue("Linked Agents");
+
+        Row agentTitleRow = sheet.createRow(rowNum++);
+        Cell agentTitleCell1 = agentTitleRow.createCell(1);
+        agentTitleCell1.setCellValue("Relationship Type");
+        Cell agentTitleCell2 = agentTitleRow.createCell(2);
+        agentTitleCell2.setCellValue("Primary Role");
+        Cell agentTitleCell3 = agentTitleRow.createCell(3);
+        agentTitleCell3.setCellValue("Main Name Original");
+        Cell agentTitleCell4 = agentTitleRow.createCell(4);
+        agentTitleCell4.setCellValue("Location (Geonames)");
+        Cell agentTitleCell5 = agentTitleRow.createCell(5);
+        agentTitleCell5.setCellValue("Artistic Movement");
+        Cell agentTitleCell6 = agentTitleRow.createCell(6);
+        agentTitleCell6.setCellValue("Discipline");
+
+        // iterate over all linked agents
+        for (EntityType et : linkedRelationships.keySet()) {
+            if ("Agent".equalsIgnoreCase(et.getName())) {
+                List<Relationship> relationships = linkedRelationships.get(et);
+                for (Relationship rel : relationships) {
+                    rowNum = createAgentRow(locale, rowNum, sheet, rel);
+                }
+            }
+        }
+        return rowNum;
+    }
+
+    public int createAgentRow(Locale locale, int rowNum, Sheet sheet, Relationship rel) {
+        Row dataRow = sheet.createRow(rowNum++);
+        Cell type = dataRow.createCell(1);
+        type.setCellValue(rel.getLabel(locale));
+        List<StringPair> metadata = MetadataManager.getMetadata(Integer.parseInt(rel.getProcessId()));
+        StringBuilder role = new StringBuilder("");
+        StringBuilder mainName = new StringBuilder("");
+        StringBuilder location = new StringBuilder("");
+        StringBuilder movement = new StringBuilder("");
+        StringBuilder discipline = new StringBuilder("");
+        for (StringPair sp : metadata) {
+            switch (sp.getOne()) {
+                case "PrimaryRole":
+                    role.append(sp.getTwo());
+                    break;
+                case "NameORIG":
+                    mainName.append(sp.getTwo());
+                    break;
+                case "Location":
+                    if (!location.isEmpty()) {
+                        location.append("; ");
+                    }
+                    location.append(sp.getTwo());
+                    break;
+                case "ArtisticMovement":
+                    if (!movement.isEmpty()) {
+                        movement.append("; ");
+                    }
+                    movement.append(sp.getTwo());
+                    break;
+                case "Discipline":
+                    if (!discipline.isEmpty()) {
+                        discipline.append("; ");
+                    }
+                    discipline.append(sp.getTwo());
+                    break;
+                default:
+                    break;
+            }
+        }
+        Cell cell2 = dataRow.createCell(2);
+        cell2.setCellValue(role.toString());
+        Cell cell3 = dataRow.createCell(3);
+        cell3.setCellValue(mainName.toString());
+        Cell cell4 = dataRow.createCell(4);
+        cell4.setCellValue(location.toString());
+        Cell cell5 = dataRow.createCell(5);
+        cell5.setCellValue(movement.toString());
+        Cell cell6 = dataRow.createCell(6);
+        cell6.setCellValue(discipline.toString());
+        return rowNum;
+    }
+
+    public int createPersonSection(Locale locale, int rowNum, Sheet sheet) {
+        Row personRow = sheet.createRow(rowNum++);
+        Cell pc = personRow.createCell(0);
+        pc.setCellValue("Linked Persons");
+        Row personTitleRow = sheet.createRow(rowNum++);
+        Cell personTitleRow1 = personTitleRow.createCell(1);
+        personTitleRow1.setCellValue("Relationship Type");
+        Cell personTitleRow2 = personTitleRow.createCell(2);
+        personTitleRow2.setCellValue("Primary Role");
+        Cell personTitleRow3 = personTitleRow.createCell(3);
+        personTitleRow3.setCellValue("Main Name Original");
+        Cell personTitleRow4 = personTitleRow.createCell(4);
+        personTitleRow4.setCellValue("Date of Birth");
+        Cell personTitleRow5 = personTitleRow.createCell(5);
+        personTitleRow5.setCellValue("Place of Birth");
+        Cell personTitleRow6 = personTitleRow.createCell(6);
+        personTitleRow6.setCellValue("Date of Death");
+        Cell personTitleRow7 = personTitleRow.createCell(7);
+        personTitleRow7.setCellValue("Place of Death");
+        Cell personTitleRow8 = personTitleRow.createCell(8);
+        personTitleRow8.setCellValue("Gender");
+        Cell personTitleRow9 = personTitleRow.createCell(9);
+        personTitleRow9.setCellValue("Discipline");
+        Cell personTitleRow10 = personTitleRow.createCell(10);
+        personTitleRow10.setCellValue("Artistic Movement");
+
+        for (EntityType et : linkedRelationships.keySet()) {
+            if ("Person".equalsIgnoreCase(et.getName())) {
+                List<Relationship> relationships = linkedRelationships.get(et);
+                for (Relationship rel : relationships) {
+                    rowNum = createPersonRow(locale, rowNum, sheet, rel);
+                }
+            }
+        }
+        return rowNum;
+    }
+
+    public int createPersonRow(Locale locale, int rowNum, Sheet sheet, Relationship rel) {
+        Row dataRow = sheet.createRow(rowNum++);
+        Cell type = dataRow.createCell(1);
+        type.setCellValue(rel.getLabel(locale));
+        List<StringPair> metadata = MetadataManager.getMetadata(Integer.parseInt(rel.getProcessId()));
+        String role = "";
+        String firstname = "";
+        String lastname = "";
+        String birthDate = "";
+        String birthPlace = "";
+        String deathDate = "";
+        String deathPlace = "";
+        String gender = "";
+        StringBuilder discipline = new StringBuilder("");
+        StringBuilder movement = new StringBuilder("");
+        for (StringPair sp : metadata) {
+            switch (sp.getOne()) {
+                case "PrimaryRole":
+                    role = sp.getTwo();
+                    break;
+                case "FirstnameOrig":
+                    firstname = sp.getTwo();
+                    break;
+                case "LastnameOrig":
+                    lastname = sp.getTwo();
+                    break;
+                case "Birthdate":
+                    birthDate = sp.getTwo();
+                    break;
+                case "Birthplace":
+                    birthPlace = sp.getTwo();
+                    break;
+                case "DeathDate":
+                    deathDate = sp.getTwo();
+                    break;
+                case "Deathplace":
+                    deathPlace = sp.getTwo();
+                    break;
+                case "Gender":
+                    gender = sp.getTwo();
+                    break;
+                case "ArtisticMovement":
+                    if (!movement.isEmpty()) {
+                        movement.append("; ");
+                    }
+                    movement.append(sp.getTwo());
+                    break;
+                case "Discipline":
+                    if (!discipline.isEmpty()) {
+                        discipline.append("; ");
+                    }
+                    discipline.append(sp.getTwo());
+                    break;
+                default:
+                    break;
+            }
+        }
+        Cell cell2 = dataRow.createCell(2);
+        cell2.setCellValue(role);
+        Cell cell3 = dataRow.createCell(3);
+        cell3.setCellValue(lastname + ", " + firstname);
+        Cell cell4 = dataRow.createCell(4);
+        cell4.setCellValue(birthDate);
+        Cell cell5 = dataRow.createCell(5);
+        cell5.setCellValue(birthPlace);
+        Cell cell6 = dataRow.createCell(6);
+        cell6.setCellValue(deathDate);
+        Cell cell7 = dataRow.createCell(7);
+        cell7.setCellValue(deathPlace);
+        Cell cell8 = dataRow.createCell(8);
+        cell8.setCellValue(gender);
+        Cell cell9 = dataRow.createCell(9);
+        cell9.setCellValue(discipline.toString());
+        Cell cell10 = dataRow.createCell(10);
+        cell10.setCellValue(movement.toString());
+        return rowNum;
+    }
+
+    public int createEventSection(Locale locale, int rowNum, Sheet sheet) {
+        Row eventRow = sheet.createRow(rowNum++);
+        Cell ec = eventRow.createCell(0);
+        ec.setCellValue("Linked Events");
+        Row eventTitleRow = sheet.createRow(rowNum++);
+        Cell eventTitle1 = eventTitleRow.createCell(1);
+        eventTitle1.setCellValue("Relationship Type");
+        Cell eventTitle2 = eventTitleRow.createCell(2);
+        eventTitle2.setCellValue("Event Type");
+        Cell eventTitle3 = eventTitleRow.createCell(3);
+        eventTitle3.setCellValue("Title");
+        Cell eventTitle4 = eventTitleRow.createCell(4);
+        eventTitle4.setCellValue("Duration Beginning");
+        Cell eventTitle5 = eventTitleRow.createCell(5);
+        eventTitle5.setCellValue("Duration End");
+        Cell eventTitle6 = eventTitleRow.createCell(6);
+        eventTitle6.setCellValue("Location (Geonames)");
+        Cell eventTitle7 = eventTitleRow.createCell(7);
+        eventTitle7.setCellValue("Recurring Event");
+
+        for (EntityType et : linkedRelationships.keySet()) {
+            if ("Event".equalsIgnoreCase(et.getName())) {
+                List<Relationship> relationships = linkedRelationships.get(et);
+                for (Relationship rel : relationships) {
+                    rowNum = createEventRow(locale, rowNum, sheet, rel);
+                }
+            }
+        }
+        return rowNum;
+    }
+
+    public int createEventRow(Locale locale, int rowNum, Sheet sheet, Relationship rel) {
+        Row dataRow = sheet.createRow(rowNum++);
+        Cell type = dataRow.createCell(1);
+        type.setCellValue(rel.getLabel(locale));
+        List<StringPair> metadata = MetadataManager.getMetadata(Integer.parseInt(rel.getProcessId()));
+        String eventType = "";
+        String title = "";
+        String durationStart = rel.getBeginningDate() == null ? "" : rel.getBeginningDate();
+        String durationEnd = rel.getEndDate() == null ? "" : rel.getEndDate();
+        String location = "";
+        String recurringEvent = "";
+        for (StringPair sp : metadata) {
+            switch (sp.getOne()) {
+                case "EventType" -> eventType = sp.getTwo();
+                case "NameORIG" -> title = sp.getTwo();
+                case "Location" -> location = sp.getTwo();
+                case "RecurringEvent" -> recurringEvent = sp.getTwo();
+            }
+        }
+
+        Cell cell2 = dataRow.createCell(2);
+        cell2.setCellValue(eventType);
+        Cell cell3 = dataRow.createCell(3);
+        cell3.setCellValue(title);
+        Cell cell4 = dataRow.createCell(4);
+        cell4.setCellValue(durationStart);
+        Cell cell5 = dataRow.createCell(5);
+        cell5.setCellValue(durationEnd);
+        Cell cell6 = dataRow.createCell(6);
+        cell6.setCellValue(location);
+        Cell cell7 = dataRow.createCell(7);
+        cell7.setCellValue(recurringEvent);
+        return rowNum;
+    }
+
+    public void createAwardSection(Locale locale, int rowNum, Sheet sheet) {
+        Row awardRow = sheet.createRow(rowNum++);
+        Cell ac = awardRow.createCell(0);
+        ac.setCellValue("Linked Awards");
+        Row awardTitleRow = sheet.createRow(rowNum++);
+        Cell awardtTitle1 = awardTitleRow.createCell(1);
+        awardtTitle1.setCellValue("Relationship Type");
+        Cell awardTitle2 = awardTitleRow.createCell(2);
+        awardTitle2.setCellValue("Primary Role");
+        Cell awardTitle3 = awardTitleRow.createCell(3);
+        awardTitle3.setCellValue("Title");
+        Cell awardTitle4 = awardTitleRow.createCell(4);
+        awardTitle4.setCellValue("Award Type");
+        Cell awardTitle5 = awardTitleRow.createCell(5);
+        awardTitle5.setCellValue("Location");
+        Cell awardTitle6 = awardTitleRow.createCell(6);
+        awardTitle6.setCellValue(" Duration Beginning");
+        Cell awardTitle7 = awardTitleRow.createCell(7);
+        awardTitle7.setCellValue("Duration End");
+        Cell awardTitle8 = awardTitleRow.createCell(8);
+        awardTitle8.setCellValue("Degree");
+
+        for (EntityType et : linkedRelationships.keySet()) {
+            if ("Award".equalsIgnoreCase(et.getName())) {
+                List<Relationship> relationships = linkedRelationships.get(et);
+                for (Relationship rel : relationships) {
+                    rowNum = createAwardRow(locale, rowNum, sheet, rel);
+                }
+            }
+        }
+    }
+
+    public int createAwardRow(Locale locale, int rowNum, Sheet sheet, Relationship rel) {
+        Row dataRow = sheet.createRow(rowNum++);
+        Cell type = dataRow.createCell(1);
+        type.setCellValue(rel.getLabel(locale));
+        List<StringPair> metadata = MetadataManager.getMetadata(Integer.parseInt(rel.getProcessId()));
+        String role = "";
+        String title = "";
+        String awardType = "";
+        String location = "";
+        String durationStart = rel.getBeginningDate() == null ? "" : rel.getBeginningDate();
+        String durationEnd = rel.getEndDate() == null ? "" : rel.getEndDate();
+        String degree = rel.getAwardTier() == null ? "" : rel.getAwardTier();
+
+        for (StringPair sp : metadata) {
+            switch (sp.getOne()) {
+                case "EventType" -> role = sp.getTwo();
+                case "TitleORIG" -> title = sp.getTwo();
+                case "AwardType" -> awardType = sp.getTwo();
+                case "Location" -> location = sp.getTwo();
+            }
+        }
+
+        Cell cell2 = dataRow.createCell(2);
+        cell2.setCellValue(role);
+        Cell cell3 = dataRow.createCell(3);
+        cell3.setCellValue(title);
+        Cell cell4 = dataRow.createCell(4);
+        cell4.setCellValue(awardType);
+        Cell cell5 = dataRow.createCell(5);
+        cell5.setCellValue(location);
+        Cell cell6 = dataRow.createCell(6);
+        cell6.setCellValue(durationStart);
+        Cell cell7 = dataRow.createCell(7);
+        cell7.setCellValue(durationEnd);
+        Cell cell8 = dataRow.createCell(8);
+        cell8.setCellValue(degree);
+        return rowNum;
     }
 }

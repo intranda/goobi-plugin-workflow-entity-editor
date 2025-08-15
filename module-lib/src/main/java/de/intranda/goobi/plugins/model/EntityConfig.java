@@ -124,7 +124,7 @@ public class EntityConfig {
 
         relationshipTierType = config.getString("/global/relations/tierType", "");
         relationshipTierVocabulary = config.getString("/global/relations/tierVocabulary", "");
-        if (StringUtils.isNotBlank(relationshipTierVocabulary)) {
+        if (extendedConfiguration && StringUtils.isNotBlank(relationshipTierVocabulary)) {
             ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(relationshipTierVocabulary);
             relationshipTierVocabularyUri = currentVocabulary.getURI();
 
