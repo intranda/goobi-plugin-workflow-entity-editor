@@ -511,6 +511,10 @@ body,
   align-items: center;
 }
 
+.box .box__title h2 {
+  text-wrap: wrap;
+}
+
 .box .box__title h3 {
   float: unset;
   margin: 0;
@@ -944,7 +948,7 @@ body,
 .link-entity-modal__search-bar .btn {
     display: flex;
     flex-wrap: nowrap;
-    align-items-center
+    align-items:center;
 }
 
 .entity-modal__search-results,
