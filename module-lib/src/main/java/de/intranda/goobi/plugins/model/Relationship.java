@@ -2,8 +2,6 @@ package de.intranda.goobi.plugins.model;
 
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
-
 import lombok.Data;
 import ugh.dl.MetadataGroup;
 
@@ -17,6 +15,9 @@ public class Relationship {
 
     private String additionalData;
     private String sourceType;
+    private String awardTier;
+    private String awardTierUri;
+
     private String processId;
     private String displayName;
 

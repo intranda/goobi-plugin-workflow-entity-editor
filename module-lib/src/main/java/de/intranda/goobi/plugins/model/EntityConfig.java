@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.vocabulary.exchange.FieldDefinition;
 import io.goobi.vocabulary.exchange.Vocabulary;
@@ -64,6 +64,15 @@ public class EntityConfig {
     private String relationshipSourceType;
 
     @Getter
+    private String relationshipTierType;
+    @Getter
+    private String relationshipTierVocabulary;
+    @Getter
+    private String relationshipTierVocabularyUri;
+    @Getter
+    private List<VocabularyEntry> tiers;
+
+    @Getter
     private int processTemplateId;
 
     @Getter
@@ -113,6 +122,35 @@ public class EntityConfig {
         relationshipType = config.getString("/global/relations/type", "");
         relationshipSourceType = config.getString("/global/relations/sourceType", "");
 
+        relationshipTierType = config.getString("/global/relations/tierType", "");
+        relationshipTierVocabulary = config.getString("/global/relations/tierVocabulary", "");
+        if (extendedConfiguration && StringUtils.isNotBlank(relationshipTierVocabulary)) {
+            ExtendedVocabulary currentVocabulary = vocabularyAPIManager.vocabularies().findByName(relationshipTierVocabulary);
+            relationshipTierVocabularyUri = currentVocabulary.getURI();
+
+            List<ExtendedVocabularyRecord> recordList = vocabularyAPIManager.vocabularyRecords()
+                    .list(currentVocabulary.getId())
+                    .all()
+                    .request()
+                    .getContent();
+            recordList.sort((r1, r2) -> r1.getMainValue().compareToIgnoreCase(r2.getMainValue()));
+
+            tiers = new ArrayList<>(recordList.size());
+
+            for (ExtendedVocabularyRecord vr : recordList) {
+                VocabularyEntry ve = new VocabularyEntry();
+                ve.setId(vr.getId());
+                ve.setEntryUrl(vr.getURI());
+                vr.getMainField().ifPresent(mainField -> {
+                    ve.setMainValue(mainField.getFieldValue("eng"));
+                    ve.setLabelEn(mainField.getFieldValue("eng"));
+                    ve.setLabelFr(mainField.getFieldValue("fre"));
+                    ve.setLabelDe(mainField.getFieldValue("ger"));
+                });
+                tiers.add(ve);
+            }
+        }
+
         List<HierarchicalConfiguration> configuredTypes = config.configurationsAt("/type");
 
         for (HierarchicalConfiguration type : configuredTypes) {
@@ -139,6 +177,7 @@ public class EntityConfig {
                     boolean reverse = field.getBoolean("@reverse", false);
                     String destinationEntity = field.getString("@destinationEntity");
                     String sourceEntity = entityName;
+                    boolean displayTierField = field.getBoolean("@tierField", false);
                     if (id != 0) {
                         ExtendedVocabulary vocabulary = vocabularyAPIManager.vocabularies().get(id);
                         List<FieldDefinition> fieldDefinitions =
@@ -159,7 +198,7 @@ public class EntityConfig {
                             RelationshipType relationType = new RelationshipType();
                             relationType.setSourceType(sourceEntity);
                             relationType.setDestinationType(destinationEntity);
-
+                            relationType.setDisplayTierField(displayTierField);
                             relationType.setVocabularyName(vocabulary.getName());
                             relationType.setVocabularyUrl(vocabulary.getURI());
                             relationType.setValueUrl(rec.getURI());
@@ -310,7 +349,6 @@ public class EntityConfig {
                     }
                 }
             }
-
         }
     }
 
@@ -423,6 +461,11 @@ public class EntityConfig {
         exportPluginName = other.exportPluginName;
         uploadFolderName = other.uploadFolderName;
         conversionFolderName = other.conversionFolderName;
+
+        relationshipTierType = other.relationshipTierType;
+        relationshipTierVocabulary = other.relationshipTierVocabulary;
+        relationshipTierVocabularyUri = other.relationshipTierVocabularyUri;
+        tiers = other.tiers;
     }
 
     public EntityType getTypeByName(String name) {

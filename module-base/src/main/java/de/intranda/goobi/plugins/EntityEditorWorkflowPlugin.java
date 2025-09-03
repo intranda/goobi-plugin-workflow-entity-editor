@@ -18,6 +18,8 @@ import java.util.UUID;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geonames.Style;
 import org.geonames.Toponym;
 import org.geonames.ToponymSearchCriteria;
@@ -40,9 +42,11 @@ import de.intranda.goobi.plugins.model.MetadataField;
 import de.intranda.goobi.plugins.model.MetadataField.SourceField;
 import de.intranda.goobi.plugins.model.Relationship;
 import de.intranda.goobi.plugins.model.RelationshipType;
+import de.intranda.goobi.plugins.model.VocabularyEntry;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
+import de.sub.goobi.helper.FacesContextHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.ExportFileException;
@@ -55,7 +59,12 @@ import io.goobi.vocabulary.exchange.VocabularySchema;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
 import io.goobi.workflow.locking.LockingBean;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.AjaxBehaviorEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -208,6 +217,8 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
     @Getter
     @Setter
     private String relationshipSourceType;
+
+    private VocabularyEntry relationshipAwardType;
 
     @Getter
     @Setter
@@ -691,6 +702,25 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         return selectedRelationship.getRelationshipNameEn();
     }
 
+    public void setAwardTier(String tier) {
+        if (tier == null) {
+            relationshipAwardType = null;
+        } else {
+            for (VocabularyEntry ve : getConfiguration().getTiers()) {
+                if (tier.equals(ve.getMainValue())) {
+                    relationshipAwardType = ve;
+                }
+            }
+        }
+    }
+
+    public String getAwardTier() {
+        if (relationshipAwardType == null) {
+            return null;
+        }
+        return relationshipAwardType.getMainValue();
+    }
+
     public void changeRelationship(Relationship relationship) {
         changeRelationship = relationship;
         // try to load other entity
@@ -706,6 +736,19 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         relationshipEndDate = relationship.getEndDate();
         relationshipData = relationship.getAdditionalData();
         relationshipSourceType = relationship.getSourceType();
+
+        relationshipAwardType = null;
+        if (getConfiguration().getTiers() != null) {
+            String tier = relationship.getAwardTier();
+            if (StringUtils.isNotBlank(tier)) {
+                for (VocabularyEntry ve : getConfiguration().getTiers()) {
+                    if (ve.getMainValue().equals(tier)) {
+                        relationshipAwardType = ve;
+                    }
+                }
+            }
+        }
+
         changeRelationshipEntity = new Entity(getConfiguration(), currentProcess);
         addRelationship(changeRelationshipEntity.getCurrentType());
         setRelationship(relationship.getType().getRelationshipNameEn());
@@ -763,6 +806,16 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
                 otherRelationship.setEndDate(null);
             }
 
+            if (otherRelationshipType.get().isDisplayTierField()) {
+                if (relationshipAwardType != null) {
+                    otherRelationship.setAwardTier(relationshipAwardType.getMainValue());
+                    otherRelationship.setAwardTierUri(relationshipAwardType.getEntryUrl());
+                } else {
+                    otherRelationship.setAwardTier(null);
+                    otherRelationship.setAwardTierUri(null);
+                }
+            }
+
             // save other process
             changeRelationshipEntity.saveEntity();
         }
@@ -786,6 +839,17 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         } else {
             changeRelationship.setEndDate(null);
         }
+
+        if (selectedRelationship.isDisplayTierField()) {
+            if (relationshipAwardType != null) {
+                changeRelationship.setAwardTier(relationshipAwardType.getMainValue());
+                changeRelationship.setAwardTierUri(relationshipAwardType.getEntryUrl());
+            } else {
+                changeRelationship.setAwardTier(null);
+                changeRelationship.setAwardTierUri(null);
+            }
+        }
+
         // save current entity
         entity.saveEntity();
         freeRelationshipLock();
@@ -805,9 +869,14 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             Helper.setFehlerMeldung("plugin_workflow_entity_locked");
             return;
         }
-
+        String tierLabel = null;
+        String tierUri = null;
+        if (relationshipAwardType != null) {
+            tierLabel = relationshipAwardType.getMainValue();
+            tierUri = relationshipAwardType.getEntryUrl();
+        }
         entity.addRelationship(selectedEntity, relationshipData, relationshipStartDate, relationshipEndDate, selectedRelationship,
-                relationshipSourceType);
+                relationshipSourceType, tierLabel, tierUri);
 
         // find reverse relationship type
         Optional<RelationshipType> otherRelationshipType = entityType.getConfiguredRelations()
@@ -820,7 +889,7 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
         }
         // reverse relationship in other entity
         selectedEntity.addRelationship(entity, relationshipData, relationshipStartDate, relationshipEndDate, otherRelationshipType.get(),
-                relationshipSourceType);
+                relationshipSourceType, tierLabel, tierUri);
 
         // save both entities
         entity.saveEntity();
@@ -1059,5 +1128,32 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
             }
         }
         return configuration;
+    }
+
+    public void createEntityRelationshipFile() {
+        FacesContext facesContext = FacesContextHelper.getCurrentFacesContext();
+        if (!facesContext.getResponseComplete()) {
+            // Prepare header information
+            ExternalContext externalContext = facesContext.getExternalContext();
+            ServletContext servletContext = (ServletContext) externalContext.getContext();
+
+            // Create and initialize response object
+            HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
+            response.setContentType(servletContext.getMimeType("linked_entites.xlsx"));
+            response.setHeader("Content-Disposition", "attachment;filename=\"linked_entites.xlsx\"");
+
+            try {
+                ServletOutputStream out = response.getOutputStream();
+                Workbook wb = new XSSFWorkbook();
+                entity.createLinkedEntityFile(wb, false);
+
+                wb.write(out);
+                out.flush();
+                facesContext.responseComplete();
+
+            } catch (IOException exception) {
+                log.error(exception);
+            }
+        }
     }
 }

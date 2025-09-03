@@ -711,6 +711,13 @@
                                 <f:ajax execute="@this" render="messages" onevent="showLoader"/>
                             </button>
 
+                            <button
+                                class="btn"
+                                jsf:id="downloadRelationships"
+                                jsf:action="#{NavigationForm.workflowPlugin.createEntityRelationshipFile}">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_downloadRelationships}" />
+                            </button>
+
                         </div>
 
                     </div>
