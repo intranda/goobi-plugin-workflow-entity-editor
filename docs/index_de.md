@@ -3,6 +3,10 @@ title: Entitäten Editor - Artist Dictionary
 identifier: intranda_workflow_entity_editor
 description: Diese Plugins ermöglichen es, Künstler, Preise und Austellungsorte vernetzt anzulegen und als Metadaten zu speichern.
 published: true
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Workflow Plugin
 ---
 ## Einführung
 Die vorliegende Dokumentation beschreibt die Installation, Konfiguration und den Einsatz zweier Plugins, die gemeinsam das Artist Dictionary stellen.
