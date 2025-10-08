@@ -3,6 +3,10 @@ title: Entity Editor - Artist Dictionary
 identifier: intranda_workflow_entity_editor
 description: These plugins enable artists, awards and exhibition venues to be cross-linked and stored as metadata.
 published: true
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Workflow Plugin
 ---
 ## Introduction
 This documentation describes the installation, configuration and use of two plugins that together make up the Artist Dictionary.
