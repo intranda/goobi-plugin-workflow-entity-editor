@@ -269,7 +269,7 @@
                                                             value="#{record.extendedFields}"
                                                             var="field">
                                                         <ui:fragment
-                                                                rendered="#{record.getFieldValueForDefinition(field.definition).isPresent()}">
+                                                                rendered="#{not record.getFieldValueForDefinition(field.definition).isEmpty()}">
                                                             <div
                                                                     class="row"
                                                                     style="margin: 0px;">
@@ -280,7 +280,7 @@
                                                                 <div class="col-sm-9">
                                                                     <h:outputText
                                                                             escape="false"
-                                                                            value="#{record.getFieldValueForDefinition(field.definition).get()}"/>
+                                                                            value="#{record.getFieldValueForDefinition(field.definition)}"/>
                                                                 </div>
                                                             </div>
                                                         </ui:fragment>
