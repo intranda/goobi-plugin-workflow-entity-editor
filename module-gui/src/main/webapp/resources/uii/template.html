@@ -134,6 +134,10 @@
                     editor.on( 'change', function() {
                         tinymce.triggerSave();
                     } );
+                    editor.on( "blur", function( event, a, b ) {
+                        editor.save();
+                        $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
+                    } );
                 },
                 statusbar: true,
                 height: 200,
@@ -152,12 +156,6 @@
                     if ( readOnlyAttr === "readonly" ) {
                         editor.setMode( "readonly" );
                     }
-                },
-                setup: (editor) => {
-                    editor.on( "blur", function( event, a, b ) {
-                        editor.save();
-                        $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
-                    } );
                 },
             };
 
