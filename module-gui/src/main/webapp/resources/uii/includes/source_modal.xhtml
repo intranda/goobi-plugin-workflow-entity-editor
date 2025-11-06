@@ -160,7 +160,7 @@
                                                     <!--															<h:outputText value="#{field} "/>-->
                                                     <!-- regular input field -->
                                                     <ui:fragment
-                                                            rendered="#{field.selectableItems.size() == 0 and field.type.large == false}">
+                                                            rendered="#{field.selectableItems.size() == 0 and field.type.large == false and field.definition.name != 'Citation'}">
                                                         <form:field
                                                             label="#{field.definition.name} #{translation.language != null ? msgs[translation.language] : ''}"
                                                             required="#{field.definition.required}">
@@ -179,14 +179,14 @@
                                                                             rendered="#{field.selectableItems.size() == 0 and field.type.large == false}"/> -->
                                                     <!-- text area field -->
                                                     <ui:fragment
-                                                        rendered="#{field.selectableItems.size() == 0 and field.type.large == true}">
+                                                        rendered="#{field.selectableItems.size() == 0 and field.type.large == true or field.definition.name == 'Citation'}">
                                                         <form:field
                                                             label="#{field.definition.name} #{translation.language != null ? msgs[translation.language] : ''}"
                                                             required="#{field.definition.required}">
                                                             <h:inputText
                                                                 id="field2"
                                                                 value="#{translation.value}"
-                                                                styleClass="form-control tinymce" />
+                                                                styleClass="form-control tinymce tinymce-modal" />
                                                         </form:field>
                                                     </ui:fragment>
                                                     <!-- select1 field -->
