@@ -124,7 +124,11 @@
                                     <f:ajax
                                         execute="@this"
                                         render=":relationshipModalContent"
-                                        onevent="openEditRelationshipModal" />
+                                        onevent="(data) => {
+                                            if (data.status == 'success') {
+                                                $('#relationshipEditBox').modal('show');
+                                            }
+                                        }" />
                                 </button>
 
 

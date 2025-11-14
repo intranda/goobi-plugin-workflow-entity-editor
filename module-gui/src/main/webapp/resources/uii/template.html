@@ -134,6 +134,10 @@
                     editor.on( 'change', function() {
                         tinymce.triggerSave();
                     } );
+                    editor.on( "blur", function( event, a, b ) {
+                        editor.save();
+                        $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
+                    } );
                 },
                 statusbar: true,
                 height: 200,
@@ -153,47 +157,68 @@
                         editor.setMode( "readonly" );
                     }
                 },
-                setup: (editor) => {
-                    editor.on( "blur", function( event, a, b ) {
-                        editor.save();
-                        $( "#" + editor.id.replaceAll( ":", "\\:" ) ).trigger( "change" );
-                    } );
-                },
             };
 
             function initTinyMce(selector) {
-                console.log( "Init tinyMce", simpleTinyMceConfig);
                 tinymce.init({ selector: selector, ...simpleTinyMceConfig });
             }
 
-            $( window ).on( "load", function() {
-                renderInputFields()
-            } )
-
-            faces.ajax.addOnEvent( function( data ) {
-                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
-                switch ( ajaxstatus ) {
-                    case "success": // This is called when ajax response is successfully processed.
-                        renderInputFields()
-                        break;
+            // Initialize TinyMCE editors individually (used for modal content)
+            function initTinyMceElements(elements) {
+                if (typeof tinyMCE !== 'undefined') {
+                    elements.forEach(element => {
+                        const editorId = element.id;
+                        const existingEditor = tinyMCE.get(editorId);
+                        if (editorId && !existingEditor) {
+                            const selector = '#' + CSS.escape(editorId);
+                            tinymce.init({ selector: selector, ...simpleTinyMceConfig });
+                        }
+                    });
                 }
-            } );
+            }
 
             function renderInputFields( ajaxData ) {
                 if ( typeof tinyMCE !== 'undefined' ) {
                     if ( ajaxData === undefined || ajaxData.status == "begin" ) {
-                        for ( edId in tinyMCE.editors ) {
+                        // Create array of editor IDs to avoid modifying object while iterating
+                        const editorIds = Object.keys(tinyMCE.editors);
+                        editorIds.forEach(edId => {
                             try {
-                                tinyMCE.editors[ edId ].remove();
-                                console.log( "Removed editor " + edId );
+                                const editor = tinyMCE.editors[edId];
+                                if (!editor) return;
+
+                                const editorElement = document.getElementById(edId);
+
+                                if (!editorElement || !editorElement.classList.contains('tinymce-entity-editor')) {
+                                    editor.remove();
+                                }
                             }
                             catch ( error ) {
                                 console.log( "Error occured during removing editors; ", error );
                             }
-                        }
+                        });
                     }
                     if ( ajaxData === undefined || ajaxData.status == "success" ) {
-                        initTinyMce('.tinymce');
+                        const regularEditors = document.querySelectorAll('.tinymce:not(.tinymce-modal):not(.tinymce-entity-editor)');
+                        if (regularEditors.length > 0) {
+                            initTinyMce('.tinymce:not(.tinymce-modal):not(.tinymce-entity-editor)');
+                        }
+
+                        // Use setTimeout to ensure DOM is fully updated
+                        setTimeout(() => {
+                            const modalEditors = document.querySelectorAll('.modal.show .tinymce-modal');
+                            if (modalEditors.length > 0) {
+
+                                modalEditors.forEach(element => {
+                                    const existingEditor = tinyMCE.get(element.id);
+                                    if (existingEditor) {
+                                        existingEditor.remove();
+                                    }
+                                });
+
+                                initTinyMceElements(Array.from(modalEditors));
+                            }
+                        }, 100);
                     }
                 }
             }
@@ -205,6 +230,28 @@
                     $("#ajaxLoader").hide();
                 }
             }
+
+            $(document).on('shown.bs.modal', '.modal', function (e) {
+                if (typeof tinyMCE !== 'undefined') {
+                    const modalEditors = this.querySelectorAll('.tinymce-modal');
+                    if (modalEditors.length > 0) {
+                        initTinyMceElements(Array.from(modalEditors));
+                    }
+                }
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function (e) {
+                if (typeof tinyMCE !== 'undefined') {
+                    const modalEditors = this.querySelectorAll('.tinymce-modal');
+                    modalEditors.forEach(editorElement => {
+                        const editorId = editorElement.id;
+                        const editor = tinyMCE.get(editorId);
+                        if (editor) {
+                            editor.remove();
+                        }
+                    });
+                }
+            });
 
             // intersection observer for more efficient loading of tinyMCE
             const observerOptions = {
@@ -224,6 +271,10 @@
                 entries.forEach(entry => {
                     const id = entry.target.id;
                     if (entry.isIntersecting) {
+                        if (initializedEditors.has(id) && typeof tinyMCE !== 'undefined' && !tinyMCE.get(id)) {
+                            initializedEditors.delete(id);
+                        }
+
                         if (!initializedEditors.has(id) && typeof tinyMCE !== 'undefined') {
                             initializedEditors.add(id);
                             const selector = '#' + CSS.escape(id);
@@ -234,10 +285,28 @@
             }
 
             const observer = new IntersectionObserver(observerCallback, observerOptions);
-            const editors = document.querySelectorAll('.tinymce-entity-editor');
-            editors.forEach(editor => {
-                observer.observe(editor);
-            });
+
+            function observeEditors() {
+                const editors = document.querySelectorAll('.tinymce-entity-editor');
+                editors.forEach(editor => {
+                    observer.observe(editor);
+                });
+            }
+
+            $( window ).on( "load", function() {
+                renderInputFields()
+                observeEditors();
+            } )
+
+            faces.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
+                switch ( ajaxstatus ) {
+                    case "success": // This is called when ajax response is successfully processed.
+                        renderInputFields(data)
+                        observeEditors();
+                        break;
+                }
+            } );
 
          // ]]>
 

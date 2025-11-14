@@ -203,14 +203,18 @@
                                                                 jsf:rendered="#{field.allowSources}"
                                                                 jsf:id="addSource"
                                                                 class="btn pull-right toggle "
-                                                                jsf:onclick="$('#sourceSearchBox').modal('show');"
                                                                 title="#{msgs.plugin_workflow_entity_addSource}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
                                                                 <i class="fa fa-quote-left" />
                                                                 <f:ajax
                                                                     execute="@this"
-                                                                    render=":sourceModalContent" />
+                                                                    render=":sourceModalContent"
+                                                                    onevent="(data) => {
+                                                                        if (data.status == 'success') {
+                                                                            $('#sourceSearchBox').modal('show');
+                                                                        }
+                                                                    }" />
                                                                 <f:setPropertyActionListener
                                                                     value="#{field}"
                                                                     target="#{NavigationForm.workflowPlugin.currentField}" />
@@ -462,8 +466,7 @@
                                                                                         class="btn vocabularySearchIndexTrigger font-light metadataButton"
                                                                                         title="#{msgs.NORM_vocabularySearch}"
                                                                                         aria-label="#{msgs.NORM_vocabularySearch}"
-                                                                                        type="button"
-                                                                                        jsf:onclick="$('#vocabularySearchBox').modal('show');">
+                                                                                        type="button">
                                                                                         <img
                                                                                             class="color-icon"
                                                                                             style="width: 16px;"
@@ -474,7 +477,12 @@
                                                                                             target="#{NavigationForm.workflowPlugin.searchField}" />
                                                                                         <f:ajax
                                                                                             execute="@this"
-                                                                                            render=":vocabularySearchModalContent" />
+                                                                                            render=":vocabularySearchModalContent"
+                                                                                            onevent="(data) => {
+                                                                                                if (data.status == 'success') {
+                                                                                                    $('#vocabularySearchBox').modal('show');
+                                                                                                }
+                                                                                            }" />
                                                                                         <f:passThroughAttribute
                                                                                             name="data-bs-toggle"
                                                                                             value="tooltip" />
@@ -515,8 +523,7 @@
                                                                                                     class="colorbox-image"
                                                                                                     data-bs-toggle="tooltip"
                                                                                                     href="#{subfield.image.bookmarkUrl}"
-                                                                                                    jsf:id="showBookmark1"
-                                                                                                    jsf:onclick="$('#imageBox').modal('show');">
+                                                                                                    jsf:id="showBookmark1">
                                                                                                     <canvas
                                                                                                         class="thumb-canvas"
                                                                                                         style="max-height: 200px;"
@@ -532,7 +539,12 @@
                                                                                                         target="#{NavigationForm.workflowPlugin.imageName}" />
                                                                                                     <f:ajax
                                                                                                         execute="@this"
-                                                                                                        render="imageBoxContent" />
+                                                                                                        render="imageBoxContent"
+                                                                                                        onevent="(data) => {
+                                                                                                            if (data.status == 'success') {
+                                                                                                                $('#imageBox').modal('show');
+                                                                                                            }
+                                                                                                        }" />
                                                                                                 </button>
                                                                                             </div>
 
@@ -584,8 +596,7 @@
                                                                                         class="btn font-light geonamesSearchIndexTrigger metadataButton"
                                                                                         title="#{msgs.NORM_geonamesSearch}"
                                                                                         aria-label="#{msgs.NORM_geonamesSearch}"
-                                                                                        type="button"
-                                                                                        jsf:onclick="$('#geonamesSearchBox').modal('show');">
+                                                                                        type="button">
                                                                                         <img
                                                                                             class="color-icon"
                                                                                             style="width: 16px;"
@@ -596,7 +607,12 @@
                                                                                             target="#{NavigationForm.workflowPlugin.searchField}" />
                                                                                         <f:ajax
                                                                                             execute="@this"
-                                                                                            render=":geonamesSearchModalContent" />
+                                                                                            render=":geonamesSearchModalContent"
+                                                                                            onevent="(data) => {
+                                                                                                if (data.status == 'success') {
+                                                                                                    $('#geonamesSearchBox').modal('show');
+                                                                                                }
+                                                                                            }" />
                                                                                         <f:passThroughAttribute
                                                                                             name="data-bs-toggle"
                                                                                             value="tooltip" />
@@ -727,13 +743,6 @@
 
 
             <script type="text/javascript">
-
-            function openEditRelationshipModal(data) {
-            	showLoader(data);
-            	if(data?.status == "success") {
-            		$('#relationshipEditBox').modal('show');
-            	}
-            }
 
             function loadColorbox () {
                 $.colorbox.remove();

@@ -356,7 +356,7 @@
 
                                                 <h:inputText
                                                     id="additionalData"
-                                                    styleClass="form-control tinymce"
+                                                    styleClass="form-control tinymce tinymce-modal"
                                                     value="#{NavigationForm.workflowPlugin.relationshipData}" />
                                             </div>
                                         </div>
@@ -371,7 +371,7 @@
                                                 <div class="form-input">
                                                     <h:selectOneMenu
                                                         id="addRelationshipSourceType"
-                                                        styleClass="form-control"
+                                                        styleClass="form-select"
                                                         value="#{NavigationForm.workflowPlugin.relationshipSourceType}">
                                                         <f:selectItem
                                                             itemValue=""
@@ -391,8 +391,8 @@
                                         </ui:fragment>
 
                                     </h:panelGroup>
-                                    
-                                    
+
+
                                     <h:panelGroup
                                         layout="block"
                                         styleClass="form-row"
@@ -423,7 +423,7 @@
                                             </h:selectOneMenu>
 
                                         </div>
-                                    </h:panelGroup>  
+                                    </h:panelGroup>
                                 </h:panelGroup>
                             </h:panelGroup>
 
