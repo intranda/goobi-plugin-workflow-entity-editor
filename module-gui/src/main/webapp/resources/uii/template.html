@@ -296,7 +296,13 @@
             $( window ).on( "load", function() {
                 renderInputFields()
                 observeEditors();
-            } )
+                // Prevent Bootstrap dialog from blocking focusin
+                document.addEventListener('focusin', (e) => {
+                    if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+                        e.stopImmediatePropagation();
+                    }
+                });
+            });
 
             faces.ajax.addOnEvent( function( data ) {
                 var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
@@ -304,6 +310,12 @@
                     case "success": // This is called when ajax response is successfully processed.
                         renderInputFields(data)
                         observeEditors();
+                        // Prevent Bootstrap dialog from blocking focusin
+                        document.addEventListener('focusin', (e) => {
+                            if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+                                e.stopImmediatePropagation();
+                            }
+                        });
                         break;
                 }
             } );
