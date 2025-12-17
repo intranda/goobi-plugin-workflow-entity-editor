@@ -285,11 +285,26 @@
             }
 
             const observer = new IntersectionObserver(observerCallback, observerOptions);
+            observer.observedElements = new Set();
 
             function observeEditors() {
                 const editors = document.querySelectorAll('.tinymce-entity-editor');
                 editors.forEach(editor => {
-                    observer.observe(editor);
+                    const id = editor.id;
+
+                    // Only observe if not already observed
+                    if (!observer.observedElements.has(editor)) {
+                        observer.observe(editor);
+                        observer.observedElements.add(editor);
+
+                        // Immediately initialize newly discovered editors
+                        // This ensures editors added via AJAX are initialized right away
+                        if (id && !initializedEditors.has(id) && typeof tinyMCE !== 'undefined' && !tinyMCE.get(id)) {
+                            initializedEditors.add(id);
+                            const selector = '#' + CSS.escape(id);
+                            initTinyMce(selector);
+                        }
+                    }
                 });
             }
 
@@ -309,7 +324,10 @@
                 switch ( ajaxstatus ) {
                     case "success": // This is called when ajax response is successfully processed.
                         renderInputFields(data)
-                        observeEditors();
+                        // Use setTimeout to ensure DOM is fully updated before observing editors
+                        setTimeout(() => {
+                            observeEditors();
+                        }, 100);
                         // Prevent Bootstrap dialog from blocking focusin
                         document.addEventListener('focusin', (e) => {
                             if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
