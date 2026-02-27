@@ -348,7 +348,26 @@
                                                                     itemValue="#{item.mainValue}" />
                                                             </h:selectOneMenu>
                                                         </ui:fragment>
-
+                                                        <ui:fragment rendered="#{field.configField.fieldType == 'date'}">
+                                                            <h:inputText
+                                                                styleClass="form-control"
+                                                                value="#field.metadata.value}"
+                                                                required="false"
+                                                                readonly="false"
+                                                                id="dateField"
+                                                                validator="#{field.dateValidator}">
+                                                                <f:ajax
+                                                                    event="change"
+                                                                    render="badge-area :header"
+                                                                    listener="#{NavigationForm.workflowPlugin.updateDisplayName}" />
+                                                            </h:inputText>
+                                                            <h:panelGroup
+                                                                layout="block"
+                                                                rendered="#{!field.valid}"
+                                                                styleClass="font-danger validation-message">
+                                                                <h:outputText value="#{field.validationErrorMessage}" />
+                                                            </h:panelGroup>
+                                                        </ui:fragment>
                                                     </h:panelGroup>
 
                                                     <h:panelGroup

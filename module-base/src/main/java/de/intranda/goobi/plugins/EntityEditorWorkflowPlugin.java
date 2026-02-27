@@ -31,7 +31,6 @@ import org.goobi.production.enums.PluginGuiType;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.PluginLoader;
 import org.goobi.production.plugin.interfaces.IExportPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 
 import de.intranda.goobi.plugins.model.BreadcrumbItem;
@@ -86,7 +85,7 @@ import ugh.fileformats.mets.MetsMods;
 
 @PluginImplementation
 @Log4j2
-public class EntityEditorWorkflowPlugin implements IWorkflowPlugin, IPlugin {
+public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
 
     private static final long serialVersionUID = 8882911907364782646L;
 
