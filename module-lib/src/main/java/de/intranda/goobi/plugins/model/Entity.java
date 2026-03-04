@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -1106,10 +1106,14 @@ public class Entity {
                     role = sp.getTwo();
                     break;
                 case "FirstnameOrig":
-                    firstname = sp.getTwo();
+                    if (StringUtils.isBlank(firstname)) {
+                        firstname = sp.getTwo();
+                    }
                     break;
                 case "LastnameOrig":
-                    lastname = sp.getTwo();
+                    if (StringUtils.isBlank(lastname)) {
+                        lastname = sp.getTwo();
+                    }
                     break;
                 case "Birthdate":
                     birthDate = sp.getTwo();
