@@ -1211,10 +1211,20 @@ public class Entity {
         String recurringEvent = "";
         for (StringPair sp : metadata) {
             switch (sp.getOne()) {
-                case "EventType" -> eventType = sp.getTwo();
-                case "NameORIG" -> title = sp.getTwo();
-                case "Location" -> location = sp.getTwo();
-                case "RecurringEvent" -> recurringEvent = sp.getTwo();
+                case "EventType":
+                    eventType = sp.getTwo();
+                    break;
+                case "NameORIG":
+                    if (StringUtils.isBlank(title)) {
+                        title = sp.getTwo();
+                    }
+                    break;
+                case "Location":
+                    location = sp.getTwo();
+                    break;
+                case "RecurringEvent":
+                    recurringEvent = sp.getTwo();
+                    break;
             }
         }
 
@@ -1280,10 +1290,20 @@ public class Entity {
 
         for (StringPair sp : metadata) {
             switch (sp.getOne()) {
-                case "EventType" -> role = sp.getTwo();
-                case "TitleORIG" -> title = sp.getTwo();
-                case "AwardType" -> awardType = sp.getTwo();
-                case "Location" -> location = sp.getTwo();
+                case "EventType":
+                    role = sp.getTwo();
+                    break;
+                case "TitleORIG":
+                    if (StringUtils.isBlank(title)) {
+                        title = sp.getTwo();
+                    }
+                    break;
+                case "AwardType":
+                    awardType = sp.getTwo();
+                    break;
+                case "Location":
+                    location = sp.getTwo();
+                    break;
             }
         }
 
