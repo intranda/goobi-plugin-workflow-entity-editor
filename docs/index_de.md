@@ -1,7 +1,7 @@
 ---
 title: Entitäten Editor - Artist Dictionary
 identifier: intranda_workflow_entity_editor
-description: Diese Plugins ermöglichen es, Künstler, Preise und Austellungsorte vernetzt anzulegen und als Metadaten zu speichern.
+description: Diese Plugins ermöglichen es, Künstler, Preise und Ausstellungsorte vernetzt anzulegen und als Metadaten zu speichern.
 published: true
 keywords:
     - Goobi workflow
@@ -607,7 +607,7 @@ Mit dieser Konfigurationsdatei kann man einstellen, welche Felder und Informatio
 
 
 ### Das Element field
-Der `field`-Element befindet sich innerhalb von jedem `displayMetadata`-Element. Ein solches Element beschreibt, welche Daten (`fields`) dort eingetragen werden können. Das Element `artist` enthält z.B. Felder wie `Name`, `Geburtsort` und `Geburtsdatum`.
+Das `field`-Element befindet sich innerhalb von jedem `displayMetadata`-Element. Ein solches Element beschreibt, welche Daten (`fields`) dort eingetragen werden können. Das Element `artist` enthält z.B. Felder wie `Name`, `Geburtsort` und `Geburtsdatum`.
 
 | Parameter | Erläuterung |
 | :--- | :--- |
@@ -632,7 +632,7 @@ Mögliche `type`-Angaben sind:
 
 
 ### Konfiguration des Dashboards
-Die Konfigurationsdatei `plugin_intranda_dashboard_entity.xml` muss für künftige Funktionserweiterungen grundsätzlich im Dateisystem vorhanden sein. Bisher werdern aus ihr jedoch noch keine Optionen ausgewertet, so dass sie so aussehen kann:
+Die Konfigurationsdatei `plugin_intranda_dashboard_entity.xml` muss für künftige Funktionserweiterungen grundsätzlich im Dateisystem vorhanden sein. Bisher werden aus ihr jedoch noch keine Optionen ausgewertet, so dass sie so aussehen kann:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
