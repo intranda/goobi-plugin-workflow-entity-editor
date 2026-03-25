@@ -251,26 +251,28 @@
                                                 id="group"
                                                 layout="block"
                                                 rendered="#{field.configField.group}"
-                                                styleClass="form-input">
-                                                <ui:repeat
-                                                    var="subfield"
-                                                    value="#{field.subfields}">
-                                                    <h:panelGroup
-                                                        layout="block"
-                                                        styleClass="#{subfield.configField.labelPosition == 'left' ? 'language-field' : ''}"
-                                                        rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+                                                styleClass="form-input field-set">
+                                                <div class="field-set-content">
+                                                    <ui:repeat
+                                                        var="subfield"
+                                                        value="#{field.subfields}">
+                                                        <h:panelGroup
+                                                            layout="form-row"
+                                                            styleClass="form-row h-100"
+                                                            rendered="#{subfield.configField.showInSearch and subfield.configField.fieldType != 'language' and subfield.configField.fieldType != 'publish'}">
+                                                            <span class="form-label">
+                                                                <h:outputText
+                                                                    value="#{msgs[subfield.configField.label]}"
+                                                                    rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
+                                                            </span>
 
-                                                        <h:outputText
-                                                            styleClass="field-label"
-                                                            value="#{msgs[subfield.configField.label]}"
-                                                            rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch and subfield.configField.fieldType != 'publish' and subfield.configField.labelPosition != 'none'}" />
-
-                                                        <h:outputText
-                                                            rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
-                                                            styleClass=""
-                                                            value="#{subfield.metadata.value}" />
-                                                    </h:panelGroup>
-                                                </ui:repeat>
+                                                            <h:outputText
+                                                                rendered="#{subfield.metadata.value != null and subfield.configField.showInSearch}"
+                                                                styleClass="form-input"
+                                                                value="#{subfield.metadata.value}" />
+                                                        </h:panelGroup>
+                                                    </ui:repeat>
+                                                </div>
                                             </h:panelGroup>
                                         </h:panelGroup>
                                     </ui:repeat>
