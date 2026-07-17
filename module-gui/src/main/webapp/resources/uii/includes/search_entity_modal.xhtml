@@ -6,7 +6,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -51,7 +52,7 @@
                                 class="btn text-white"
                                 data-bs-dismiss="modal"
                                 aria-label="Close">
-                                <span class="fa fa-times" aria-hidden="true" />
+                                <util:icon icon="x" />
                             </button>
                         </div>
                         <div
@@ -99,12 +100,7 @@
                                         jsf:id="searchEntities"
                                         class="btn btn-box-color submitOnEnter"
                                         jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
-                                        <span
-                                            class="fa fa-search"
-                                            aria-hidden="true" />
-                                        <span>
-                                            #{msgs.search}
-                                        </span>
+                                        <util:icon-text icon="search" text="#{msgs.search}" />
                                         <f:passThroughAttribute
                                             name="data-bs-toggle"
                                             value="tooltip" />
@@ -137,12 +133,7 @@
                                                 class="btn btn-box-color"
                                                 jsf:id="createNewEntityButton"
                                                 jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
-                                                <span
-                                                    class="fa fa-plus"
-                                                    aria-hidden="true" />
-                                                <span>
-                                                    <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
-                                                </span>
+                                                <util:icon-text icon="plus" text="#{msgs.plugin_workflow_entity_createEntity}" />
 
                                             </button>
 
@@ -231,7 +222,7 @@
                                                         <f:setPropertyActionListener
                                                             value="#{not record.selected}"
                                                             target="#{record.selected}" />
-                                                        <i class="fa #{record.selected ? 'fa-check' : 'fa-minus'}" />
+                                                        <util:icon icon="#{record.selected ? 'check' : 'minus'}" />
                                                     </button>
                                                 </div>
                                             </div>

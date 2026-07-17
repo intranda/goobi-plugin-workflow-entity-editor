@@ -5,7 +5,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -35,9 +36,7 @@
                             title="#{msgs.plugin_workflow_entity_delete}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top">
-                            <span
-								aria-hidden="true"
-								class="fa fa-trash" />
+                            <util:icon icon="trash" />
                             <f:ajax
                                 execute="@this"
                                 render="@form" />
@@ -49,10 +48,7 @@
 					<div class="form-label">
 						<h:outputLabel for="sourceType"
 							value="#{msgs.plugin_workflow_entity_editor_sourceType}" />
-						<span
-							class="fa fa-asterisk pull-right font-asterisk"
-							aria-hidden="true"
-							title="#{msgs.requiredField}" data-bs-toggle="tooltip" />
+						<util:icon icon="asterisk" styleClass="pull-right font-asterisk" title="#{msgs.requiredField}" />
 					</div>
 					<div class="form-input">
 						<h:selectOneMenu id="sourceType" styleClass="form-select"

@@ -38,7 +38,7 @@
 		</relations>
 
 		<color>#B13B29</color>
-		<icon>fa-user</icon>
+		<icon>user</icon>
 		<identifyingMetadata languageOrder="ORIG, FR, DE, EN">PersonMainName/Firstname PersonMainName/Lastname</identifyingMetadata>
 
 		<!-- Define, which input type should be used. Allowed values are:
@@ -270,7 +270,7 @@
 
 
 		<color>#568FB2</color>
-		<icon>fa-university</icon>
+		<icon>building</icon>
 		<!--always english -->
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
 
@@ -417,7 +417,7 @@
 		</relations>
 
 		<color>#8966CA</color>
-		<icon>fa-calendar</icon>
+		<icon>calendar</icon>
 		<identifyingMetadata>MainName/NameEN</identifyingMetadata>
 
 		<displayMetadata>
@@ -508,7 +508,7 @@
 
 		</relations>
 		<color>#DC7E2E</color>
-		<icon>fa-picture-o</icon>
+		<icon>photo</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 
 
@@ -584,7 +584,7 @@
 		</relations>
 
 		<color>#2E8D38</color>
-		<icon>fa-trophy</icon>
+		<icon>trophy</icon>
 		<identifyingMetadata>TitleGroup/TitleEN</identifyingMetadata>
 
 		<displayMetadata>

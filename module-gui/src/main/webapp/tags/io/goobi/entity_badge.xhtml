@@ -5,15 +5,15 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core">
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:util="http://goobi.io/util">
 <h:body>
     <ui:composition>
         <span class="badge #{styleclassname} #{item.valid ? '' : 'validation-error'}">
             <h:commandLink
                 action="#{NavigationForm.workflowPlugin.entity.duplicateMetadata(item)}"
                 rendered="#{item.repeatable and item.showField}">
-                <i class="fa fa-plus-circle margin-right-5" />
-                <h:outputText value="#{msgs[item.label]}" />
+                <util:icon-text icon="circle-plus" text="#{msgs[item.label]}" />
                 <f:setPropertyActionListener
                     target="#{item.showField}"
                     value="true" />
@@ -24,11 +24,11 @@
 
             <h:commandLink rendered="#{!item.repeatable or (item.repeatable and !item.showField)}">
                 <ui:fragment rendered="#{item.repeatable}">
-                    <i class="fa fa-plus-circle margin-right-5" />
+                    <util:icon-text icon="circle-plus" text="#{msgs[item.label]}" />
                 </ui:fragment>
                 <h:outputText value="#{msgs[item.label]}" />
                 <ui:fragment rendered="#{!item.valid}">
-                    <i class="fa fa-exclamation-triangle margin-left-5" />
+                    <util:icon-text icon="alert-triangle" />
                 </ui:fragment>
 
                 <f:setPropertyActionListener

@@ -6,7 +6,8 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:util="http://goobi.io/util">
 <h:body>
     <ui:composition>
 
@@ -23,10 +24,9 @@
                     value="#{breadcrumb}"
                     target="#{NavigationForm.workflowPlugin.selectedBreadcrumb}" />
                 <span class="skew-fix">
-                    <span
-                        class="fa #{entityIcon} big-icon"
-                        jsf:rendered="#{entityName != null}"
-                        aria-hidden="true" />
+                    <ui:fragment rendered="#{entityName != null}">
+                        <util:icon icon="#{entityIcon}" styleClass="big-icon" />
+                    </ui:fragment>
                     <h:outputText
                         value="#{entityName}"
                     />
@@ -36,9 +36,7 @@
                 class="btn breadcrumb-button"
                 jsf:action="#{NavigationForm.workflowPlugin.removeBreadcrumb(breadcrumb)}">
                 <span class="skew-fix">
-                    <span
-                        class="fa fa-times"
-                        aria-hidden="true" />
+                    <util:icon icon="x" />
                 </span>
             </button>
         </h:panelGroup>

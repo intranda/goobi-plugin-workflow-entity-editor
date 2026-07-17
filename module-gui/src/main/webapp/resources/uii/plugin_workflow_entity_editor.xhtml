@@ -11,6 +11,7 @@
     xmlns:entity="http://entity.goobi.io/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:util="http://goobi.io/util"
     template="template.html">
 
     <composite:interface>
@@ -70,8 +71,7 @@
                                             class="btn entity-search"
                                             style="--entity-search-color: #{type.color};"
                                             jsf:action="#{NavigationForm.workflowPlugin.searchForType(type)}">
-                                            <span class="fa #{type.icon} big-icon"
-                                                aria-hidden="true" />
+                                            <util:icon icon="#{type.icon}" styleClass="big-icon" />
                                             <h:outputText
                                                 value="#{msgs[type.plural]}"
                                                 styleClass="btn-text" />
@@ -126,7 +126,7 @@
                             <div
                                 class="box__title">
                                 <h2>
-                                    <span class="fa #{NavigationForm.workflowPlugin.entity.currentType.icon} big-icon" />
+                                    <util:icon icon="#{NavigationForm.workflowPlugin.entity.currentType.icon}" styleClass="big-icon" />
 
                                     <h:outputFormat value="#{msgs.plugin_workflow_entity_edit_header}">
                                         <f:param value="#{NavigationForm.workflowPlugin.entity.currentType.name}" />
@@ -144,7 +144,7 @@
                                         title="#{msgs.plugin_workflow_entity_createBibliography}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                        <i class="fa fa-plus-circle margin-right-5 big-icon" />
+                                        <util:icon icon="circle-plus" styleClass="big-icon" />
                                     </button>
                                 </div>
 
@@ -206,7 +206,7 @@
                                                                 title="#{msgs.plugin_workflow_entity_addSource}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                <i class="fa fa-quote-left" />
+                                                                <util:icon icon="quote" />
                                                                 <f:ajax
                                                                     execute="@this"
                                                                     render=":sourceModalContent"
@@ -234,7 +234,7 @@
                                                                 title="#{msgs.plugin_workflow_entity_duplicate}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                <i class="fa fa-plus-circle" />
+                                                                <util:icon icon="circle-plus" />
                                                                 <f:ajax
                                                                     execute="@this"
                                                                     render="@form" />
@@ -249,7 +249,7 @@
                                                                 title="#{msgs.plugin_workflow_entity_delete}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                <i class="fa fa-minus-circle" />
+                                                                <util:icon icon="circle-minus" />
                                                                 <f:ajax
                                                                     execute="@this"
                                                                     render="@form" />
@@ -264,8 +264,10 @@
                                                                     title="#{ field.publishField.booleanValue == false ? msgs.plugin_workflow_entity_publish : msgs.plugin_workflow_entity_doNotPublish }"
                                                                     data-bs-toggle="tooltip"
                                                                     data-bs-placement="#{status.index == 1 ? 'bottom' : 'top' }">
-                                                                    <i
-                                                                        class="fa #{field.publishField.booleanValue == false?'fa fa-toggle-off':'fa fa-toggle-on toggle-on'}" />
+                                                                    <util:icon
+                                                                        icon="#{field.publishField.booleanValue == false ? 'toggle-left' : 'toggle-right'}"
+                                                                        filled="#{field.publishField.booleanValue}"
+                                                                        styleClass="#{field.publishField.booleanValue ? 'toggle-on' : ''}" />
                                                                     <f:ajax
                                                                         execute="pubBtn"
                                                                         render="pubBtn" />

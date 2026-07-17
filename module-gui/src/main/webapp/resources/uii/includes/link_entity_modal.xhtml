@@ -6,7 +6,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -45,7 +46,7 @@
                                 class="btn text-white"
                                 data-bs-dismiss="modal"
                                 aria-label="Close">
-                                <span class="fa fa-times" aria-hidden="true" />
+                                <util:icon icon="x" />
                             </button>
                         </div>
                         <div
@@ -68,12 +69,7 @@
                                     <button
                                         class="btn btn-box-color searchEntity"
                                         jsf:action="#{NavigationForm.workflowPlugin.searchEntity}">
-                                        <span
-                                            class="fa fa-search"
-                                            aria-hidden="true" />
-                                        <span>
-                                            #{msgs.search}
-                                        </span>
+                                        <util:icon-text icon="search" text="#{msgs.search}" />
                                         <f:passThroughAttribute
                                             name="data-bs-toggle"
                                             value="tooltip" />
@@ -97,11 +93,7 @@
                                             class="btn btn-box-color"
                                             jsf:id="createEntityButton"
                                             jsf:action="#{NavigationForm.workflowPlugin.createEntity}">
-                                            <span
-                                                class="fa fa-plus" />
-                                            <span>
-                                                <h:outputText value="#{msgs.plugin_workflow_entity_createEntity}" />
-                                            </span>
+                                            <util:icon-text icon="plus" text="#{msgs.plugin_workflow_entity_createEntity}" />
 
                                         </button>
                                     </div>
@@ -191,7 +183,7 @@
                                                         <f:setPropertyActionListener
                                                             value="#{record}"
                                                             target="#{NavigationForm.workflowPlugin.selectedEntity}" />
-                                                        <i class="fa fa-check" />
+                                                        <util:icon icon="check" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -435,12 +427,7 @@
                                     class="btn btn-blank border"
                                     jsf:id="back"
                                     jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}">
-                                    <span
-                                        class="fa fa-undo"
-                                        aria-hidden="true" />
-                                    <span>
-                                        <h:outputText value="#{msgs.zurueck}" />
-                                    </span>
+                                    <util:icon-text icon="arrow-back-up" text="#{msgs.zurueck}" />
                                     <f:passThroughAttribute
                                         name="data-bs-toggle"
                                         value="tooltip" />
@@ -460,10 +447,7 @@
                                     jsf:rendered="#{NavigationForm.workflowPlugin.selectedEntity != null}"
                                     title="#{msgs.save}"
                                     class="btn btn-box-color">
-                                    <span class="fa fa-floppy-o" />
-                                    <span>
-                                        <h:outputText value="#{msgs.save}" />
-                                    </span>
+                                    <util:icon-text icon="device-floppy" text="#{msgs.save}" />
                                 </button>
                             </div>
 

@@ -5,7 +5,8 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
-                xmlns:form="http://goobi.io/form">
+                xmlns:form="http://goobi.io/form"
+                xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -38,7 +39,7 @@
                                 class="btn text-white"
                                 data-bs-dismiss="modal"
                                 aria-label="Close">
-                                <span class="fa fa-times" aria-hidden="true" />
+                                <util:icon icon="x" />
                             </button>
                         </div>
                         <div
@@ -62,24 +63,14 @@
                                         jsf:action="#{NavigationForm.workflowPlugin.searchSource}"
                                         jsf:id="searchSource"
                                         type="button">
-                                        <span
-                                            class="fa fa-search"
-                                            aria-hidden="true" />
-                                        <span>
-                                            #{msgs.search}
-                                        </span>
+                                        <util:icon-text icon="search" text="#{msgs.search}" />
                                         <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
                                         <f:ajax execute="@form" render="sourcesList"/>
                                     </button>
                                     <!-- ADD new source-->
                                     <button type="button" class="btn btn-blank border"
                                             jsf:action="#{NavigationForm.workflowPlugin.createNewSource}">
-                                        <span
-                                            class="fa fa-plus"
-                                            aria-hidden="true" />
-                                        <span>
-                                            #{msgs.add}
-                                        </span>
+                                        <util:icon-text icon="plus" text="#{msgs.add}" />
                                         <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
                                         <f:setPropertyActionListener
                                             value="edition"
@@ -96,8 +87,7 @@
                                         <h:outputLabel for="sourceType"
                                                         value="#{msgs.plugin_workflow_entity_editor_sourceType}"/>
                                         <h:panelGroup>
-                                            <i class="fa fa-asterisk pull-right font-asterisk"
-                                                title="#{msgs.requiredField}" data-bs-toggle="tooltip"/>
+                                            <util:icon icon="asterisk" styleClass="pull-right font-asterisk" title="#{msgs.requiredField}" />
                                         </h:panelGroup>
                                     </div>
                                     <div class="form-input">
@@ -241,7 +231,7 @@
                                     <div class="source-modal__actions">
                                         <button class="btn btn-blank border"
                                                 jsf:action="#{NavigationForm.Reload}">
-                                            <i class="fa fa-undo" aria-hidden="true"></i> #{msgs.goBack}
+                                            <util:icon-text icon="arrow-back-up" text="#{msgs.goBack}" />
                                             <f:passThroughAttribute name="data-bs-toggle" value="tooltip"/>
                                             <f:setPropertyActionListener value=""
                                                                             target="#{NavigationForm.workflowPlugin.sourceMode}"/>
@@ -250,7 +240,7 @@
 
                                         <button jsf:id="check" class="btn btn-box-color"
                                                 jsf:action="#{NavigationForm.workflowPlugin.saveAndAddSource}">
-                                            <i class="fa fa-save"/> #{msgs.save}
+                                            <util:icon-text icon="device-floppy" text="#{msgs.save}" />
                                         </button>
                                     </div>
                                 </ui:fragment>
@@ -294,7 +284,7 @@
                                                         <f:setPropertyActionListener value="#{record}"
                                                                                         target="#{NavigationForm.workflowPlugin.selectedSource}"/>
 
-                                                        <span class="fa fa-check"/>
+                                                        <util:icon icon="check" />
                                                     </button>
                                                 </div>
 

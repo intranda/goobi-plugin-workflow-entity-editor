@@ -6,7 +6,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -43,7 +44,7 @@
                                 class="btn text-white"
                                 data-bs-dismiss="modal"
                                 aria-label="Close">
-                                <span class="fa fa-times" aria-hidden="true" />
+                                <util:icon icon="x" />
                             </button>
                         </div>
                         <h:form
@@ -289,10 +290,7 @@
                                     title="#{msgs.save}"
                                     class="btn btn-box-color"
                                     jsf:id="saveRelationship">
-                                    <span class="fa fa-floppy-o" />
-                                    <span>
-                                        <h:outputText value="#{msgs.save}" />
-                                    </span>
+                                    <util:icon-text icon="device-floppy" text="#{msgs.save}" />
                                 </button>
 
                             </div>

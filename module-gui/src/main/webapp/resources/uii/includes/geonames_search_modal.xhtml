@@ -5,7 +5,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -43,7 +44,7 @@
                                 class="btn text-white"
                                 data-bs-dismiss="modal"
                                 aria-label="Close">
-                                <span class="fa fa-times" aria-hidden="true" />
+                                <util:icon icon="x" />
                             </button>
                         </div>
                         <div class="modal-body">
@@ -64,12 +65,7 @@
                                     jsf:id="geonamesSearchAction"
                                     class="btn btn-primary btn--loader geonamesSearch"
                                     jsf:action="#{NavigationForm.workflowPlugin.searchGeonames}">
-                                    <span
-                                        class="fa fa-search"
-                                        aria-hidden="true" />
-                                    <span>
-                                        #{msgs.search}
-                                    </span>
+                                    <util:icon-text icon="search" text="#{msgs.search}" />
 
                                     <f:passThroughAttribute
                                         name="data-bs-toggle"
@@ -182,9 +178,7 @@
                                                 <f:setPropertyActionListener
                                                     value=""
                                                     target="#{NavigationForm.workflowPlugin.geonamesSearchValue}" />
-                                                <i
-                                                    class="fa fa-check"
-                                                    aria-hidden="true"></i>
+                                                <util:icon icon="check" />
                                             </button>
                                         </div>
                                     </div>
