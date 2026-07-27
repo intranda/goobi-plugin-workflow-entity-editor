@@ -52,9 +52,10 @@
                             prependId="false">
                             <div class="modal-body p-0">
 
-                                <h:panelGroup rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity == null}">
-                                    <div class="alert alert-danger">#{msgs.plugin_workflow_entity_locked}</div>
-                                </h:panelGroup>
+                                <util:alert
+                                    type="danger"
+                                    message="#{msgs.plugin_workflow_entity_locked}"
+                                    rendered="#{NavigationForm.workflowPlugin.changeRelationshipEntity == null}" />
 
                                 <h:panelGroup
                                     layout="block"
