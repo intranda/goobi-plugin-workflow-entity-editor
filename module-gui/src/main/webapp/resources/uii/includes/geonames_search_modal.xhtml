@@ -47,6 +47,9 @@
                                 <util:icon icon="x" />
                             </button>
                         </div>
+                        <!-- the metadata field to search for is assigned when the modal is opened from a field;
+                             without it there is nothing to search for and nothing to import into -->
+                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField != null}">
                         <div class="modal-body">
                             <p>
                                 <h:outputText
@@ -194,6 +197,13 @@
                             </ui:fragment>
 
                         </h:panelGroup>
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.searchField == null}">
+                            <div class="modal-body">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_noFieldSelected}" />
+                            </div>
+                        </ui:fragment>
 
                         <div class="modal-footer">
 

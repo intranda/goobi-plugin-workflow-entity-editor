@@ -304,9 +304,27 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
     }
 
     /**
+     * The metadata field to search in is assigned by the view when the search modal is opened. A stale view can assign null instead, in
+     * which case there is nothing to search for and nothing to import into.
+     *
+     * @return true if no field is selected
+     */
+    private boolean isSearchFieldMissing() {
+        if (searchField == null) {
+            log.warn("No metadata field is selected, cannot search or import authority data.");
+            Helper.setFehlerMeldung("plugin_workflow_entity_noFieldSelected");
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Search within a vocabulary
      */
     public void searchVocabulary() {
+        if (isSearchFieldMissing()) {
+            return;
+        }
         if (entity != null) {
             LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         }
@@ -337,6 +355,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
      * Import data from selected vocabulary record
      */
     public void importVocabularyData() {
+        if (isSearchFieldMissing()) {
+            return;
+        }
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         Metadata md = searchField.getMetadata();
@@ -346,6 +367,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
     }
 
     public void searchGeonames() {
+        if (isSearchFieldMissing()) {
+            return;
+        }
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
         String credentials = ConfigurationHelper.getInstance().getGeonamesCredentials();
         WebService.setUserName(credentials);
@@ -382,6 +406,9 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
     }
 
     public void importGeonamesData() {
+        if (isSearchFieldMissing()) {
+            return;
+        }
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         Metadata md = searchField.getMetadata();
