@@ -42,6 +42,9 @@
                                 <util:icon icon="x" />
                             </button>
                         </div>
+                        <!-- the metadata field to add the source to is assigned when the modal is opened from a field;
+                             without it there is nothing to add a source to -->
+                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.currentField != null}">
                         <div
                             jsf:id="modalBody"
                             class="modal-body p-0 bg-white">
@@ -303,6 +306,13 @@
 
 
                         </div>
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{NavigationForm.workflowPlugin.currentField == null}">
+                            <div class="modal-body">
+                                <h:outputText value="#{msgs.plugin_workflow_entity_noFieldSelected}" />
+                            </div>
+                        </ui:fragment>
 
                         <div class="modal-footer">
 

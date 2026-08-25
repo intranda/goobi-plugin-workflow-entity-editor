@@ -67,4 +67,15 @@ public class EntityEditorPluginTest {
     public void testImportGeonamesDataWithoutSearchField() {
         pluginWithoutSearchField().importGeonamesData();
     }
+
+    /**
+     * The source modal assigns the field to add a source to in the same way, so its action has to abort as well when the view never made
+     * that assignment.
+     */
+    @Test
+    public void testAddSourceWithoutCurrentField() {
+        EntityEditorWorkflowPlugin plugin = new EntityEditorWorkflowPlugin();
+        assertNull(plugin.getCurrentField());
+        plugin.addSource();
+    }
 }

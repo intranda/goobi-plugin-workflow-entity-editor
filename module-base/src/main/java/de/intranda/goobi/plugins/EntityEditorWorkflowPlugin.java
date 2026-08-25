@@ -469,10 +469,28 @@ public class EntityEditorWorkflowPlugin implements IWorkflowPlugin {
     }
 
     /**
+     * The metadata field to add the source to is assigned by the view when the source modal is opened. A stale view can assign null
+     * instead, in which case there is nothing to add a source to.
+     *
+     * @return true if no field is selected
+     */
+    private boolean isCurrentFieldMissing() {
+        if (currentField == null) {
+            log.warn("No metadata field is selected, cannot add a source.");
+            Helper.setFehlerMeldung("plugin_workflow_entity_noFieldSelected");
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Add selected source to the current metadata field
      */
 
     public void addSource() {
+        if (isCurrentFieldMissing()) {
+            return;
+        }
         LockingBean.updateLocking(String.valueOf(entity.getCurrentProcess().getId()));
 
         String sourceId = String.valueOf(selectedSource.getId());
