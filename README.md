@@ -1,6 +1,9 @@
 # Goobi workflow Plugin: goobi-plugin-workflow-entity-editor
 
-<img src="https://goobi.io/wp-content/uploads/logo_goobi_plugin.png" align="right" style="margin:0 0 20px 20px;" alt="Plugin for Goobi workflow" width="175" height="109">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://goobi.io/logo_goobi_workflow_dark.png">
+  <img src="https://goobi.io/logo_goobi_workflow.png" align="right" alt="Plugin for Goobi workflow" width="240" height="132" hspace="20" vspace="10">
+</picture>
 
 This Workflow plugin for Goobi workflow was originally developed for the MNAHA in Luxembourg to handle the Artist Dictionary project data but is used in other projects now as well. The plugin allows to edit metadata of entities for persons, corporates, awards etc. These entities can be freely configured and they can have links between each other.
 
