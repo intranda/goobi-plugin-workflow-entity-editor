@@ -2,6 +2,7 @@ package de.intranda.goobi.plugins.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -70,6 +71,24 @@ public class MetadataFieldTest {
         field.addSource(field.new SourceField("42", null, "name", "Primary", null, null), null);
 
         field.hashCode();
+    }
+
+    /**
+     * The empty option of a vocabulary dropdown has to clear the field. The setter ignored a blank value, so the metadata kept the entry it
+     * had: the form showed "please select" while the old value was still in the document, went back into the METS file on the next save, and
+     * the pill above the form stayed dark - the pill being the only part that reported the truth.
+     */
+    @Test
+    public void testClearingAVocabularyValueClearsTheMetadata() throws Exception {
+        MetadataField field = row(new ConfiguredField("label", "vocabularyList", "Note"), "Autobiography");
+        field.getMetadata().setAuthorityFile("Biography Type", "https://vocabulary.example/17", "https://vocabulary.example/17/3");
+
+        field.setVocabularyValue("");
+
+        assertEquals("", field.getMetadata().getValue());
+        assertNull(field.getMetadata().getAuthorityID());
+        assertNull(field.getMetadata().getAuthorityURI());
+        assertNull(field.getMetadata().getAuthorityValue());
     }
 
     /**

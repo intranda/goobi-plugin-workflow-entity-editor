@@ -142,13 +142,17 @@ public class MetadataField {
     // vocabulary dropdown
 
     public void setVocabularyValue(String value) {
-        if (StringUtils.isNotBlank(value)) {
-            for (VocabularyEntry item : configField.getVocabularyList()) {
-                if (value.equals(item.getMainValue())) {
-                    metadata.setValue(item.getMainValue());
-                    metadata.setAuthorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(),
-                            item.getEntryUrl());
-                }
+        if (StringUtils.isBlank(value)) {
+            // the empty option of the dropdown: drop the value and the authority record it came with, otherwise the form shows an empty
+            // field while the document keeps the entry and writes it back on the next save
+            metadata.setValue("");
+            metadata.setAuthorityFile(null, null, null);
+            return;
+        }
+        for (VocabularyEntry item : configField.getVocabularyList()) {
+            if (value.equals(item.getMainValue())) {
+                metadata.setValue(item.getMainValue());
+                metadata.setAuthorityFile(configField.getVocabularyName(), configField.getVocabularyUrl(), item.getEntryUrl());
             }
         }
     }
