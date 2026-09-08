@@ -322,7 +322,7 @@
                                                                 <f:selectItem
                                                                     itemValue=""
                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                    itemDisabled="true" />
+                                                                    itemDisabled="#{field.configField.required}" />
                                                                 <f:selectItems
                                                                     value="#{field.configField.valueList}"
                                                                     var="item"
@@ -342,7 +342,7 @@
                                                                 <f:selectItem
                                                                     itemValue=""
                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                    itemDisabled="false" />
+                                                                    itemDisabled="#{field.configField.required}" />
                                                                 <f:selectItems
                                                                     value="#{field.selectableVocabularyEntries}"
                                                                     var="item"
@@ -450,7 +450,7 @@
                                                                                 <f:selectItem
                                                                                     itemValue=""
                                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                                    itemDisabled="true" />
+                                                                                    itemDisabled="#{subfield.configField.required}" />
                                                                                 <f:selectItems
                                                                                     value="#{subfield.configField.valueList}"
                                                                                     var="item"
@@ -469,7 +469,7 @@
                                                                                 <f:selectItem
                                                                                     itemValue=""
                                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
-                                                                                    itemDisabled="false" />
+                                                                                    itemDisabled="#{subfield.configField.required}" />
                                                                                 <f:selectItems
                                                                                     value="#{subfield.selectableVocabularyEntries}"
                                                                                     var="item"
