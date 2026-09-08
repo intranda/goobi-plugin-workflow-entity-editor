@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabularyRecord;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +76,7 @@ public class ConfiguredField {
     private String valueUrl;
 
     @Getter
+    @Setter(AccessLevel.PACKAGE)
     private List<VocabularyEntry> vocabularyList;
 
     @Getter
@@ -266,6 +268,22 @@ public class ConfiguredField {
             }
 
         }
+    }
+
+    /**
+     * @param value a metadata value
+     * @return true if the configured vocabulary offers this value; false when it does not, and when no vocabulary could be loaded
+     */
+    public boolean vocabularyContains(String value) {
+        if (vocabularyList == null || StringUtils.isBlank(value)) {
+            return false;
+        }
+        for (VocabularyEntry entry : vocabularyList) {
+            if (value.equals(entry.getMainValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isFilled() {

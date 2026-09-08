@@ -344,11 +344,21 @@
                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
                                                                     itemDisabled="false" />
                                                                 <f:selectItems
-                                                                    value="#{field.configField.vocabularyList}"
+                                                                    value="#{field.selectableVocabularyEntries}"
                                                                     var="item"
                                                                     itemLabel="#{item.getLabel(SpracheForm.locale)}"
                                                                     itemValue="#{item.mainValue}" />
                                                             </h:selectOneMenu>
+                                                            <ui:fragment
+                                                                rendered="#{not empty field.metadata.value and not field.configField.vocabularyContains(field.metadata.value)}">
+                                                                <h:panelGroup
+                                                                    layout="block"
+                                                                    styleClass="font-danger validation-message">
+                                                                    <util:icon-text
+                                                                        icon="alert-triangle"
+                                                                        text="#{msgs.plugin_workflow_entity_valueNotInVocabulary}" />
+                                                                </h:panelGroup>
+                                                            </ui:fragment>
                                                         </ui:fragment>
                                                         <ui:fragment rendered="#{field.configField.fieldType == 'date'}">
                                                             <h:inputText
@@ -461,11 +471,21 @@
                                                                                     itemLabel="#{msgs.bitteAuswaehlen}"
                                                                                     itemDisabled="false" />
                                                                                 <f:selectItems
-                                                                                    value="#{subfield.configField.vocabularyList}"
+                                                                                    value="#{subfield.selectableVocabularyEntries}"
                                                                                     var="item"
                                                                                     itemLabel="#{item.getLabel(SpracheForm.locale)}"
                                                                                     itemValue="#{item.mainValue}" />
                                                                             </h:selectOneMenu>
+                                                                            <ui:fragment
+                                                                                rendered="#{not empty subfield.metadata.value and not subfield.configField.vocabularyContains(subfield.metadata.value)}">
+                                                                                <h:panelGroup
+                                                                                    layout="block"
+                                                                                    styleClass="font-danger validation-message">
+                                                                                    <util:icon-text
+                                                                                        icon="alert-triangle"
+                                                                                        text="#{msgs.plugin_workflow_entity_valueNotInVocabulary}" />
+                                                                                </h:panelGroup>
+                                                                            </ui:fragment>
                                                                         </ui:fragment>
 
                                                                         <ui:fragment rendered="#{subfield.configField.fieldType == 'vocabularySearch'}">

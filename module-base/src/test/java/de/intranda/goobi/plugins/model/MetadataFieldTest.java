@@ -32,6 +32,12 @@ public class MetadataFieldTest {
         return field;
     }
 
+    private static VocabularyEntry vocabularyEntry(String mainValue) {
+        VocabularyEntry entry = new VocabularyEntry();
+        entry.setMainValue(mainValue);
+        return entry;
+    }
+
     /**
      * Every row of a repeatable metadata field is an entry of its own, even when two rows hold the same value. Value based equality makes
      * them interchangeable, which is what lets List.remove() delete a different row than the one the user clicked.
@@ -89,6 +95,56 @@ public class MetadataFieldTest {
         assertNull(field.getMetadata().getAuthorityID());
         assertNull(field.getMetadata().getAuthorityURI());
         assertNull(field.getMetadata().getAuthorityValue());
+    }
+
+    /**
+     * A value the configured vocabulary does not offer - because the vocabulary changed, or because an import or a GoobiScript wrote it -
+     * still belongs to the field. The getter used to hide it, so the dropdown showed "please select" over a value the document held, and the
+     * next submit replaced it.
+     */
+    @Test
+    public void testVocabularyValueOutsideTheVocabularyIsKept() throws Exception {
+        MetadataField field = row(new ConfiguredField("label", "vocabularyList", "Note"), "Retired term");
+
+        assertEquals("Retired term", field.getVocabularyValue());
+    }
+
+    /**
+     * The dropdown also has to be able to render such a value, so it is offered as an entry of its own next to the configured ones.
+     */
+    @Test
+    public void testVocabularyEntriesIncludeAValueOutsideTheVocabulary() throws Exception {
+        ConfiguredField configField = new ConfiguredField("label", "vocabularyList", "Note");
+        configField.setVocabularyList(new ArrayList<>(List.of(vocabularyEntry("Autobiography"))));
+        MetadataField field = row(configField, "Retired term");
+
+        List<VocabularyEntry> entries = field.getSelectableVocabularyEntries();
+
+        assertEquals(2, entries.size());
+        assertEquals("Autobiography", entries.get(0).getMainValue());
+        assertEquals("Retired term", entries.get(1).getMainValue());
+    }
+
+    @Test
+    public void testVocabularyEntriesAreTheConfiguredOnesWhenTheValueIsKnown() throws Exception {
+        ConfiguredField configField = new ConfiguredField("label", "vocabularyList", "Note");
+        configField.setVocabularyList(new ArrayList<>(List.of(vocabularyEntry("Autobiography"))));
+        MetadataField field = row(configField, "Autobiography");
+
+        assertEquals(1, field.getSelectableVocabularyEntries().size());
+    }
+
+    /**
+     * A vocabulary that could not be loaded leaves the list null, which must not turn the dropdown into an exception.
+     */
+    @Test
+    public void testVocabularyEntriesWithoutAConfiguredVocabulary() throws Exception {
+        MetadataField field = row(new ConfiguredField("label", "vocabularyList", "Note"), "Retired term");
+
+        List<VocabularyEntry> entries = field.getSelectableVocabularyEntries();
+
+        assertEquals(1, entries.size());
+        assertEquals("Retired term", entries.get(0).getMainValue());
     }
 
     /**

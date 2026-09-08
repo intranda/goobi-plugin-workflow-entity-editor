@@ -157,16 +157,28 @@ public class MetadataField {
         }
     }
 
+    /**
+     * The stored value, whatever it is. Filtering it against the configured vocabulary would hide a value the document holds - a vocabulary
+     * can change, and imports write values of their own - and the dropdown would then replace it on the next submit.
+     */
     public String getVocabularyValue() {
-        String label = metadata.getValue();
-        if (StringUtils.isNotBlank(label)) {
-            for (VocabularyEntry item : configField.getVocabularyList()) {
-                if (label.equals(item.getMainValue())) {
-                    return item.getMainValue();
-                }
-            }
+        return metadata.getValue();
+    }
+
+    /**
+     * The entries a vocabulary dropdown can offer. A stored value the vocabulary does not know is offered as an entry of its own, so that
+     * the dropdown shows it instead of falling back to its first entry.
+     */
+    public List<VocabularyEntry> getSelectableVocabularyEntries() {
+        List<VocabularyEntry> configured = configField.getVocabularyList();
+        List<VocabularyEntry> entries = configured == null ? new ArrayList<>() : new ArrayList<>(configured);
+        String value = metadata.getValue();
+        if (StringUtils.isNotBlank(value) && !configField.vocabularyContains(value)) {
+            VocabularyEntry unknown = new VocabularyEntry();
+            unknown.setMainValue(value);
+            entries.add(unknown);
         }
-        return null;
+        return entries;
     }
 
     public void addSubField(MetadataField field) {
