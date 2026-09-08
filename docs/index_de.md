@@ -32,6 +32,45 @@ Daneben gibt es zwei Konfigurationsdateien, die üblicherweise an folgender Stel
 ```
 
 
+### Anforderungen an den Tomcat
+Der Metadatenbereich des Entitäten Editors wird als einzelnes Formular vom Typ `multipart/form-data` übertragen und enthält für jedes angezeigte Metadatum eigene Eingabefelder. Bei Entitäten mit vielen Feldern übersteigt eine solche Anfrage die Grenzwerte, die aktuelle Tomcat-Versionen standardmäßig setzen.
+
+Werden diese Grenzwerte überschritten, verwirft Tomcat die überzähligen Parameter, ohne die Anfrage abzulehnen. Da die Parameter, die die auszuführende Aktion benennen, am Ende der Anfrage stehen, gehen genau diese verloren: Die Schaltflächen im Metadatenbereich reagieren nicht mehr – kein Feld lässt sich hinzufügen oder entfernen, keine Quelle löschen –, und zwar ohne Fehlermeldung und ohne Eintrag in der `goobi.log`. Je mehr Felder geöffnet sind, desto früher tritt das Verhalten auf.
+
+Erhöhen Sie daher in der Datei `server.xml` die folgenden beiden Werte:
+
+```xml
+maxParameterCount="20000"
+maxPartCount="2000"
+```
+
+Diese Angaben gelten jeweils nur für den Connector, an dem sie stehen. Sie müssen deshalb an **allen genutzten Connectoren** ergänzt werden. Wird Goobi hinter einem Apache über AJP betrieben, genügt der HTTP-Connector allein nicht:
+
+```xml
+<Connector port="8080" protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           redirectPort="8443"
+           maxParameterCount="20000"
+           maxPartCount="2000" />
+
+<Connector protocol="AJP/1.3"
+           address="127.0.0.1"
+           port="8009"
+           redirectPort="8443"
+           secretRequired="false"
+           maxParameterCount="20000"
+           maxPartCount="2000" />
+```
+
+Zu den Standardwerten: `maxParameterCount` ist in der von Tomcat ausgelieferten `server.xml` neuerer Versionen bereits auf `1000` gesetzt, `maxPartCount` gilt mit einem Standardwert von `50` zusätzlich zu `maxParameterCount`. Das Attribut `maxPartCount` kennen erst aktuelle Tomcat-Versionen der Reihe 10.1; bei älteren Versionen ist es weggelassen.
+
+Nach einem Neustart des Tomcat lässt sich das Ergebnis in der `catalina.out` prüfen. Die folgende Meldung darf bei der Arbeit im Editor nicht mehr auftreten:
+
+```
+More than the maximum number of request parameters (GET plus POST) for a single request
+```
+
+
 ## Überblick und Funktionsweise
 Wenn das Plugin korrekt installiert und konfiguriert wurde, kann es als Dashboard in den Benutzereinstellungen ausgewählt werden:
 

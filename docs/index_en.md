@@ -32,6 +32,45 @@ In addition, there are two configuration files, which usually have to be located
 ```
 
 
+### Tomcat requirements
+The metadata area of the entity editor is transmitted as a single form of type `multipart/form-data` and contains its own input controls for every metadata field on display. For entities with many fields, such a request exceeds the limits that current Tomcat versions apply by default.
+
+When those limits are exceeded, Tomcat discards the surplus parameters without rejecting the request. As the parameters that name the action to be performed come last, they are precisely the ones that get lost: the buttons in the metadata area stop responding – no field can be added or removed, no source deleted – with no error message and no entry in `goobi.log`. The more fields are open, the sooner this happens.
+
+Therefore raise the following two values in `server.xml`:
+
+```xml
+maxParameterCount="20000"
+maxPartCount="2000"
+```
+
+These settings apply only to the connector they are written on, so they have to be added to **every connector in use**. Where Goobi runs behind an Apache over AJP, the HTTP connector alone is not enough:
+
+```xml
+<Connector port="8080" protocol="HTTP/1.1"
+           connectionTimeout="20000"
+           redirectPort="8443"
+           maxParameterCount="20000"
+           maxPartCount="2000" />
+
+<Connector protocol="AJP/1.3"
+           address="127.0.0.1"
+           port="8009"
+           redirectPort="8443"
+           secretRequired="false"
+           maxParameterCount="20000"
+           maxPartCount="2000" />
+```
+
+On the defaults: recent Tomcat versions already ship a `server.xml` in which `maxParameterCount` is set to `1000`, and `maxPartCount` applies with a default of `50` in addition to `maxParameterCount`. The `maxPartCount` attribute only exists in current Tomcat 10.1 versions; on older ones it is left out.
+
+After restarting Tomcat, the result can be checked in `catalina.out`. The following message must no longer appear while working in the editor:
+
+```
+More than the maximum number of request parameters (GET plus POST) for a single request
+```
+
+
 ## Overview and functionality
 If the plugin has been installed and configured correctly, it can be selected as a dashboard in the user settings:
 
