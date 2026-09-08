@@ -35,6 +35,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.DocStruct;
 import ugh.dl.Fileformat;
+import ugh.dl.HoldingElement;
 import ugh.dl.Metadata;
 import ugh.dl.MetadataGroup;
 import ugh.dl.MetadataGroupType;
@@ -546,6 +547,8 @@ public class Entity {
 
             catch (UGHException e) {
                 log.error(e);
+                Helper.setFehlerMeldung("plugin_workflow_entity_cannotAddMetadata");
+                return;
             }
         } else {
             try {
@@ -560,9 +563,34 @@ public class Entity {
                 field.adMetadataField(f);
             } catch (UGHException e) {
                 log.error(e);
+                Helper.setFehlerMeldung("plugin_workflow_entity_cannotAddMetadata");
+                return;
             }
         }
         field.setShowField(true);
+    }
+
+    /**
+     * A metadata that is no longer attached to the document has no parent to remove it from. The fields of an entity live on the logical doc struct,
+     * so that is what to fall back to; if it cannot be reached either, the caller only drops the row.
+     *
+     * @param parent the parent the metadata reports, may be null
+     * @return the element to remove the metadata from, or null if there is none
+     */
+    private HoldingElement holdingElementOf(HoldingElement parent) {
+        if (parent != null) {
+            return parent;
+        }
+        try {
+            DocStruct logical = currentFileformat == null ? null : currentFileformat.getDigitalDocument().getLogicalDocStruct();
+            if (logical == null) {
+                log.warn("Metadata is not attached to the document and the logical doc struct is not available, removing the field only.");
+            }
+            return logical;
+        } catch (PreferencesException e) {
+            log.error(e);
+            return null;
+        }
     }
 
     /**
@@ -575,7 +603,10 @@ public class Entity {
         ConfiguredField cf = field.getConfigField();
         if (cf.isGroup()) {
             MetadataGroup grp = field.getGroup();
-            grp.getParent().removeMetadataGroup(grp, true);
+            HoldingElement parent = holdingElementOf(grp.getParent());
+            if (parent != null) {
+                parent.removeMetadataGroup(grp, true);
+            }
             for (ConfiguredField sub : cf.getSubfieldList()) {
                 if ("fileupload".equals(sub.getFieldType())) {
                     try {
@@ -592,7 +623,10 @@ public class Entity {
 
         } else {
             Metadata md = field.getMetadata();
-            md.getParent().removeMetadata(md, true);
+            HoldingElement parent = holdingElementOf(md.getParent());
+            if (parent != null) {
+                parent.removeMetadata(md, true);
+            }
         }
         cf.getMetadataList().remove(field);
 

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -30,6 +31,7 @@ import jakarta.servlet.http.Part;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import ugh.dl.ContentFile;
 import ugh.dl.DigitalDocument;
@@ -43,7 +45,14 @@ import ugh.exceptions.TypeNotAllowedAsChildException;
 import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.UGHException;
 
-@Data
+/**
+ * One occurrence of a configured metadata field, as the editor shows it in a row. A repeatable field may hold several of them with the same value,
+ * and they are not interchangeable: each one wraps its own metadata of the document. Equality is therefore object identity - see
+ * ugh.dl.Metadata, which holds the same contract for the same reason.
+ */
+@Getter
+@Setter
+@ToString
 @Log4j2
 public class MetadataField {
 
@@ -92,12 +101,17 @@ public class MetadataField {
         sources.remove(field);
         if (group != null) {
             MetadataGroup toRemove = null;
-            for (MetadataGroup mg : group.getAllMetadataGroups()) {
-                if ("Source".equals(mg.getType().getName())) {
-                    for (Metadata md : mg.getMetadataByType("SourceID")) {
-                        if (md.getValue().equals(field.getSourceId())) {
-                            toRemove = mg;
-                            break;
+            // a group that never got a source has no sub groups at all
+            List<MetadataGroup> subGroups = group.getAllMetadataGroups();
+            if (subGroups != null) {
+                for (MetadataGroup mg : subGroups) {
+                    if ("Source".equals(mg.getType().getName())) {
+                        for (Metadata md : mg.getMetadataByType("SourceID")) {
+                            // sources are read from the METS file, so the id may be missing on either side
+                            if (StringUtils.equals(md.getValue(), field.getSourceId())) {
+                                toRemove = mg;
+                                break;
+                            }
                         }
                     }
                 }
@@ -440,33 +454,26 @@ public class MetadataField {
             this.showDetails = showDetails;
         }
 
+        /*
+         * A source is identified by the record it points at, so two SourceField objects with the same id are the same source, whatever else they
+         * carry. hashCode has to rest on the same id, and neither may assume that the id is set: sources are read from the METS file, where the
+         * SourceID can be missing.
+         */
+
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getEnclosingInstance().hashCode();
-            result = prime * result + ((pageRange == null) ? 0 : pageRange.hashCode());
-            result = prime * result + (showDetails ? 1231 : 1237);
-            result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
-            result = prime * result + ((sourceLink == null) ? 0 : sourceLink.hashCode());
-            result = prime * result + ((sourceName == null) ? 0 : sourceName.hashCode());
-            result = prime * result + ((sourceType == null) ? 0 : sourceType.hashCode());
-            result = prime * result + ((sourceUri == null) ? 0 : sourceUri.hashCode());
-            return result;
+            return Objects.hash(sourceId);
         }
 
         @Override
         public boolean equals(Object obj) {
-            SourceField other = (SourceField) obj;
-            if (other == null) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof SourceField)) {
                 return false;
             }
-
-            return sourceId.equals(other.sourceId);
-        }
-
-        private MetadataField getEnclosingInstance() {
-            return MetadataField.this;
+            return StringUtils.equals(sourceId, ((SourceField) obj).sourceId);
         }
 
         public void setSourceType(String sourceType) {
