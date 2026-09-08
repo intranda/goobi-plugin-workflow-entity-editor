@@ -26,9 +26,11 @@
                 <ui:fragment rendered="#{item.repeatable}">
                     <util:icon-text icon="circle-plus" text="#{msgs[item.label]}" />
                 </ui:fragment>
-                <h:outputText value="#{msgs[item.label]}" />
+                <ui:fragment rendered="#{!item.repeatable}">
+                    <h:outputText value="#{msgs[item.label]}" />
+                </ui:fragment>
                 <ui:fragment rendered="#{!item.valid}">
-                    <util:icon-text icon="alert-triangle" />
+                    <util:icon icon="alert-triangle" />
                 </ui:fragment>
 
                 <f:setPropertyActionListener

@@ -207,6 +207,15 @@
     padding: 8px;
 }
 
+/* The badge area stretches every pill to the height of the tallest one in its row, which are the pills
+ * carrying an icon. Core centres those through .badge:has(.icon-wrapper), while a pill without an icon
+ * falls back to span.badge { display: inline-block } and would keep its label at the top of the
+ * stretched box. Element plus two classes, so this wins over both core rules in any load order. */
+.badge-area span.badge {
+    display: inline-flex;
+    align-items: center;
+}
+
 .badge-bordered {
     color: #666;
     border-radius: 10px;
